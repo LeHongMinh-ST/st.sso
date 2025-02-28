@@ -6,9 +6,12 @@ use App\Enums\Role;
 use App\Enums\Status;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Laravel\Passport\HasApiTokens;
 
 class User extends Authenticatable
 {
+    use HasApiTokens;
+
     protected $fillable = [
         'user_name',
         'first_name',
