@@ -33,9 +33,20 @@ class LoginRequest extends FormRequest
     }
 
     /**
-     * Attempt to authenticate the request's credentials.
+     * Get custom attributes for validator errors.
      *
-     * @throws \Illuminate\Validation\ValidationException
+     * @return array<string, string>
+     */
+    public function attributes(): array
+    {
+        return [
+            'email' => 'Email đăng nhập',
+            'password' => 'Mật khẩu',
+        ];
+    }
+
+    /**
+     * Attempt to authenticate the request's credentials.
      */
     public function authenticate(): void
     {
