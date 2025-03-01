@@ -1,0 +1,170 @@
+2025-02-28 18:19:38,685 CRIT Supervisor is running as root.  Privileges were not dropped because no user is specified in the config file.  If you intend to run as root, you can set user=root in the config file to avoid this message.
+2025-02-28 18:19:38,689 INFO supervisord started with pid 1
+2025-02-28 18:19:39,692 INFO spawned: 'php-fpm' with pid 7
+2025-02-28 18:19:39,693 INFO spawned: 'vite' with pid 8
+2025-02-28 18:19:39,937 WARN exited: vite (exit status 1; not expected)
+2025-02-28 18:19:40,937 INFO success: php-fpm entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-02-28 18:19:40,938 INFO spawned: 'vite' with pid 33
+2025-02-28 18:19:41,130 WARN exited: vite (exit status 1; not expected)
+2025-02-28 18:19:43,146 INFO spawned: 'vite' with pid 56
+2025-02-28 18:19:43,497 WARN exited: vite (exit status 1; not expected)
+2025-02-28 18:19:47,061 INFO spawned: 'vite' with pid 79
+2025-02-28 18:19:47,269 WARN exited: vite (exit status 1; not expected)
+2025-02-28 18:19:48,273 INFO gave up: vite entered FATAL state, too many start retries too quickly
+2025-02-28 18:21:00,490 WARN received SIGQUIT indicating exit request
+2025-02-28 18:21:00,492 INFO waiting for php-fpm to die
+2025-02-28 18:21:01,507 INFO stopped: php-fpm (exit status 0)
+2025-02-28 18:21:46,992 CRIT Supervisor is running as root.  Privileges were not dropped because no user is specified in the config file.  If you intend to run as root, you can set user=root in the config file to avoid this message.
+2025-02-28 18:21:46,993 INFO supervisord started with pid 1
+2025-02-28 18:21:47,998 INFO spawned: 'php-fpm' with pid 7
+2025-02-28 18:21:48,000 INFO spawned: 'vite' with pid 8
+2025-02-28 18:21:48,247 WARN exited: vite (exit status 1; not expected)
+2025-02-28 18:21:49,248 INFO success: php-fpm entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-02-28 18:21:49,249 INFO spawned: 'vite' with pid 33
+2025-02-28 18:21:49,466 WARN exited: vite (exit status 1; not expected)
+2025-02-28 18:21:51,476 INFO spawned: 'vite' with pid 56
+2025-02-28 18:21:51,655 WARN exited: vite (exit status 1; not expected)
+2025-02-28 18:21:54,664 INFO spawned: 'vite' with pid 79
+2025-02-28 18:21:54,847 WARN exited: vite (exit status 1; not expected)
+2025-02-28 18:21:55,848 INFO gave up: vite entered FATAL state, too many start retries too quickly
+2025-02-28 18:22:13,892 WARN received SIGQUIT indicating exit request
+2025-02-28 18:22:13,894 INFO waiting for php-fpm to die
+2025-02-28 18:22:14,914 INFO stopped: php-fpm (exit status 0)
+2025-02-28 18:23:10,674 CRIT Supervisor is running as root.  Privileges were not dropped because no user is specified in the config file.  If you intend to run as root, you can set user=root in the config file to avoid this message.
+2025-02-28 18:23:10,683 INFO supervisord started with pid 1
+2025-02-28 18:23:11,686 INFO spawned: 'php-fpm' with pid 8
+2025-02-28 18:23:11,687 INFO spawned: 'vite' with pid 9
+2025-02-28 18:23:11,943 WARN exited: vite (exit status 1; not expected)
+2025-02-28 18:23:12,947 INFO success: php-fpm entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-02-28 18:23:12,948 INFO spawned: 'vite' with pid 34
+2025-02-28 18:23:13,118 WARN exited: vite (exit status 1; not expected)
+2025-02-28 18:23:15,126 INFO spawned: 'vite' with pid 57
+2025-02-28 18:23:15,303 WARN exited: vite (exit status 1; not expected)
+2025-02-28 18:23:18,646 INFO spawned: 'vite' with pid 80
+2025-02-28 18:23:19,466 INFO success: vite entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-02-28 18:23:19,473 WARN exited: vite (exit status 1; not expected)
+2025-02-28 18:23:20,476 INFO spawned: 'vite' with pid 103
+2025-02-28 18:23:20,694 WARN exited: vite (exit status 1; not expected)
+2025-02-28 18:23:22,475 INFO spawned: 'vite' with pid 126
+2025-02-28 18:23:22,726 WARN exited: vite (exit status 1; not expected)
+2025-02-28 18:23:24,737 INFO spawned: 'vite' with pid 149
+2025-02-28 18:23:24,917 WARN exited: vite (exit status 1; not expected)
+2025-02-28 18:23:27,929 INFO spawned: 'vite' with pid 172
+2025-02-28 18:23:28,102 WARN exited: vite (exit status 1; not expected)
+2025-02-28 18:23:29,105 INFO gave up: vite entered FATAL state, too many start retries too quickly
+2025-03-01 03:52:09,136 WARN received SIGQUIT indicating exit request
+2025-03-01 03:52:09,139 INFO waiting for php-fpm to die
+2025-03-01 03:52:10,154 INFO stopped: php-fpm (exit status 0)
+2025-03-01 04:13:35,897 CRIT Supervisor is running as root.  Privileges were not dropped because no user is specified in the config file.  If you intend to run as root, you can set user=root in the config file to avoid this message.
+2025-03-01 04:13:35,900 INFO supervisord started with pid 1
+2025-03-01 04:13:36,907 INFO spawned: 'php-fpm' with pid 7
+2025-03-01 04:13:36,911 INFO spawned: 'vite' with pid 8
+2025-03-01 04:13:37,324 WARN exited: vite (exit status 1; not expected)
+2025-03-01 04:13:38,128 INFO success: php-fpm entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-03-01 04:13:39,402 INFO spawned: 'vite' with pid 33
+2025-03-01 04:13:39,993 WARN exited: vite (exit status 1; not expected)
+2025-03-01 04:13:42,002 INFO spawned: 'vite' with pid 56
+2025-03-01 04:13:42,181 WARN exited: vite (exit status 1; not expected)
+2025-03-01 04:13:45,196 INFO spawned: 'vite' with pid 79
+2025-03-01 04:13:45,380 WARN exited: vite (exit status 1; not expected)
+2025-03-01 04:13:46,383 INFO gave up: vite entered FATAL state, too many start retries too quickly
+2025-03-01 04:14:15,226 WARN received SIGQUIT indicating exit request
+2025-03-01 04:14:15,226 INFO waiting for php-fpm to die
+2025-03-01 04:14:16,241 INFO stopped: php-fpm (exit status 0)
+2025-03-01 04:14:52,674 CRIT Supervisor is running as root.  Privileges were not dropped because no user is specified in the config file.  If you intend to run as root, you can set user=root in the config file to avoid this message.
+2025-03-01 04:14:52,676 INFO supervisord started with pid 1
+2025-03-01 04:14:53,686 INFO spawned: 'php-fpm' with pid 6
+2025-03-01 04:14:53,689 INFO spawned: 'vite' with pid 7
+2025-03-01 04:14:53,875 WARN exited: vite (exit status 1; not expected)
+2025-03-01 04:14:54,880 INFO success: php-fpm entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-03-01 04:14:54,885 INFO spawned: 'vite' with pid 32
+2025-03-01 04:14:55,173 WARN exited: vite (exit status 1; not expected)
+2025-03-01 04:14:57,737 INFO spawned: 'vite' with pid 55
+2025-03-01 04:14:57,931 WARN exited: vite (exit status 1; not expected)
+2025-03-01 04:15:01,519 INFO spawned: 'vite' with pid 78
+2025-03-01 04:15:01,738 WARN exited: vite (exit status 1; not expected)
+2025-03-01 04:15:02,740 INFO gave up: vite entered FATAL state, too many start retries too quickly
+2025-03-01 04:15:14,088 WARN received SIGQUIT indicating exit request
+2025-03-01 04:15:14,091 INFO waiting for php-fpm to die
+2025-03-01 04:15:15,103 INFO stopped: php-fpm (exit status 0)
+2025-03-01 04:15:53,394 CRIT Supervisor is running as root.  Privileges were not dropped because no user is specified in the config file.  If you intend to run as root, you can set user=root in the config file to avoid this message.
+2025-03-01 04:15:53,396 INFO supervisord started with pid 1
+2025-03-01 04:15:54,405 INFO spawned: 'php-fpm' with pid 7
+2025-03-01 04:15:54,408 INFO spawned: 'vite' with pid 8
+2025-03-01 04:15:54,602 WARN exited: vite (exit status 1; not expected)
+2025-03-01 04:15:55,603 INFO success: php-fpm entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-03-01 04:15:55,608 INFO spawned: 'vite' with pid 33
+2025-03-01 04:15:55,789 WARN exited: vite (exit status 1; not expected)
+2025-03-01 04:15:57,795 INFO spawned: 'vite' with pid 56
+2025-03-01 04:15:57,987 WARN exited: vite (exit status 1; not expected)
+2025-03-01 04:16:01,016 INFO spawned: 'vite' with pid 79
+2025-03-01 04:16:01,198 WARN exited: vite (exit status 1; not expected)
+2025-03-01 04:16:02,201 INFO gave up: vite entered FATAL state, too many start retries too quickly
+2025-03-01 04:17:04,586 WARN received SIGQUIT indicating exit request
+2025-03-01 04:17:04,588 INFO waiting for php-fpm to die
+2025-03-01 04:17:05,603 INFO stopped: php-fpm (exit status 0)
+2025-03-01 04:18:33,810 CRIT Supervisor is running as root.  Privileges were not dropped because no user is specified in the config file.  If you intend to run as root, you can set user=root in the config file to avoid this message.
+2025-03-01 04:18:33,813 INFO supervisord started with pid 1
+2025-03-01 04:18:34,782 INFO spawned: 'php-fpm' with pid 7
+2025-03-01 04:18:34,783 INFO spawned: 'vite' with pid 8
+2025-03-01 04:18:35,251 WARN exited: vite (exit status 1; not expected)
+2025-03-01 04:18:36,254 INFO success: php-fpm entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-03-01 04:18:36,255 INFO spawned: 'vite' with pid 33
+2025-03-01 04:18:36,420 WARN exited: vite (exit status 1; not expected)
+2025-03-01 04:18:38,430 INFO spawned: 'vite' with pid 56
+2025-03-01 04:18:38,619 WARN exited: vite (exit status 1; not expected)
+2025-03-01 04:18:41,634 INFO spawned: 'vite' with pid 79
+2025-03-01 04:18:41,822 WARN exited: vite (exit status 1; not expected)
+2025-03-01 04:18:42,824 INFO gave up: vite entered FATAL state, too many start retries too quickly
+2025-03-01 06:43:10,189 WARN received SIGQUIT indicating exit request
+2025-03-01 06:43:10,190 INFO waiting for php-fpm to die
+2025-03-01 06:43:11,220 INFO stopped: php-fpm (exit status 0)
+2025-03-01 06:43:17,851 CRIT Supervisor is running as root.  Privileges were not dropped because no user is specified in the config file.  If you intend to run as root, you can set user=root in the config file to avoid this message.
+2025-03-01 06:43:17,854 INFO supervisord started with pid 1
+2025-03-01 06:43:18,861 INFO spawned: 'php-fpm' with pid 8
+2025-03-01 06:43:18,865 INFO spawned: 'vite' with pid 9
+2025-03-01 06:43:19,123 WARN exited: vite (exit status 1; not expected)
+2025-03-01 06:43:20,126 INFO success: php-fpm entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-03-01 06:43:20,131 INFO spawned: 'vite' with pid 34
+2025-03-01 06:43:20,337 WARN exited: vite (exit status 1; not expected)
+2025-03-01 06:43:22,346 INFO spawned: 'vite' with pid 57
+2025-03-01 06:43:22,531 WARN exited: vite (exit status 1; not expected)
+2025-03-01 06:43:25,545 INFO spawned: 'vite' with pid 80
+2025-03-01 06:43:25,732 WARN exited: vite (exit status 1; not expected)
+2025-03-01 06:43:26,735 INFO gave up: vite entered FATAL state, too many start retries too quickly
+2025-03-01 07:00:23,443 WARN received SIGQUIT indicating exit request
+2025-03-01 07:00:23,446 INFO waiting for php-fpm to die
+2025-03-01 07:00:24,458 INFO stopped: php-fpm (exit status 0)
+2025-03-01 07:00:28,536 CRIT Supervisor is running as root.  Privileges were not dropped because no user is specified in the config file.  If you intend to run as root, you can set user=root in the config file to avoid this message.
+2025-03-01 07:00:28,539 INFO supervisord started with pid 1
+2025-03-01 07:00:29,547 INFO spawned: 'php-fpm' with pid 7
+2025-03-01 07:00:29,549 INFO spawned: 'vite' with pid 8
+2025-03-01 07:00:29,818 WARN exited: vite (exit status 1; not expected)
+2025-03-01 07:00:30,822 INFO success: php-fpm entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-03-01 07:00:30,825 INFO spawned: 'vite' with pid 33
+2025-03-01 07:00:31,012 WARN exited: vite (exit status 1; not expected)
+2025-03-01 07:00:32,014 WARN received SIGQUIT indicating exit request
+2025-03-01 07:00:32,015 INFO waiting for php-fpm to die
+2025-03-01 07:00:33,023 INFO stopped: php-fpm (exit status 0)
+2025-03-01 07:01:47,103 CRIT Supervisor is running as root.  Privileges were not dropped because no user is specified in the config file.  If you intend to run as root, you can set user=root in the config file to avoid this message.
+2025-03-01 07:01:47,107 INFO supervisord started with pid 1
+2025-03-01 07:01:48,112 INFO spawned: 'php-fpm' with pid 6
+2025-03-01 07:01:48,114 INFO spawned: 'vite' with pid 7
+2025-03-01 07:01:48,483 WARN exited: vite (exit status 1; not expected)
+2025-03-01 07:01:49,487 INFO success: php-fpm entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-03-01 07:01:49,489 INFO spawned: 'vite' with pid 32
+2025-03-01 07:01:49,671 WARN exited: vite (exit status 1; not expected)
+2025-03-01 07:01:51,679 INFO spawned: 'vite' with pid 55
+2025-03-01 07:01:51,890 WARN exited: vite (exit status 1; not expected)
+2025-03-01 07:01:54,903 INFO spawned: 'vite' with pid 78
+2025-03-01 07:01:55,102 WARN exited: vite (exit status 1; not expected)
+2025-03-01 07:01:56,103 INFO gave up: vite entered FATAL state, too many start retries too quickly
+2025-03-01 07:06:07,383 WARN received SIGQUIT indicating exit request
+2025-03-01 07:06:07,385 INFO waiting for php-fpm to die
+2025-03-01 07:06:08,400 INFO stopped: php-fpm (exit status 0)
+2025-03-01 07:06:15,032 CRIT Supervisor is running as root.  Privileges were not dropped because no user is specified in the config file.  If you intend to run as root, you can set user=root in the config file to avoid this message.
+2025-03-01 07:06:15,036 INFO supervisord started with pid 1
+2025-03-01 07:06:16,041 INFO spawned: 'php-fpm' with pid 7
+2025-03-01 07:06:16,043 INFO spawned: 'vite' with pid 8
+2025-03-01 07:06:17,993 INFO success: php-fpm entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-03-01 07:06:18,001 INFO success: vite entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
