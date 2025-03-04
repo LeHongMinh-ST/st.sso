@@ -23,7 +23,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
                     <form className="p-6 md:p-8" onSubmit={handleSubmit}>
                         <div className="flex flex-col gap-6">
                             <div className="flex flex-col items-center text-center">
-                                <h1 className="text-2xl font-bold">Hệ thống VNUA SSO</h1>
+                                <h1 className="text-2xl font-bold">Hệ thống ST SSO</h1>
                                 <p className="text-muted-foreground text-balance">Đăng nhập vào tài khoản của bạn</p>
                             </div>
                             <div className="grid gap-2">
