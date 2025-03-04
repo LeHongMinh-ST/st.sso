@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -12,6 +13,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return Inertia::render('dashboard');
     })->name('dashboard');
 });
+Route::post('/authorize/azure', [AuthenticatedSessionController::class, 'redirectToSocialite'])->name('login.microsoft');
+Route::get('/authorize/azure/callback', [AuthenticatedSessionController::class, 'handleSocialteCallback']);
 
 require __DIR__.'/settings.php';
 require __DIR__.'/faculty.php';

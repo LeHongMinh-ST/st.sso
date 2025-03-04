@@ -7,7 +7,7 @@ import { useForm } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 
 export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) {
-    const { data, setData, post, processing } = useForm({
+    const { data, setData, post, processing, get } = useForm({
         email: '',
         password: '',
     });
@@ -23,6 +23,14 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
         const isDark = document.documentElement.classList.contains('dark');
         setImageSrc(isDark ? '/images/auth/login-dark.svg' : '/images/auth/login.svg');
     }, []);
+
+    const loginWithMicrosoft = () => {
+        try {
+            post(route('login.microsoft'));
+        } catch (error) {
+            console.error(error);
+        }
+    };
 
     return (
         <div className={cn('flex flex-col gap-6', className)} {...props}>
@@ -66,7 +74,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
                             <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
                                 <span className="bg-background text-muted-foreground relative z-10 px-2">Hoặc tiếp tục với</span>
                             </div>
-                            <Button variant="outline" className="w-full">
+                            <Button onClick={loginWithMicrosoft} variant="outline" className="w-full">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 23 23" className="mr-2 h-5 w-5">
                                     <path
                                         fill="currentColor"
