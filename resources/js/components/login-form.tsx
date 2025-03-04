@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { useForm } from '@inertiajs/react';
+import { useEffect, useState } from 'react';
 
 export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) {
     const { data, setData, post, processing } = useForm({
@@ -15,6 +16,13 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
         e.preventDefault();
         post(route('login'));
     };
+
+    const [imageSrc, setImageSrc] = useState('/images/auth/login.svg');
+
+    useEffect(() => {
+        const isDark = document.documentElement.classList.contains('dark');
+        setImageSrc(isDark ? '/images/auth/login-dark.svg' : '/images/auth/login.svg');
+    }, []);
 
     return (
         <div className={cn('flex flex-col gap-6', className)} {...props}>
@@ -71,7 +79,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
                         </div>
                     </form>
                     <div className="bg-muted relative hidden md:block">
-                        <img src="/images/auth/login.svg" alt="Hình ảnh" className="absolute inset-0 h-full w-full object-cover" />
+                        <img src={imageSrc} alt="Hình ảnh" className="absolute inset-0 h-full w-full object-cover" />
                     </div>
                 </CardContent>
             </Card>
