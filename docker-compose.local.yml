@@ -17,6 +17,8 @@ services:
       - network
     env_file:
       - .env
+    environment:
+      - DOCKER=true  # Thêm biến môi trường này để nhận diện chạy trong Docker
 
   webserver:
     image: nginx:alpine

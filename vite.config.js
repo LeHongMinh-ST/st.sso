@@ -4,6 +4,8 @@ import fs from 'fs';
 import laravel from 'laravel-vite-plugin';
 import { defineConfig } from 'vite';
 
+const isDocker = process.env.DOCKER === 'true';
+
 export default defineConfig({
     plugins: [
         laravel({
@@ -18,24 +20,33 @@ export default defineConfig({
         jsx: 'automatic',
     },
     server: {
-        host: '0.0.0.0', // Để cho phép truy cập từ bên ngoài
+        host: '0.0.0.0',
         watch: {
             usePolling: true,
         },
         port: 5173,
-        https: {
-            key: fs.readFileSync('/etc/nginx/certs/st.sso.dev-key.pem'),
-            cert: fs.readFileSync('/etc/nginx/certs/st.sso.dev.pem'),
-        },
+        ...(isDocker
+            ? {
+                  https: {
+                      key: fs.readFileSync('/etc/nginx/certs/st.sso.dev-key.pem'),
+                      cert: fs.readFileSync('/etc/nginx/certs/st.sso.dev.pem'),
+                  },
+                  hmr: {
+                      protocol: 'wss',
+                      host: 'st.sso.dev',
+                      port: 5173,
+                  },
+              }
+            : {
+                  https: false, // Không bật HTTPS khi chạy cục bộ
+                  hmr: {
+                      protocol: 'ws', // Dùng WebSocket thường
+                  },
+              }),
         strictPort: true,
-        cors: true, // Bật CORS để tránh lỗi proxy chặn
-        hmr: {
-            protocol: 'wss', // Chắc chắn sử dụng WebSocket Secure
-            host: 'st.sso.dev',
-            port: 5173,
-        },
+        cors: true,
     },
     preview: {
-        https: true,
+        https: isDocker,
     },
 });
