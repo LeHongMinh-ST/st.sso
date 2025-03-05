@@ -36,3 +36,7 @@ logs:
 # Tail logs from a specific service (e.g., make logs-tail service=app)
 logs-tail:
 	@$(DOCKER_COMPOSE) logs -f --tail=100 $(service)
+
+# Tail logs from a specific service (e.g., make logs-tail service=app)
+idea-helper
+	@$(DOCKER_COMPOSE) exec app php artisan ide-helper:models -RW

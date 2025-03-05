@@ -36,7 +36,7 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        return redirect()->intended($request->input('redirect', route('dashboard', absolute: false)));
     }
 
     /**
@@ -52,8 +52,10 @@ class AuthenticatedSessionController extends Controller
         return redirect('/');
     }
 
-    public function redirectToSocialite()
+    public function redirectToSocialite(Request $request)
     {
+        session(['redirect_after_login' => $request->query('redirect', route('dashboard', absolute: false))]);
+
         $url = Socialite::driver('azure')->stateless()->redirect()->getTargetUrl();
 
         return Inertia::location($url);
@@ -75,6 +77,10 @@ class AuthenticatedSessionController extends Controller
 
         Auth::login($user, true);
 
-        return redirect('/dashboard');
+        $redirectUrl = session('redirect_after_login', route('dashboard', absolute: false));
+
+        session()->forget('redirect_after_login');
+
+        return redirect($redirectUrl);
     }
 }

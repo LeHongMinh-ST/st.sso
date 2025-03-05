@@ -596,3 +596,10 @@
 2025-03-04 08:20:32,626 INFO success: php-fpm entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
 2025-03-04 08:20:32,626 INFO success: vite entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
 2025-03-04 08:20:37,255 INFO reaped unknown pid 112 (exit status 0)
+2025-03-05 02:03:34,669 CRIT Supervisor is running as root.  Privileges were not dropped because no user is specified in the config file.  If you intend to run as root, you can set user=root in the config file to avoid this message.
+2025-03-05 02:03:34,672 INFO supervisord started with pid 1
+2025-03-05 02:03:35,673 INFO spawned: 'php-fpm' with pid 25
+2025-03-05 02:03:35,675 INFO spawned: 'vite' with pid 26
+2025-03-05 02:03:37,661 INFO success: php-fpm entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-03-05 02:03:37,661 INFO success: vite entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2025-03-05 02:03:37,661 INFO reaped unknown pid 63 (exit status 0)
