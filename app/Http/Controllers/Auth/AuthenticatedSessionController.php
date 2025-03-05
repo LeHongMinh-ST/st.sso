@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Models\User;
+use Helper;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -21,22 +22,31 @@ class AuthenticatedSessionController extends Controller
      */
     public function create(Request $request): Response
     {
+        $redirectAfterLogin = $request->get('redirect', null);
+
         return Inertia::render('auth/login', [
             'canResetPassword' => Route::has('password.request'),
             'status' => $request->session()->get('status'),
+            'redirect' => $redirectAfterLogin,
         ]);
     }
 
     /**
      * Handle an incoming authentication request.
      */
-    public function store(LoginRequest $request): RedirectResponse
+    public function store(LoginRequest $request)
     {
+
         $request->authenticate();
 
         $request->session()->regenerate();
 
-        return redirect()->intended($request->input('redirect', route('dashboard', absolute: false)));
+        $redirectAfterLogin = $request->get('redirect', null);
+        if ($redirectAfterLogin) {
+            return redirect()->to($redirectAfterLogin);
+        }
+
+        return redirect()->intended(route('dashboard', absolute: false));
     }
 
     /**
@@ -47,6 +57,7 @@ class AuthenticatedSessionController extends Controller
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();
+
         $request->session()->regenerateToken();
 
         return redirect('/');
@@ -68,8 +79,11 @@ class AuthenticatedSessionController extends Controller
         $user = User::where('email', $azureUser->getEmail())->first();
 
         if (! $user) {
+            [$lastName, $firstName] = Helper::splitFullName($azureUser->getName());
             $user = User::create([
-                'name' => $azureUser->getName(),
+                'name' => $azureUser->getEmail(),
+                'first_name' => $firstName,
+                'last_name' => $lastName,
                 'email' => $azureUser->getEmail(),
                 'password' => Hash::make('password'),
             ]);
@@ -81,6 +95,10 @@ class AuthenticatedSessionController extends Controller
 
         session()->forget('redirect_after_login');
 
-        return redirect($redirectUrl);
+        if ($redirectUrl) {
+            return Inertia::location($redirectUrl);
+        }
+
+        return redirect()->intended(route('dashboard', absolute: false));
     }
 }

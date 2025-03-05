@@ -11,7 +11,7 @@ class AdminUserSeeder extends Seeder
     public function run(): void
     {
         User::create([
-            'name' => 'System Admin',
+            'name' => 'sytem_admin',
             'first_name' => 'System',
             'last_name' => 'Admin',
             'email' => 'admin@gmail.com',
@@ -23,3 +23,4 @@ class AdminUserSeeder extends Seeder
         ]);
     }
 }
+
