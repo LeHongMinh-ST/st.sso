@@ -37,13 +37,13 @@ class AuthenticatedSessionController extends Controller
     public function store(LoginRequest $request)
     {
 
+        $redirectAfterLogin = $request->get('redirect', null);
         $request->authenticate();
 
         $request->session()->regenerate();
 
-        $redirectAfterLogin = $request->get('redirect', null);
         if ($redirectAfterLogin) {
-            return redirect()->to($redirectAfterLogin);
+            return Inertia::location($redirectAfterLogin);
         }
 
         return redirect()->intended(route('dashboard', absolute: false));
@@ -65,7 +65,9 @@ class AuthenticatedSessionController extends Controller
 
     public function redirectToSocialite(Request $request)
     {
-        session(['redirect_after_login' => $request->query('redirect', route('dashboard', absolute: false))]);
+        $redirectAfterLogin = $request->get('redirect', null);
+
+        session(['redirect_after_login' => $redirectAfterLogin]);
 
         $url = Socialite::driver('azure')->stateless()->redirect()->getTargetUrl();
 
@@ -91,7 +93,7 @@ class AuthenticatedSessionController extends Controller
 
         Auth::login($user, true);
 
-        $redirectUrl = session('redirect_after_login', route('dashboard', absolute: false));
+        $redirectUrl = session('redirect_after_login');
 
         session()->forget('redirect_after_login');
 
