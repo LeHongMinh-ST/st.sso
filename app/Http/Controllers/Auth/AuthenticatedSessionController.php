@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Enums\Role;
+use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Models\User;
-use Helper;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -81,13 +82,16 @@ class AuthenticatedSessionController extends Controller
         $user = User::where('email', $azureUser->getEmail())->first();
 
         if (! $user) {
-            [$lastName, $firstName] = Helper::splitFullName($azureUser->getName());
+            $name = Helper::splitFullName($azureUser->getName());
             $user = User::create([
                 'name' => $azureUser->getEmail(),
-                'first_name' => $firstName,
-                'last_name' => $lastName,
+                'last_name' => $name['last_name'],
+                'first_name' => $name['first_name'],
                 'email' => $azureUser->getEmail(),
                 'password' => Hash::make('password'),
+                'role' => Role::Officer->value,
+                'status' => 'active',
+                'code' => 'ST-OFFICER-'.time(),
             ]);
         }
 
