@@ -13,6 +13,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Laravel\Passport\Client;
 use Laravel\Socialite\Facades\Socialite;
 
 class AuthenticateController extends Controller
@@ -34,6 +35,21 @@ class AuthenticateController extends Controller
             return redirect()->back()
                 ->withErrors(['message' => ['Vui lòng kiểm tra lại tài khoản hoặc mật khẩu!']])
                 ->withInput();
+        }
+
+        if ($request->has('client_id')) {
+            $client = Client::where('id', $request->get('client_id'))->first();
+            $redirect = $client->redirect_uri;
+            $user = Auth::user();
+            $query = http_build_query([
+                'client_id'     => $client->id,
+                'redirect_uri'  => $redirect,
+                'response_type' => 'code',
+                'scope'         => '',
+                'state'         => $user->id,
+            ]);
+            $ssoServerAuth = route('passport.authorizations.authorize');
+            return redirect("$ssoServerAuth?$query");
         }
 
         return redirect()->intended(route('dashboard'));
