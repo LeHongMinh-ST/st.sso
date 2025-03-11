@@ -14,7 +14,8 @@ services:
       - "${APP_PORT:-9000}:9000"  # PHP-FPM
       - "${VITE_PORT:-5173}:5173"  # Vite frontend
     networks:
-      - network
+      - st_network
+      - default
     env_file:
       - .env
     environment:
@@ -32,7 +33,7 @@ services:
       - ./.docker/local/nginx/default.conf:/etc/nginx/conf.d/default.conf
       - ./.docker/local/certs:/etc/nginx/certs  # Mount thư mục chứa chứng chỉ SSL
     networks:
-      - network
+      - default
     depends_on:
       - app
     env_file:
@@ -52,7 +53,7 @@ services:
     volumes:
       - dbdata:/var/lib/mysql
     networks:
-      - network
+      - default
     env_file:
       - .env
 
@@ -67,7 +68,7 @@ services:
       - .:/var/www
     command: ["php", "artisan", "queue:work"]
     networks:
-      - network
+      - default
     depends_on:
       - db
       - app
@@ -79,5 +80,8 @@ volumes:
     driver: local
 
 networks:
-  network:
+  st_network:
+    driver: bridge
+    external: true
+  default:
     driver: bridge

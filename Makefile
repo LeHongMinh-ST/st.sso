@@ -60,6 +60,9 @@ clear-cache:
 	@$(EXEC_PHP) php artisan config:clear
 	@$(EXEC_PHP) php artisan route:clear
 	@$(EXEC_PHP) php artisan view:clear
+# Generate application key
+genkey:
+	@$(EXEC_PHP) php artisan key:generate
 
 # Get logs from a specific service (e.g., make logs service=app)
 logs:

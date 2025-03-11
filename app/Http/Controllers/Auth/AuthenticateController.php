@@ -37,21 +37,6 @@ class AuthenticateController extends Controller
                 ->withInput();
         }
 
-        if ($request->has('client_id')) {
-            $client = Client::where('id', $request->get('client_id'))->first();
-            $redirect = $client->redirect_uri;
-            $user = Auth::user();
-            $query = http_build_query([
-                'client_id'     => $client->id,
-                'redirect_uri'  => $redirect,
-                'response_type' => 'code',
-                'scope'         => '',
-                'state'         => $user->id,
-            ]);
-            $ssoServerAuth = route('passport.authorizations.authorize');
-            return redirect("$ssoServerAuth?$query");
-        }
-
         return redirect()->intended(route('dashboard'));
     }
 
@@ -69,10 +54,6 @@ class AuthenticateController extends Controller
 
     public function redirectToSocialite(Request $request): RedirectResponse
     {
-        $redirectAfterLogin = $request->get('redirect', null);
-
-        session(['redirect_after_login' => $redirectAfterLogin]);
-
         $url = Socialite::driver('azure')->stateless()->redirect()->getTargetUrl();
 
         return redirect($url);
@@ -99,14 +80,6 @@ class AuthenticateController extends Controller
         }
 
         Auth::login($user, true);
-
-        $redirectUrl = session('redirect_after_login');
-
-        session()->forget('redirect_after_login');
-
-        if ($redirectUrl) {
-            return redirect($redirectUrl);
-        }
 
         return redirect()->intended(route('dashboard', absolute: false));
     }
