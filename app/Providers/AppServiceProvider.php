@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Client;
 use App\View\Components\Layouts\AdminLayout;
 use App\View\Components\Layouts\AuthLayout;
 use App\View\Components\Layouts\ClientLayout;
@@ -34,6 +35,7 @@ class AppServiceProvider extends ServiceProvider
         Passport::tokensExpireIn(now()->addDays(15));
         Passport::refreshTokensExpireIn(now()->addDays(30));
         Passport::personalAccessTokensExpireIn(now()->addDays(15));
+        Passport::useClientModel(Client::class);
 
         Blade::component('auth-layout', AuthLayout::class);
         Blade::component('admin-layout', AdminLayout::class);

@@ -3,8 +3,24 @@
 
 namespace App\Helpers;
 
+use Carbon\Exceptions\InvalidFormatException;
+use Illuminate\Support\Carbon;
+
 class Helper
 {
+
+
+    public static function isValidDateFormat($dateString, $format): bool
+    {
+        try {
+            $date = Carbon::createFromFormat($format, $dateString);
+
+            return $date && $date->format($format) === $dateString;
+        } catch (InvalidFormatException $e) {
+            return false;
+        }
+    }
+
     public static function splitFullName($fullName)
     {
         $parts = explode(' ', trim($fullName));

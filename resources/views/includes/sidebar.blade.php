@@ -39,25 +39,28 @@
                 </li>
 
 
-                <li class="nav-item-header">
-                    <div class="opacity-50 text-uppercase fs-sm lh-sm sidebar-resize-hide">Hệ thống</div>
-                    <i class="ph-dots-three sidebar-resize-show"></i>
-                </li>
-                <li class="nav-item">
-                    <a href=""
-                       class="nav-link {{ request()->routeIs('admin.teachers.*') ? 'active' : '' }}">
-                        <i class="ph-user"></i>
-                        <span>Người dùng</span>
-                    </a>
-                </li>
+                @if (auth()->user()->role === \App\Enums\Role::SuperAdmin)
+                    <li class="nav-item-header">
+                        <div class="opacity-50 text-uppercase fs-sm lh-sm sidebar-resize-hide">Hệ thống</div>
+                        <i class="ph-dots-three sidebar-resize-show"></i>
+                    </li>
 
-                <li class="nav-item">
-                    <a href=""
-                       class="nav-link {{ request()->routeIs('admin.teachers.*') ? 'active' : '' }}">
-                        <i class="ph-package"></i>
-                        <span>Ứng dụng khách</span>
-                    </a>
-                </li>
+                    <li class="nav-item">
+                        <a href="{{ route('faculty.index') }}"
+                           class="nav-link {{ request()->routeIs('faculty.*') ? 'active' : '' }}">
+                            <i class="ph-buildings"></i>
+                            <span>Quản lý Khoa</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="{{ route('client.index') }}"
+                           class="nav-link {{ request()->routeIs('client.*') ? 'active' : '' }}">
+                            <i class="ph-package"></i>
+                            <span>Ứng dụng SSO</span>
+                        </a>
+                    </li>
+                @endif
 
 
             </ul>
