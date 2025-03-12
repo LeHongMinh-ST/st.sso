@@ -87,4 +87,9 @@ make down
 #### Windows (Using Docker Compose Directly)
 ```powershell
 docker-compose down
+
+### Generate keys passport
+php artisan passport:keys
+php artisan passport:client
+
 ```
