@@ -53,7 +53,7 @@ class Password extends Component
             return;
         }
 
-        auth()->user()->update(['password' => Hash::make($this->new_password)]);
+        auth()->user()->update(['password' => Hash::make($this->new_password), 'is_change_password' => true]);
         $this->dispatch('alert', type: 'success', message: 'Lưu thành công!');
         $this->clearForm();
     }
