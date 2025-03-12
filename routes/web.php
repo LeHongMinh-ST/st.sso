@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Auth\AuthenticateController;
 use Illuminate\Support\Facades\Route;
 
@@ -14,4 +15,7 @@ Route::get('/authorize/azure/callback', [AuthenticateController::class, 'handleS
 Route::middleware('auth')->group(function () {
 
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::prefix('/profile')->group(function () {
+       Route::get('/', [ProfileController::class, 'index'])->name('profile');
+    });
 });
