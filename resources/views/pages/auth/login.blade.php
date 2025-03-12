@@ -24,7 +24,7 @@
                                     <img src="{{ asset('assets/images/logoST.jpg') }}" class="h-64px" alt="">
                                 </div>
                                 <span class="d-block text-muted">Chào mừng bạn đến với</span>
-                                <h5 class="mb-0">Hệ thống ST Singer Sign-On</h5>
+                                <h5 class="mb-0">Hệ thống ST Single Sign-On</h5>
                             </div>
 
                             <div class="mb-3">
