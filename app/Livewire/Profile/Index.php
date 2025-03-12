@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Profile;
 
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 class Index extends Component
@@ -11,18 +12,27 @@ class Index extends Component
 
     public function render()
     {
-        $tabs = [
-            'profile' => 'Thông tin tài khoản',
-            'password' => 'Mật khẩu'
-        ];
-
-        return view('livewire.profile.index', [
-            'tabs' => $tabs
-        ]);
+        return view('livewire.profile.index');
     }
 
-    public function selectTab($tab)
+    public function mount(): void
     {
-        $this->tab = $tab;
+        $this->checkChangePassword();
+    }
+
+    public function selectTab($tab): void
+    {
+        if ($this->checkChangePassword()) {
+            $this->tab = $tab;
+        }
+    }
+
+    public function checkChangePassword() {
+        $user = Auth::user();
+
+        if ($user && !$user->is_change_password) {
+            $this->tab = 'password';
+        }
+        return $user->is_change_password;
     }
 }

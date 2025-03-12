@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('role');
             $table->string('status');
             $table->string('code')->unique();
+            $table->boolean('is_change_password')->default(false);
             $table->unsignedBigInteger('department_id')->nullable()->constrained()->nullOnDelete();
             $table->unsignedBigInteger('faculty_id')->nullable()->constrained()->nullOnDelete();
             $table->timestamp('email_verified_at')->nullable();
