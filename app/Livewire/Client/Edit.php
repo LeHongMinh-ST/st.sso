@@ -5,13 +5,13 @@ namespace App\Livewire\Client;
 use App\Models\Client;
 use Livewire\Component;
 
-class Detail extends Component
+class Edit extends Component
 {
     public $client;
 
     public function render()
     {
-        return view('livewire.client.detail');
+        return view('livewire.client.edit');
     }
 
     public function mount(Client $client)

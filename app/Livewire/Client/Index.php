@@ -16,6 +16,7 @@ class Index extends Component
         $clients = Client::query()
             ->search($this->search)
             ->paginate(Constants::PER_PAGE_ADMIN);
+
         return view('livewire.client.index')->with([
             'clients' => $clients
         ]);
