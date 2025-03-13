@@ -44,7 +44,6 @@
     </div>
     <!-- /left sidebar component -->
 
-
     <!-- Right content -->
     <div class="tab-content flex-fill">
         <div class="tab-pane fade @if($tab == 'profile') active show @endif " id="profile" role="tabpanel">

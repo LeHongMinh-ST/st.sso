@@ -29,8 +29,8 @@
                 <tbody>
                     @forelse($clients as $item)
                         <tr>
-                            <td>{{ $loop->index + 1 + $clients->perPage() * ($clients->currentPage() - 1) }}</td>
-                            <td>
+                            <td class="text-center" width="5%">{{ $loop->index + 1 + $clients->perPage() * ($clients->currentPage() - 1) }}</td>
+                            <td width="35%">
                                 <a href="{{ route('client.show', $item->id) }}">
                                     <img
                                          src="{{ Avatar::create($item->name)->setShape('square')->toBase64() }}"
@@ -38,8 +38,8 @@
                                     {{ $item->name }}
                                 </a>
                             </td>
-                            <td> <a href="{{ $item->baseRedirectUrl }}" taget="_blank"><i class="ph-link-simple"></i> {{ $item->baseRedirectUrl }}</a></td>
-                            <td>{{ $item->created_at->format('d/m/Y') }}</td>
+                            <td width="35%"> <a href="{{ $item->baseRedirectUrl }}" taget="_blank"><i class="ph-link-simple"></i> {{ $item->baseRedirectUrl }}</a></td>
+                            <td width="15%">{{ $item->created_at->format('d/m/Y') }}</td>
                         </tr>
                     @empty
                         <x-table-empty :colspan="4" />

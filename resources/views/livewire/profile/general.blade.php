@@ -26,7 +26,7 @@
                                class="validation-error-label text-danger"
                                for="email">{{ $message }}</label>
                         @enderror
-                        </div>
+                    </div>
                 </div>
             </div>
 
