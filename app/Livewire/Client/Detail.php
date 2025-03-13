@@ -18,4 +18,10 @@ class Detail extends Component
     {
         $this->client = $client;
     }
+
+    public function delete()
+    {
+        $this->client->delete();
+        $this->dispatch('notify', type: 'success', message: 'Client deleted successfully');
+    }
 }
