@@ -39,7 +39,7 @@
                 </li>
 
 
-                @if (auth()->user()->role === \App\Enums\Role::SuperAdmin)
+                @if (auth()->user()->isSuperAdmin())
                     <li class="nav-item-header">
                         <div class="opacity-50 text-uppercase fs-sm lh-sm sidebar-resize-hide">Hệ thống</div>
                         <i class="ph-dots-three sidebar-resize-show"></i>

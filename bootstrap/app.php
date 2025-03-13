@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\CheckPasswordChanged;
+use App\Http\Middleware\CheckSuperAdmin;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -14,7 +15,10 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
-            'check.password' => CheckPasswordChanged::class
+            'check.password' => CheckPasswordChanged::class,
+        ]);
+        $middleware->alias([
+            'check.superadmin' => CheckSuperAdmin::class
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

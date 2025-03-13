@@ -21,13 +21,15 @@ Route::middleware(['auth', 'check.password'])->group(function () {
        Route::get('/', [ProfileController::class, 'index'])->name('profile');
     });
 
-    Route::prefix('/faculties')->group(function () {
-        Route::get('/', [FacultyController::class, 'index'])->name('faculty.index');
-    });
+    Route::middleware(['check.superadmin'])->group(function () {
+        Route::prefix('/faculties')->group(function () {
+            Route::get('/', [FacultyController::class, 'index'])->name('faculty.index');
+        });
 
-    Route::prefix('/clients')->group(function () {
-        Route::get('/', [ClientController::class, 'index'])->name('client.index');
-        Route::get('/create', [ClientController::class, 'create'])->name('client.create');
-        Route::get('/{id}', [ClientController::class, 'show'])->name('client.show');
+        Route::prefix('/clients')->group(function () {
+            Route::get('/', [ClientController::class, 'index'])->name('client.index');
+            Route::get('/create', [ClientController::class, 'create'])->name('client.create');
+            Route::get('/{id}', [ClientController::class, 'show'])->name('client.show');
+        });
     });
 });
