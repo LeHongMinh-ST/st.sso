@@ -27,7 +27,7 @@ class Index extends Component
         }
     }
 
-    public function checkChangePassword() {
+    private function checkChangePassword() {
         $user = Auth::user();
 
         if ($user && !$user->is_change_password) {
