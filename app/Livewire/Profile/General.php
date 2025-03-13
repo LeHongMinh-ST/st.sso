@@ -17,7 +17,7 @@ class General extends Component
     #[Validate(as: 'email')]
     public string $email;
     #[Validate(as: 'phone')]
-    public string $phone;
+    public string|null $phone;
 
     public function mount()
     {
@@ -49,10 +49,10 @@ class General extends Component
         $user->first_name = $this->first_name;
         $user->last_name = $this->last_name;
         $user->email = $this->email;
-        $user->phone = $this->phone;
+        $user->phone = $this->phone ?? '';
         $user->save();
 
-        $this->dispatch('notify', type: 'success', message: 'Cập nhật thông tin thành công');
+        $this->dispatch('alert', type: 'success', message: 'Cập nhật thông tin thành công!');
     }
 
     public function render()

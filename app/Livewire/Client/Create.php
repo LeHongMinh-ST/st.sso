@@ -22,11 +22,7 @@ class Create extends Component
 
     public string $secret;
 
-    public function __construct(
-        private ClientRepository $clientRepository
-    )
-    {
-    }
+
 
     public function rules(): array
     {
@@ -44,8 +40,10 @@ class Create extends Component
     public function submit()
     {
         $this->validate();
-        
-        $client = $this->clientRepository->create(Auth::user()->id, $this->name, $this->redirect, $this->description);
+
+        $client = app(ClientRepository::class)->create(Auth::user()->id, $this->name, $this->redirect);
+        $client->description = $this->description;
+        $client->save();
 
         $this->id = $client->id;
         $this->secret = $client->secret;

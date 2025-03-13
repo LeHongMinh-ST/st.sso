@@ -13,7 +13,7 @@
                         </label>
                         <input wire:model.live="name" type="text" id="name" class="form-control @error('name') is-invalid @enderror">
                         @error('name')
-                        <div class="invalid-feedback">{{ $message }}</div>
+                            <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
                 </div>
@@ -24,7 +24,7 @@
                         </label>
                         <input wire:model.live="redirect" type="text" id="redirect" class="form-control @error('redirect') is-invalid @enderror">
                         @error('redirect')
-                        <div class="invalid-feedback">{{ $message }}</div>
+                            <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
                 </div>
@@ -35,13 +35,13 @@
                         </label>
                         <textarea wire:model.live="description" id="description" class="form-control @error('description') is-invalid @enderror"></textarea>
                         @error('description')
-                        <div class="invalid-feedback">{{ $message }}</div>
+                            <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
                 </div>
             </div>
         </div>
-      
+
 
     </div>
     <div class="col-md-3 col-12">
@@ -50,12 +50,12 @@
                 <i class="ph-gear-six"></i>
                 Hành động
             </div>
-            <div class="card-body d-flex justify-content-center gap-3">
-                <button wire:loading wire:target="submit" class="btn btn-primary">
+            <div class="gap-3 card-body d-flex justify-content-center">
+                <button wire:loading wire:target="submit" class="btn btn-primary flex-fill">
                     <i class="ph-circle-notch spinner"></i>
                     Lưu
                 </button>
-                <button wire:click="submit" wire:loading.remove class="btn btn-primary">
+                <button wire:click="submit" wire:loading.remove class="btn btn-primary flex-fill">
                     <i class="ph-floppy-disk"></i>
                     Lưu
                 </button>
@@ -63,6 +63,18 @@
             </div>
         </div>
     </div>
+
+    <livewire:client.modal.create-success :clientId="$id" :clientSecert="$secret" />
 </div>
 
+@script
+    <script>
+        window.addEventListener('open-success-modal', () => {
+            $('#model-success').modal('show')
+        })
 
+        window.addEventListener('close-success-modal', () => {
+            $('#model-success').modal('hide')
+        })
+    </script>
+@endscript
