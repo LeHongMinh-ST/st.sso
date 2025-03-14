@@ -24,6 +24,8 @@ class Create extends Component
 
     public string $secret;
 
+    private bool $isLoading = false;
+
     public function rules(): array
     {
         return [
@@ -39,16 +41,26 @@ class Create extends Component
 
     public function submit(): void
     {
-        $this->validate();
+        if ($this->isLoading) {
+            return;
+        }
+        try {
+            $this->isLoading = true;
+            $this->validate();
 
-        $client = app(ClientRepository::class)->create(Auth::user()->id, $this->name, $this->redirect);
-        $client->description = $this->description;
-        $client->save();
+            $client = app(ClientRepository::class)->create(Auth::user()->id, $this->name, $this->redirect);
+            $client->description = $this->description;
+            $client->save();
 
-        $this->id = $client->id;
-        $this->secret = $client->secret;
+            $this->id = $client->id;
+            $this->secret = $client->secret;
 
-        $this->openSuccessModal();
+            $this->openSuccessModal();
+        } catch (\Throwable $th) {
+            $this->dispatch('error', ['message' => 'Tạo ứng dụng thất bại']);
+        } finally {
+            $this->isLoading = false;
+        }
     }
 
     public function openSuccessModal(): void
