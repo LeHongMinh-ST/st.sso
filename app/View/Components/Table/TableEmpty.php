@@ -15,7 +15,8 @@ class TableEmpty extends Component
      */
     public function __construct(
         public readonly int $colspan = 1,
-    ) {}
+    ) {
+    }
 
     /**
      * Get the view / contents that represent the component.

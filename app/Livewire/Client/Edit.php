@@ -1,9 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Client;
 
 use App\Models\Client;
-use Laravel\Passport\ClientRepository;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 
@@ -23,7 +24,7 @@ class Edit extends Component
         return view('livewire.client.edit');
     }
 
-    public function mount(Client $client)
+    public function mount(Client $client): void
     {
         $this->client = $client;
         $this->name = $client->name;
@@ -39,7 +40,7 @@ class Edit extends Component
         ];
     }
 
-    public function submit()
+    public function submit(): void
     {
         $this->validate();
 

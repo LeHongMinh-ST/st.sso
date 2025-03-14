@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Auth;
 
 use App\Enums\Role;
@@ -13,7 +15,6 @@ use Illuminate\Foundation\Application;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Laravel\Passport\Client;
 use Laravel\Socialite\Facades\Socialite;
 
 class AuthenticateController extends Controller
@@ -47,11 +48,6 @@ class AuthenticateController extends Controller
         return redirect()->route('login');
     }
 
-    private function username(): string
-    {
-        return filter_var(request()->input('username'), FILTER_VALIDATE_EMAIL) ? 'email' : 'user_name';
-    }
-
     public function redirectToSocialite(Request $request): RedirectResponse
     {
         $url = Socialite::driver('azure')->stateless()->redirect()->getTargetUrl();
@@ -75,12 +71,17 @@ class AuthenticateController extends Controller
                 'password' => 'password',
                 'role' => Role::Officer->value,
                 'status' => 'active',
-                'code' => 'ST-OFFICER-'.time(),
+                'code' => 'ST-OFFICER-' . time(),
             ]);
         }
 
         Auth::login($user, true);
 
         return redirect()->intended(route('dashboard', absolute: false));
+    }
+
+    private function username(): string
+    {
+        return filter_var(request()->input('username'), FILTER_VALIDATE_EMAIL) ? 'email' : 'user_name';
     }
 }

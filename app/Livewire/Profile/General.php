@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Profile;
 
 use Illuminate\Support\Facades\Auth;
@@ -19,7 +21,7 @@ class General extends Component
     #[Validate(as: 'phone')]
     public string|null $phone;
 
-    public function mount()
+    public function mount(): void
     {
         $user = Auth::user();
         $this->user_name = $user->user_name;
@@ -40,7 +42,7 @@ class General extends Component
         ];
     }
 
-    public function submit()
+    public function submit(): void
     {
         $this->validate();
 

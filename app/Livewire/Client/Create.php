@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Client;
 
 use Illuminate\Support\Facades\Auth;
@@ -37,7 +39,7 @@ class Create extends Component
         return view('livewire.client.create');
     }
 
-    public function submit()
+    public function submit(): void
     {
         $this->validate();
 

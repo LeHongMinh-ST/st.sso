@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Client;
 
 use App\Models\Client;
@@ -14,12 +16,12 @@ class Detail extends Component
         return view('livewire.client.detail');
     }
 
-    public function mount(Client $client)
+    public function mount(Client $client): void
     {
         $this->client = $client;
     }
 
-    public function delete()
+    public function delete(): void
     {
         $this->client->delete();
         $this->dispatch('notify', type: 'success', message: 'Client deleted successfully');

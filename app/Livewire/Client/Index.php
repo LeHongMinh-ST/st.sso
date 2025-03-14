@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Client;
 
 use App\Helpers\Constants;
@@ -8,7 +10,6 @@ use Livewire\Component;
 
 class Index extends Component
 {
-
     public string $search = '';
 
     public function render()

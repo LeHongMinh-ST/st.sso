@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Profile;
 
 use Illuminate\Support\Facades\Auth;
@@ -7,7 +9,6 @@ use Livewire\Component;
 
 class Index extends Component
 {
-
     public $tab = 'profile';
 
     public function render()
@@ -27,7 +28,8 @@ class Index extends Component
         }
     }
 
-    private function checkChangePassword() {
+    private function checkChangePassword()
+    {
         $user = Auth::user();
 
         if ($user && !$user->is_change_password) {

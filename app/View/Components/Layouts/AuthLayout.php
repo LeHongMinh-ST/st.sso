@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\View\Components\Layouts;
 
 use Closure;
@@ -13,7 +15,7 @@ class AuthLayout extends Component
      */
     public function __construct()
     {
-        //
+
     }
 
     /**

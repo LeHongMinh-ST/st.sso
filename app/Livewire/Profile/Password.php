@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Profile;
 
 use Illuminate\Support\Facades\Auth;
@@ -44,7 +46,7 @@ class Password extends Component
     {
         $this->validate();
 
-        if (trim($this->password_confirmation) !== trim($this->new_password)) {
+        if (mb_trim($this->password_confirmation) !== mb_trim($this->new_password)) {
             $this->addError('password_confirmation', 'Mật khẩu không trùng khớp');
             return;
         }
