@@ -122,13 +122,7 @@ php artisan storage:link
 php artisan db:seed
 ```
 
-### 7. Run passport
-```sh
-php artisan passport:keys
-php artisan passport:client
-```
-
-### 8. Run dev
+### 7. Run dev
 ```sh
 composer run dev  
 ```
