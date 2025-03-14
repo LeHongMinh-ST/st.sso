@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace App\Livewire\Client;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Laravel\Passport\ClientRepository;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
+use Throwable;
 
 class Create extends Component
 {
@@ -56,7 +58,8 @@ class Create extends Component
             $this->secret = $client->secret;
 
             $this->openSuccessModal();
-        } catch (\Throwable $th) {
+        } catch (Throwable $th) {
+            Log::error($th->getMessage());
             $this->dispatch('error', ['message' => 'Tạo ứng dụng thất bại']);
         } finally {
             $this->isLoading = false;
