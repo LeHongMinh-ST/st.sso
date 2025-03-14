@@ -22,4 +22,10 @@ class CreateSuccess extends Component
         $this->clientId = $clientId;
         $this->clientSecret = $clientSecret;
     }
+
+    public function closeSuccessModal()
+    {
+        $this->dispatch('close-success-modal');
+        return redirect()->route('client.index');
+    }
 }

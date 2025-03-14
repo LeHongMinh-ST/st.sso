@@ -20,11 +20,9 @@ class Create extends Component
     #[Validate(as: 'mô tả')]
     public string $description;
 
-    public int $id;
+    public string $id;
 
     public string $secret;
-
-
 
     public function rules(): array
     {
@@ -50,6 +48,11 @@ class Create extends Component
         $this->id = $client->id;
         $this->secret = $client->secret;
 
-        $this->dispatch('notify', type: 'success', message: 'Client created successfully');
+        $this->openSuccessModal();
+    }
+
+    public function openSuccessModal(): void
+    {
+        $this->dispatch('open-success-modal');
     }
 }
