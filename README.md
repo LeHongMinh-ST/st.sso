@@ -7,7 +7,7 @@
 - **Make** installed (for running commands easily)
 - **mkcert** installed (for generating SSL certificates)
 
-## Setting Up the Project
+## Setting Up the Project with Docker
 
 ### 1. Clone the Repository
 ```sh
@@ -88,8 +88,48 @@ make down
 ```powershell
 docker-compose down
 
-### Generate keys passport
+```
+
+## Setting Up the Project basic
+
+### 1. Clone the Repository
+```sh
+git clone git@github.com:LeHongMinh-ST/st.sso.git
+cd st.sso
+```
+### 2. Copy .env.example to .env
+```sh
+cp .env.example .env
+```
+### 3. Run composer install
+```sh
+composer install
+php artisan key:generate
+```
+### 4. Run npm install
+```sh
+npm install
+```
+### 5. Run npm run build
+```sh
+npm run build
+```
+
+### 6. Run migrations
+```sh
+php artisan migrate
+php artisan storage:link
+php artisan db:seed
+```
+
+### 7. Run passport
+```sh
 php artisan passport:keys
 php artisan passport:client
-
 ```
+
+### 8. Run dev
+```sh
+composer run dev  
+```
+

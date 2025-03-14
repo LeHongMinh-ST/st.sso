@@ -1,1 +1,2 @@
+echo "Running pre-commit hooks..."
 ./vendor/bin/pint --test

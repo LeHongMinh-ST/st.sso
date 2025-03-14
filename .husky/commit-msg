@@ -1,1 +1,2 @@
+echo "Running commit-msg hooks..."
 npx --no-install commitlint --edit "$1"
