@@ -59,7 +59,7 @@
                     <i class="ph-floppy-disk"></i>
                     Lưu
                 </button>
-                <a href="{{ route('client.index') }}" type="button" class="btn btn-warning flex-fill"><i class="ph-arrow-counter-clockwise"></i> Trở lại</a>
+                <a href="{{ route('client.show', $client->id) }}" type="button" class="btn btn-warning flex-fill"><i class="ph-arrow-counter-clockwise"></i> Trở lại</a>
             </div>
         </div>
     </div>

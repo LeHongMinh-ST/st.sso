@@ -8,15 +8,17 @@
             <div class="modal-body">
                 <p>
                     <b>ID:</b> {{ $clientId }}
-                    <span onclick="copyToClipboard('{{ $clientId }}')" style="cursor: pointer;" title="Copy">
-                        <i class="fas fa-copy"></i>
-                    </span>
+                    <a href="javascript:void(0)" class="copy-link text-dark"
+                       data-id="{{ $clientId }}">
+                        <i class="ph-copy"></i>
+                    </a>
                 </p>
                 <p>
                     <b>Secret:</b> {{ $clientSecret }}
-                    <span onclick="copyToClipboard('{{ $clientSecret }}')" style="cursor: pointer;" title="Copy">
+                    <a href="javascript:void(0)" class="copy-link text-dark"
+                       data-id="{{ $clientSecret }}">
                         <i class="ph-copy"></i>
-                    </span>
+                    </a>
                 </p>
                 <p class="text-warning">Lưu ý: Mã bí mật chỉ hiển thị một lần!</p>
             </div>
@@ -31,12 +33,18 @@
 
 @script
     <script>
-        function copyToClipboard(text) {
-            navigator.clipboard.writeText(text).then(function() {
-                alert('Copied to clipboard: ' + text);
-            }, function(err) {
-                console.error('Could not copy text: ', err);
-            });
-        }
+        $('.copy-link').on('click', function() {
+            const copy = $(this).attr('data-id');
+
+            const $tempInput = $('<input>');
+
+            $('body').append($tempInput);
+
+            $tempInput.val(copy).select();
+
+            document.execCommand('copy');
+
+            $tempInput.remove();
+        });
     </script>
 @endscript
