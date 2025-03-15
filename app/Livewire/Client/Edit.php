@@ -27,9 +27,9 @@ class Edit extends Component
     public function mount(Client $client): void
     {
         $this->client = $client;
-        $this->name = $client->name;
-        $this->redirect = $client->redirect;
-        $this->description = $client->description;
+        $this->name = $client->name ?? '';
+        $this->redirect = $client->redirect ?? '';
+        $this->description = $client->description ?? '';
     }
 
     public function rules(): array
@@ -50,6 +50,6 @@ class Edit extends Component
             'description' => $this->description,
         ]);
 
-        $this->dispatch('notify', type: 'success', message: 'Client updated successfully');
+        $this->dispatch('alert', type: 'success', message: 'Cập nhật thành công!');
     }
 }

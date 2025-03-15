@@ -66,7 +66,7 @@ class Create extends Component
         } catch (Throwable $th) {
             DB::rollBack();
             Log::error($th->getMessage());
-            $this->dispatch('error', ['message' => 'Tạo ứng dụng thất bại']);
+            $this->dispatch('alert', type: 'error', message: 'Tạo mới thất bại!');
         } finally {
             $this->isLoading = false;
         }

@@ -31,7 +31,8 @@ Route::middleware(['auth', 'check.password'])->group(function (): void {
         Route::prefix('/clients')->group(function (): void {
             Route::get('/', [ClientController::class, 'index'])->name('client.index');
             Route::get('/create', [ClientController::class, 'create'])->name('client.create');
-            Route::get('/{id}', [ClientController::class, 'show'])->name('client.show');
+            Route::get('/{client}', [ClientController::class, 'show'])->name('client.show');
+            Route::get('/{client}/edit', [ClientController::class, 'edit'])->name('client.edit');
         });
     });
 });
