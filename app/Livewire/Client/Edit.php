@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Client;
 
+use App\Enums\Role;
 use App\Models\Client;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
@@ -19,6 +20,8 @@ class Edit extends Component
     #[Validate(as: 'mô tả')]
     public string $description;
 
+    public array $allowed_roles = [Role::SuperAdmin->value];
+
     public function render()
     {
         return view('livewire.client.edit');
@@ -30,6 +33,7 @@ class Edit extends Component
         $this->name = $client->name ?? '';
         $this->redirect = $client->redirect ?? '';
         $this->description = $client->description ?? '';
+        $this->allowed_roles = $client->allowed_roles ? $client->allowed_roles : [Role::SuperAdmin->value];
     }
 
     public function rules(): array
@@ -48,6 +52,7 @@ class Edit extends Component
             'name' => $this->name,
             'redirect' => $this->redirect,
             'description' => $this->description,
+            'allowed_roles' => $this->allowed_roles,
         ]);
 
         $this->dispatch('alert', type: 'success', message: 'Cập nhật thành công!');

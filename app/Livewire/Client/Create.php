@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Client;
 
+use App\Enums\Role;
 use App\Models\Client;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -26,6 +27,8 @@ class Create extends Component
 
     private bool $isLoading = false;
 
+    public array $allowed_roles = [Role::SuperAdmin->value];
+
     public function rules(): array
     {
         return [
@@ -44,6 +47,7 @@ class Create extends Component
         if ($this->isLoading) {
             return;
         }
+        
 
         DB::beginTransaction();
         try {
@@ -54,7 +58,8 @@ class Create extends Component
                 ->create(Auth::user()->id, $this->name, $this->redirect);
 
             Client::where('id', $client->id)->update([
-                'description' => $this->description
+                'description' => $this->description,
+                'allowed_roles' => $this->allowed_roles,
             ]);
 
             DB::commit();

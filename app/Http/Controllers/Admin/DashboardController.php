@@ -6,12 +6,18 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Client;
+use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        $clients = Client::query()->where('is_show_dashboard', true)->get();
+        $auth = Auth::user();
+
+        $clients = Client::query()
+            ->where('is_show_dashboard', true)
+            ->whereJsonContains('allowed_roles', $auth->role->value)
+            ->get();
         return view('pages.dashboard', compact('clients'));
     }
 }
