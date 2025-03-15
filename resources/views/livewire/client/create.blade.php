@@ -64,7 +64,7 @@
         </div>
     </div>
 
-    <livewire:client.modal.create-success :clientId="$id" :clientSecert="$secret" />
+    <livewire:client.modal.create-success />
 </div>
 
 @script
