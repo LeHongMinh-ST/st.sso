@@ -11,6 +11,10 @@ class Detail extends Component
 {
     public $client;
 
+    protected $listeners = [
+        'deleteClient' => 'delete',
+    ];
+
     public function render()
     {
         return view('livewire.client.detail');
@@ -21,9 +25,15 @@ class Detail extends Component
         $this->client = $client;
     }
 
-    public function delete(): void
+    public function delete()
     {
         $this->client->delete();
-        $this->dispatch('notify', type: 'success', message: 'Client deleted successfully');
+        session()->flash('success', 'Xoá thành công ứng dụng!');
+        return redirect()->route('client.index');
+    }
+
+    public function openDeleteModal(): void
+    {
+        $this->dispatch('onOpenDeleteModal');
     }
 }
