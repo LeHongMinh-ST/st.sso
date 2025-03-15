@@ -7,9 +7,12 @@ namespace App\Livewire\Client;
 use App\Helpers\Constants;
 use App\Models\Client;
 use Livewire\Component;
+use Livewire\WithPagination;
 
 class Index extends Component
 {
+    use WithPagination;
+
     public string $search = '';
 
     public function render()
@@ -18,8 +21,19 @@ class Index extends Component
             ->search($this->search)
             ->paginate(Constants::PER_PAGE_ADMIN);
 
-        return view('livewire.client.index')->with([
+        return view('livewire.client.index', [
             'clients' => $clients
         ]);
+    }
+
+    public function toggleShowDashboard($id)
+    {
+        $client = Client::find($id);
+        if (!$client) {
+            $this->dispatch('error', ['message' => 'Có lỗi xảy ra vui lòng thử lại sau']);
+            return; // Hoặc thông báo lỗi nếu cần
+        }
+        $client->is_show_dashboard = !$client->is_show_dashboard;
+        $client->save();
     }
 }

@@ -12,7 +12,6 @@
                         <i class="px-1 ph-plus-circle"></i><span>Thêm mới</span>
                     </a>
                 </div>
-
             </div>
         </div>
 
@@ -23,6 +22,7 @@
                         <th>STT</th>
                         <th>Ứng dụng</th>
                         <th>Đường dẫn truy cập</th>
+                        <th>Hiển thị trang chủ</th>
                         <th>Ngày tạo</th>
                     </tr>
                 </thead>
@@ -32,13 +32,20 @@
                             <td class="text-center" width="5%">{{ $loop->index + 1 + $clients->perPage() * ($clients->currentPage() - 1) }}</td>
                             <td width="35%">
                                 <a href="{{ route('client.show', $item->id) }}">
-                                    <img
-                                         src="{{ Avatar::create($item->name)->setShape('square')->toBase64() }}"
-                                         class="w-32px h-32px" alt="">
+                                    <img src="{{ Avatar::create($item->name)->setShape('square')->toBase64() }}" class="w-31px h-32px" alt="">
                                     {{ $item->name }}
                                 </a>
                             </td>
-                            <td width="35%"> <a href="{{ $item->baseRedirectUrl }}" taget="_blank"><i class="ph-link-simple"></i> {{ $item->baseRedirectUrl }}</a></td>
+                            <td width="30%">
+                                <a href="{{ $item->baseRedirectUrl }}" target="_blank">
+                                    <i class="ph-link-simple"></i> {{ $item->baseRedirectUrl }}
+                                </a>
+                            </td>
+                            <td>
+                                <div class="mb-2 form-check form-switch">
+                                    <input wire:click="toggleShowDashboard('{{ $item->id }}')"type="checkbox" class="form-check-input" @if ($item->is_show_dashboard) checked @endif>
+                                </div>
+                            </td>
                             <td width="15%">{{ $item->created_at->format('d/m/Y') }}</td>
                         </tr>
                     @empty

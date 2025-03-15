@@ -11,7 +11,7 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $clients = Client::all();
+        $clients = Client::query()->where('is_show_dashboard', true)->get();
         return view('pages.dashboard', compact('clients'));
     }
 }
