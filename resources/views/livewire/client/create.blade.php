@@ -69,7 +69,7 @@
 
 @script
     <script>
-        window.addEventListener('onCloseCreateSuccessModal', () => {
+        window.addEventListener('onOpenCreateSuccessModal', () => {
             $('#model-success').modal('show')
         })
 
