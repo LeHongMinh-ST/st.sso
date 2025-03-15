@@ -38,7 +38,7 @@
         </div>
         <div class="row">
             @foreach ($clients as $item)
-                <div class="col-lg-4">
+                <div class="col-lg-3">
 
                     <!-- Top placement -->
                     <div class="card">
@@ -53,8 +53,8 @@
                         </div>
 
                         <div class="card-body">
-                            <h5 class="card-title">{{ $item->name }}</h5>
-                            <p class="card-text">
+                            <h5 class="card-title text-title" data-bs-popup="tooltip" title="{{ $item->name }}" data-bs-placement="top">{{ $item->name }}</h5>
+                            <p class="card-text text-des">
                                 {{ $item->description }}
                             </p>
                         </div>
