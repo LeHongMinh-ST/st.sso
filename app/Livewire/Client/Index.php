@@ -6,6 +6,7 @@ namespace App\Livewire\Client;
 
 use App\Helpers\Constants;
 use App\Models\Client;
+use App\Models\User;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -31,9 +32,15 @@ class Index extends Component
         $client = Client::find($id);
         if (!$client) {
             $this->dispatch('error', ['message' => 'Có lỗi xảy ra vui lòng thử lại sau']);
-            return; // Hoặc thông báo lỗi nếu cần
+            return;
         }
         $client->is_show_dashboard = !$client->is_show_dashboard;
         $client->save();
+        
+        // Clear all user dashboard caches
+        $users = User::all();
+        foreach ($users as $user) {
+            cache()->forget('dashboard.clients.' . $user->id);
+        }
     }
 }

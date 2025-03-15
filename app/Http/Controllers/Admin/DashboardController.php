@@ -14,10 +14,13 @@ class DashboardController extends Controller
     {
         $auth = Auth::user();
 
-        $clients = Client::query()
-            ->where('is_show_dashboard', true)
-            ->whereJsonContains('allowed_roles', $auth->role->value)
-            ->get();
+        $clients = cache()->remember('dashboard.clients.' . $auth->id, now()->addDays(30), function () use ($auth) {
+            return Client::query()
+                ->where('is_show_dashboard', true)
+                ->whereJsonContains('allowed_roles', $auth->role->value)
+                ->get();
+        });
+            
         return view('pages.dashboard', compact('clients'));
     }
 }
