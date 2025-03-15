@@ -33,7 +33,7 @@ class AppServiceProvider extends ServiceProvider
             $event->extendSocialite('azure', \SocialiteProviders\Azure\Provider::class);
         });
 
-        Passport::hashClientSecrets();
+        // Passport::hashClientSecrets(false);
         Passport::tokensExpireIn(now()->addDays(15));
         Passport::refreshTokensExpireIn(now()->addDays(30));
         Passport::personalAccessTokensExpireIn(now()->addDays(15));

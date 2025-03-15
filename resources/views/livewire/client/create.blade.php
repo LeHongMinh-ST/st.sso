@@ -63,18 +63,4 @@
             </div>
         </div>
     </div>
-
-    <livewire:client.modal.create-success />
 </div>
-
-@script
-    <script>
-        window.addEventListener('onOpenCreateSuccessModal', () => {
-            $('#model-success').modal('show')
-        })
-
-        window.addEventListener('onOpenCreateSuccessModal', () => {
-            $('#model-success').modal('hide')
-        })
-    </script>
-@endscript

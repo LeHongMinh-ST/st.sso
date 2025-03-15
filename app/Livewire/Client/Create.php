@@ -39,7 +39,7 @@ class Create extends Component
         return view('livewire.client.create');
     }
 
-    public function submit(): void
+    public function submit()
     {
         if ($this->isLoading) {
             return;
@@ -57,12 +57,9 @@ class Create extends Component
                 'description' => $this->description
             ]);
 
-            $this->dispatch('onOpenCreateSuccessModal', [
-                'id' => $client->id,
-                'secret' => $client->secret
-            ]);
-
             DB::commit();
+            session()->flash('success', 'Tạo ứng dụng thành công!');
+            return redirect()->route('client.show', $client->id);
         } catch (Throwable $th) {
             DB::rollBack();
             Log::error($th->getMessage());

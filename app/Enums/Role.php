@@ -10,4 +10,5 @@ enum Role: string
     case Officer = 'officer';
     case Teacher = 'teacher';
     case Student = 'student';
+    case Normal = 'normal';
 }
