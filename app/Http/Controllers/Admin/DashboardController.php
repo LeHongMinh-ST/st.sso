@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Client;
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        return view('pages.dashboard');
+        $clients = Client::all();
+        return view('pages.dashboard', compact('clients'));
     }
 }

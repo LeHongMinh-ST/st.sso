@@ -37,31 +37,33 @@
             <span class="text-muted">Chúc một ngày làm việc tốt lành!</span>
         </div>
         <div class="row">
-            <div class="col-lg-4">
+            @foreach ($clients as $item)
+                <div class="col-lg-4">
 
-                <!-- Top placement -->
-                <div class="card">
-                    <div class="card-img-actions">
-                        <img class="card-img-top img-fluid" src="{{ asset('assets/images/default-app.png') }}" alt="">
-                        <div class="card-img-actions-overlay card-img-top">
-                            <a href="/" class="btn btn-outline-white border-width-2" data-popup="lightbox">
-                                Truy cập
-                            </a>
+                    <!-- Top placement -->
+                    <div class="card">
+                        <div class="card-img-actions">
+                            <img class="card-img-top img-fluid" src="{{ asset('assets/images/default-app.png') }}" alt="">
+                            <div class="card-img-actions-overlay card-img-top">
+                                <a href="{{ $item->baseRedirectUrl }}" target="_blank" class="btn btn-outline-white border-width-2" data-popup="lightbox">
+                                    Truy cập
+                                </a>
 
+                            </div>
                         </div>
+
+                        <div class="card-body">
+                            <h5 class="card-title">{{ $item->name }}</h5>
+                            <p class="card-text">
+                                {{ $item->description }}
+                            </p>
+                        </div>
+
+
                     </div>
-
-                    <div class="card-body">
-                        <h5 class="card-title">Hệ thống quản lý sinh viên</h5>
-                        <p class="card-text">
-                            Hệ thống quản lý sinh viên giúp quản lý thông tin sinh viên, điểm số, trạng thái sinh viên,...
-                        </p>
-                    </div>
-
-
+                    <!-- /top placement -->
                 </div>
-                <!-- /top placement -->
-            </div>
+            @endforeach
 
 
 
