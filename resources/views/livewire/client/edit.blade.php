@@ -80,7 +80,7 @@
                 <i class="ph-gear-six"></i>
                 Hành động
             </div>
-            <div class="gap-3 card-body d-flex justify-content-center">
+            <div class="gap-2 card-body d-flex justify-content-center">
                 <button wire:loading wire:target="submit" class="btn btn-primary flex-fill">
                     <i class="ph-circle-notch spinner"></i>
                     Lưu

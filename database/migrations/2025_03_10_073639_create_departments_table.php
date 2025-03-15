@@ -14,6 +14,10 @@ return new class () extends Migration {
     {
         Schema::create('departments', function (Blueprint $table): void {
             $table->id();
+            $table->string('name');
+            $table->enum('status', Status::cases())->default(Status::Active);
+            $table->text('description')->nullable();
+            $table->unsignedBigInteger('faculty_id');
             $table->timestamps();
         });
     }

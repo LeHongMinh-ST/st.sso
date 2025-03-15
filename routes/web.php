@@ -26,6 +26,9 @@ Route::middleware(['auth', 'check.password'])->group(function (): void {
     Route::middleware(['check.superadmin'])->group(function (): void {
         Route::prefix('/faculties')->group(function (): void {
             Route::get('/', [FacultyController::class, 'index'])->name('faculty.index');
+            Route::get('/create', [FacultyController::class, 'create'])->name('faculty.create');
+            Route::get('/{faculty}', [FacultyController::class, 'show'])->name('faculty.show');
+            Route::get('/{faculty}/edit', [FacultyController::class, 'edit'])->name('faculty.edit');
         });
 
         Route::prefix('/clients')->group(function (): void {

@@ -9,12 +9,28 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\RedirectResponse;
+use App\Models\Faculty;
 
 class FacultyController extends Controller
 {
     public function index(): View|Application|Factory|RedirectResponse
     {
         return view('pages.faculty.index');
+    }   
+
+    public function create(): View|Application|Factory|RedirectResponse
+    {
+        return view('pages.faculty.create');
+    }
+
+    public function show(Faculty $faculty): View|Application|Factory|RedirectResponse
+    {
+        return view('pages.faculty.detail', compact('faculty'));
+    }
+
+    public function edit(Faculty $faculty): View|Application|Factory|RedirectResponse
+    {
+        return view('pages.faculty.edit', compact('faculty'));
     }
 
 }

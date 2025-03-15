@@ -1,13 +1,11 @@
 <?php
 
-declare(strict_types=1);
-
 namespace App\Livewire\Faculty;
 
 use Livewire\Component;
 use App\Models\Faculty;
 
-class Create extends Component
+class Edit extends Component
 {
     #[Validate(as: 'tên khoa')]
     public $name;
@@ -16,10 +14,12 @@ class Create extends Component
     public $description;
 
     private bool $isLoading = false;
-    
+
+    public Faculty $faculty;
+
     public function render()
     {
-        return view('livewire.faculty.create');
+        return view('livewire.faculty.edit');
     }
 
     public function rules(): array
@@ -28,6 +28,13 @@ class Create extends Component
             'name' => 'required',
             'description' => 'nullable',
         ];
+    }
+
+    public function mount(Faculty $faculty)
+    {
+        $this->faculty = $faculty;
+        $this->name = $faculty->name;
+        $this->description = $faculty->description;
     }
 
     public function submit()
@@ -39,16 +46,16 @@ class Create extends Component
             $this->isLoading = true;
             $this->validate();
 
-            $faculty = Faculty::create([
+            $this->faculty->update([
                 'name' => $this->name,
                 'description' => $this->description,
             ]);
 
-            session()->flash('success', 'Tạo mới thành công!');
-            return redirect()->route('faculty.show', $faculty->id);
+            session()->flash('success', 'Cập nhật thành công!');
+            return redirect()->route('faculty.show', $this->faculty->id);
         } catch (Throwable $th) {
             Log::error($th->getMessage());
-            $this->dispatch('alert', type: 'error', message: 'Tạo mới thất bại!');
+            $this->dispatch('alert', type: 'error', message: 'Cập nhật thất bại!');
         } finally {
             $this->isLoading = false;
         }

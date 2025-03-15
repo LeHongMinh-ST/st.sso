@@ -14,6 +14,9 @@ return new class () extends Migration {
     {
         Schema::create('faculties', function (Blueprint $table): void {
             $table->id();
+            $table->string('name');
+            $table->enum('status', Status::cases())->default(Status::Active);
+            $table->text('description')->nullable();
             $table->timestamps();
         });
     }

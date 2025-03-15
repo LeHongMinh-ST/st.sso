@@ -52,7 +52,7 @@
                         <i class="ph-floppy-disk"></i>
                         Lưu
                     </button>
-                    <a href="{{ route('faculty.index') }}" type="button" class="btn btn-warning flex-fill"><i
+                    <a href="{{ route('faculty.show', $faculty->id) }}" type="button" class="btn btn-warning flex-fill"><i
                             class="ph-arrow-counter-clockwise"></i> Trở lại</a>
                 </div>
             </div>

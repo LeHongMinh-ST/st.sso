@@ -59,7 +59,7 @@
                             <td width="15%">{{ $item->created_at->format('d/m/Y') }}</td>
                         </tr>
                     @empty
-                        <x-table-empty :colspan="4" />
+                        <x-table-empty :colspan="6" />
                     @endforelse
                 </tbody>
             </table>

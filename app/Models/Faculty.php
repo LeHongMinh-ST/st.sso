@@ -7,6 +7,7 @@ namespace App\Models;
 use App\Enums\Status;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Laravolt\Avatar\Avatar;
 
 /**
  *
@@ -31,9 +32,8 @@ class Faculty extends Model
 {
     protected $fillable = [
         'name',
-        'code',
         'status',
-        'logo',
+        'description',
     ];
 
     protected $casts = [
@@ -48,5 +48,14 @@ class Faculty extends Model
     public function users(): HasMany
     {
         return $this->hasMany(User::class);
+    }
+
+    public function scopeSearch($query, $search)
+    {
+        if ($search) {
+            $query->where('name', 'like', '%' . $search . '%');
+        }
+
+        return $query;
     }
 }
