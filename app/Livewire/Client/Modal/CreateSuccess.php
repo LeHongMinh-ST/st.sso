@@ -18,16 +18,16 @@ class CreateSuccess extends Component
     }
 
     protected $listeners = [
-        'open-success-modal' => 'handleOpenSuccess',
+        'onOpenCreateSuccessModal' => 'handleOpenCreateSuccessModal',
     ];
 
     public function closeSuccessModal()
     {
-        $this->dispatch('close-success-modal');
+        $this->dispatch('onCloseCreateSuccessModal');
         return redirect()->route('client.index');
     }
 
-    public function handleOpenSuccess($data)
+    public function handleOpenCreateSuccessModal($data)
     {
         $this->clientId = $data['id'];
         $this->clientSecret = $data['secret'];

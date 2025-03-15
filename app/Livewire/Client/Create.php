@@ -57,7 +57,7 @@ class Create extends Component
                 'description' => $this->description
             ]);
 
-            $this->dispatch('open-success-modal', [
+            $this->dispatch('onOpenCreateSuccessModal', [
                 'id' => $client->id,
                 'secret' => $client->secret
             ]);
