@@ -15,7 +15,7 @@
                 <p>
                     <b>Secret:</b> {{ $clientSecret }}
                     <span onclick="copyToClipboard('{{ $clientSecret }}')" style="cursor: pointer;" title="Copy">
-                        <i class="fas fa-copy"></i>
+                        <i class="ph-copy"></i>
                     </span>
                 </p>
                 <p class="text-warning">Lưu ý: Mã bí mật chỉ hiển thị một lần!</p>
