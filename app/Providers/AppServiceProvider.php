@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Enums\Role;
 use App\Models\Client;
 use App\View\Components\Layouts\AdminLayout;
 use App\View\Components\Layouts\AuthLayout;
@@ -15,6 +16,7 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Passport\Passport;
+use Opcodes\LogViewer\Facades\LogViewer;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -34,6 +36,13 @@ class AppServiceProvider extends ServiceProvider
         if (App::environment('production')) {
             URL::forceScheme('https');
         }
+
+        LogViewer::auth(function ($request) {
+            return $request->user()
+                && in_array($request->user()->role, [
+                    Role::SuperAdmin,
+                ]);
+        });
 
         Event::listen(function (\SocialiteProviders\Manager\SocialiteWasCalled $event): void {
             $event->extendSocialite('azure', \SocialiteProviders\Azure\Provider::class);
