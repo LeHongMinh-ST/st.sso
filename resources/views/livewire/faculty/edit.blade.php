@@ -5,7 +5,7 @@
                 <div class="col">
                     <div class="card">
                         <div class="card-header bold">
-                            <i class="ph-package"></i>
+                            <i class="ph-buildings"></i>
                             Thông tin khoa
                         </div>
                         <div class="card-body">

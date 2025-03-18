@@ -3,6 +3,7 @@
 namespace App\Livewire\User;
 
 use App\Enums\Role;
+use App\Models\Faculty;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -25,22 +26,26 @@ class Create extends Component
     public string $email;
 
     #[Validate(as: 'số điện thoại')]
-    public string $phone;
+    public string $phone = '';
 
     public Role $role = Role::Normal;
 
     #[Validate(as: 'mã giảng viên')]
-    public string $code;
-        
-    public int $department_id;
+    public string $code = '';
 
-    public int $faculty_id;
+    public int|null|string $department_id = null;
+
+    public int|null|string $faculty_id = null;
 
     private bool $isLoading = false;
 
     public function render()
     {
-        return view('livewire.user.create');
+        $faculties = Faculty::all();
+
+        return view('livewire.user.create', [
+            'faculties' => $faculties
+        ]);
     }
 
     public function rules(): array

@@ -19,7 +19,7 @@ enum Role: string
             self::Officer->value => 'Cán bộ khoa',
             self::Teacher->value => 'Giáo viên',
             self::Student->value => 'Học sinh',
-            self::Normal->value => 'Người dùng khác',
+            self::Normal->value => 'Cơ bản',
         ];
     }
 

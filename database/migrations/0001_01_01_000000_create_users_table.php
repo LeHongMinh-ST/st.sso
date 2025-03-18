@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Enums\Status;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -21,8 +22,8 @@ return new class () extends Migration {
             $table->string('password');
             $table->string('phone')->nullable();
             $table->string('role');
-            $table->string('status');
-            $table->string('code')->unique();
+            $table->string('status')->default(Status::Active->value);
+            $table->string('code')->nullable()->unique();
             $table->boolean('is_change_password')->default(false);
             $table->unsignedBigInteger('department_id')->nullable()->constrained()->nullOnDelete();
             $table->unsignedBigInteger('faculty_id')->nullable()->constrained()->nullOnDelete();
