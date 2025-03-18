@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\DB;
 use Laravel\Passport\HasApiTokens;
 
 /**
- * 
+ *
  *
  * @property int $id
  * @property string $user_name
@@ -161,17 +161,11 @@ class User extends Authenticatable
             ->orWhere('phone', 'like', "%{$search}%");
     }
 
-    public function scopeFaculty($query, $facultyIds)
+    public function scopeFaculty($query, $facultyId)
     {
-        if (empty($facultyIds)) {
-            return $query;
-        }
+        $hasNull = $facultyId === "0";
 
-        $hasNull = in_array(null, $facultyIds, true);
-
-        $facultyIds = array_filter($facultyIds, fn($id) => !is_null($id));
-
-        return $query->when(!empty($facultyIds), fn($q) => $q->whereIn('faculty_id', $facultyIds))
+        return $query->when(!empty($facultyId), fn($q) => $q->where('faculty_id', $facultyId))
             ->when($hasNull, fn($q) => $q->orWhereNull('faculty_id'));
     }
 
@@ -181,6 +175,6 @@ class User extends Authenticatable
             return $query;
         }
 
-        return $query->whereIn('role', $roles);
+        return $query->where('role', $roles);
     }
 }

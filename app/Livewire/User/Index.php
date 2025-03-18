@@ -14,9 +14,16 @@ class Index extends Component
 
     public string $search = '';
 
-    public array $facultyIds = [];
+    public string $facultyId = "";
 
-    public array $roles = [];
+    public string $role = "";
+
+    public bool $isShowFilter = false;
+
+    public function toogleFilter()
+    {
+        $this->isShowFilter = !$this->isShowFilter;
+    }
 
     public function render()
     {
@@ -24,8 +31,8 @@ class Index extends Component
 
         $users = User::query()
             ->search($this->search)
-            ->faculty($this->facultyIds)
-            ->role($this->roles)
+            ->faculty($this->facultyId)
+            ->role($this->role)
             ->with('faculty')
             ->paginate(Constants::PER_PAGE);
 
@@ -34,4 +41,6 @@ class Index extends Component
             'faculties' => $faculties,
         ]);
     }
+
 }
+
