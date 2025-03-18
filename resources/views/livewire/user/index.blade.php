@@ -51,7 +51,7 @@
 
         <div class="table-responsive-md">
             <div wire:loading class="my-3 text-center w-100">
-                <span class="spinner-border spinner-border-sm text-primary"></span> Đang tải dữ liệu...
+                <span class="spinner-border spinner-border-sm"></span> Đang tải dữ liệu...
             </div>
 
             <table class="table fs-table" wire:loading.remove>
