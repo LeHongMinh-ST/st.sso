@@ -5,7 +5,7 @@
 
                 <div class="flex-wrap gap-2 d-flex">
                     <div>
-                        <input wire:model.live="search" type="text" class="form-control" placeholder="Tìm kiếm...">
+                        <input wire:model.live.debounce.500ms="search" type="text" class="form-control" placeholder="Tìm kiếm...">
                     </div>
                     <div>
 
@@ -50,7 +50,11 @@
         </div>
 
         <div class="table-responsive-md">
-            <table class="table fs-table">
+            <div wire:loading class="my-3 text-center">
+                <span class="spinner-border spinner-border-sm text-primary"></span> Đang tải dữ liệu...
+            </div>
+
+            <table class="table fs-table" wire:loading.remove>
                 <thead>
                     <tr class="table-light">
                         <th>STT</th>

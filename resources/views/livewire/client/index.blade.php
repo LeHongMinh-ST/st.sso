@@ -3,7 +3,7 @@
         <div class="py-3 card-header d-flex justify-content-between">
             <div class="gap-2 d-flex">
                 <div>
-                    <input wire:model.live="search" type="text" class="form-control" placeholder="Tìm kiếm...">
+                    <input wire:model.live.debounce.500ms="search" type="text" class="form-control" placeholder="Tìm kiếm...">
                 </div>
             </div>
             <div class="gap-2 d-flex">
