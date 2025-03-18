@@ -54,11 +54,11 @@
                         <div class="row">
                             @foreach (\App\Enums\Role::getDescription() as $key => $role)
                                 <div class="col-12">
-                                    <div class="form-check mb-2">
+                                    <div class="mb-2 form-check">
                                         <input type="checkbox" class="form-check-input" wire:model.live="allowed_roles"
-                                            value="{{ $key }}"
-                                            @if ($key === \App\Enums\Role::SuperAdmin->value) disabled checked @endif
-                                            id="role_{{ $key }}">
+                                               value="{{ $key }}"
+                                               @if ($key === \App\Enums\Role::SuperAdmin->value) disabled checked @endif
+                                               id="role_{{ $key }}">
                                         <label class="form-check-label" for="role_{{ $key }}">{{ $role }}</label>
                                     </div>
                                 </div>
@@ -70,7 +70,7 @@
                 </div>
             </div>
         </div>
-       
+
 
 
     </div>
@@ -81,15 +81,15 @@
                 Hành động
             </div>
             <div class="gap-2 card-body d-flex justify-content-center">
-                <button wire:loading wire:target="submit" class="btn btn-primary flex-fill">
-                    <i class="ph-circle-notch spinner"></i>
+                <button wire:loading wire:target="submit" class="shadow btn btn-primary fw-semibold flex-fill">
+                    <i class="ph-circle-notch spinner fw-semibold"></i>
                     Lưu
                 </button>
-                <button wire:click="submit" wire:loading.remove class="btn btn-primary flex-fill">
-                    <i class="ph-floppy-disk"></i>
+                <button wire:click="submit" wire:loading.remove class="shadow btn btn-primary fw-semibold flex-fill">
+                    <i class="ph-floppy-disk fw-semibold"></i>
                     Lưu
                 </button>
-                <a href="{{ route('client.show', $client->id) }}" type="button" class="btn btn-warning flex-fill"><i class="ph-arrow-counter-clockwise"></i> Trở lại</a>
+                <a href="{{ route('client.show', $client->id) }}" type="button" class="shadow btn fw-semibold btn-warning flex-fill"><i class="ph-arrow-counter-clockwise fw-semibold"></i> Trở lại</a>
             </div>
         </div>
     </div>

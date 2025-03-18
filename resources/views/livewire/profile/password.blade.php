@@ -10,11 +10,11 @@
                 <div class="col-lg-6">
                     <div class="mb-3">
                         <label class="form-label">Mật khẩu hiện tại</label>
-                        <input type="password" wire:model.live="password" id="password" placeholder="Nhập mật khẩu hiện tại"  class="form-control">
+                        <input type="password" wire:model.live="password" id="password" placeholder="Nhập mật khẩu hiện tại" class="form-control">
                         @error('password')
-                        <label id="error-password"
-                               class="validation-error-label text-danger"
-                               for="password">{{ $message }}</label>
+                            <label id="error-password"
+                                   class="validation-error-label text-danger"
+                                   for="password">{{ $message }}</label>
                         @enderror
                     </div>
                 </div>
@@ -26,9 +26,9 @@
                         <label class="form-label">Mật khẩu mới</label>
                         <input type="password" wire:model.live="new_password" id="new_password" placeholder="Nhập mật khẩu mới" class="form-control">
                         @error('new_password')
-                        <label id="error-new_password"
-                               class="validation-error-label text-danger"
-                               for="new_password">{{ $message }}</label>
+                            <label id="error-new_password"
+                                   class="validation-error-label text-danger"
+                                   for="new_password">{{ $message }}</label>
                         @enderror
                     </div>
                 </div>
@@ -38,9 +38,9 @@
                         <label class="form-label">Nhập lại mật khẩu</label>
                         <input type="password" wire:model.live="password_confirmation" id="password_confirmation" placeholder="Nhập lại mật khẩu" class="form-control">
                         @error('password_confirmation')
-                        <label id="error-password_confirmation"
-                               class="validation-error-label text-danger"
-                               for="password_confirmation">{{ $message }}</label>
+                            <label id="error-password_confirmation"
+                                   class="validation-error-label text-danger"
+                                   for="password_confirmation">{{ $message }}</label>
                         @enderror
                     </div>
                 </div>
@@ -48,12 +48,12 @@
 
 
             <div class="text-end">
-                <button wire:loading wire:target="submit" class="btn btn-primary">
-                    <i class="ph-circle-notch spinner"></i>
+                <button wire:loading wire:target="submit" class="shadow btn btn-primary fw-semibold flex-fill">
+                    <i class="ph-circle-notch spinner fw-semibold"></i>
                     Lưu
                 </button>
-                <button wire:click="submit" wire:loading.remove class="btn btn-primary">
-                    <i class="ph-floppy-disk"></i>
+                <button wire:click="submit" wire:loading.remove class="shadow btn btn-primary fw-semibold flex-fill">
+                    <i class="ph-floppy-disk fw-semibold"></i>
                     Lưu
                 </button>
             </div>

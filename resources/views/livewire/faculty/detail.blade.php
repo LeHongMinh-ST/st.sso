@@ -3,14 +3,14 @@
         <div class="py-3 card-header d-flex justify-content-between">
             <div class="gap-2 d-flex">
                 <div>
-                    <a href="{{ route('faculty.edit', $faculty->id) }}" type="button" class="px-2 btn btn-primary btn-icon">
-                        <i class="px-1 ph-note-pencil"></i><span>Chỉnh sửa</span>
+                    <a href="{{ route('faculty.edit', $faculty->id) }}" type="button" class="px-2 shadow btn fw-semibold btn-primary btn-icon">
+                        <i class="px-1 ph-note-pencil fw-semibold"></i><span>Chỉnh sửa</span>
                     </a>
                 </div>
 
                 <div>
-                    <button wire:click="openDeleteModal()" class="px-2 btn btn-danger btn-icon">
-                        <i class="px-1 ph-trash"></i><span>Xoá</span>
+                    <button wire:click="openDeleteModal()" class="px-2 shadow btn btn-danger btn-icon fw-semibold">
+                        <i class="px-1 ph-trash fw-semibold"></i><span>Xoá</span>
                     </button>
                 </div>
             </div>

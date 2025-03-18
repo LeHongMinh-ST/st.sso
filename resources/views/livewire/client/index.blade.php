@@ -8,8 +8,8 @@
             </div>
             <div class="gap-2 d-flex">
                 <div>
-                    <a href="{{ route('client.create') }}" type="button" class="px-2 btn btn-primary btn-icon">
-                        <i class="px-1 ph-plus-circle"></i><span>Thêm mới</span>
+                    <a href="{{ route('client.create') }}" type="button" class="px-2 shadow btn btn-primary btn-icon fw-semibold">
+                        <i class="px-1 ph-plus-circle fw-semibold"></i><span>Thêm mới</span>
                     </a>
                 </div>
             </div>
@@ -32,7 +32,7 @@
                         <tr>
                             <td class="text-center" width="5%">{{ $loop->index + 1 + $clients->perPage() * ($clients->currentPage() - 1) }}</td>
                             <td width="30%">
-                                <a href="{{ route('client.show', $item->id) }}">
+                                <a class="fw-semibold" href="{{ route('client.show', $item->id) }}">
                                     <img src="{{ Avatar::create($item->name)->setShape('square')->toBase64() }}" class="w-32px h-32px" alt="">
                                     {{ $item->name }}
                                 </a>

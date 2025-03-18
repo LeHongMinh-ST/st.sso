@@ -6,10 +6,12 @@ namespace App\Providers;
 
 use App\Enums\Role;
 use App\Models\Client;
+use App\View\Components\Commons\StatusBadge;
 use App\View\Components\Layouts\AdminLayout;
 use App\View\Components\Layouts\AuthLayout;
 use App\View\Components\Layouts\ClientLayout;
 use App\View\Components\Table\TableEmpty;
+use App\View\Components\User\RoleBadge;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Event;
@@ -58,5 +60,7 @@ class AppServiceProvider extends ServiceProvider
         Blade::component('admin-layout', AdminLayout::class);
         Blade::component('client-layout', ClientLayout::class);
         Blade::component('table-empty', TableEmpty::class);
+        Blade::component('status-badge', StatusBadge::class);
+        Blade::component('role-badge', RoleBadge::class);
     }
 }

@@ -70,12 +70,12 @@
 
 
             <div class="text-end">
-                <button wire:loading wire:target="submit" class="btn btn-primary">
-                    <i class="ph-circle-notch spinner"></i>
+                <button wire:loading wire:target="submit" class="shadow btn btn-primary fw-semibold flex-fill">
+                    <i class="ph-circle-notch spinner fw-semibold"></i>
                     Lưu
                 </button>
-                <button wire:click="submit" wire:loading.remove class="btn btn-primary">
-                    <i class="ph-floppy-disk"></i>
+                <button wire:click="submit" wire:loading.remove class="shadow btn btn-primary fw-semibold flex-fill">
+                    <i class="ph-floppy-disk fw-semibold"></i>
                     Lưu
                 </button>
             </div>
