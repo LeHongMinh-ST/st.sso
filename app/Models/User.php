@@ -108,6 +108,10 @@ class User extends Authenticatable
         'status' => Status::class,
     ];
 
+    protected $appends = [
+        'full_name',
+    ];
+
     public function department(): BelongsTo
     {
         return $this->belongsTo(Department::class);
