@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Faculty;
 
+use App\Enums\Status;
 use Livewire\Component;
 use App\Models\Faculty;
 use Illuminate\Support\Facades\Log;
@@ -15,6 +16,8 @@ class Edit extends Component
 
     #[Validate(as: 'mô tả')]
     public string $description;
+
+    public Status $status = Status::Active;
 
     private bool $isLoading = false;
 
@@ -38,6 +41,7 @@ class Edit extends Component
         $this->faculty = $faculty;
         $this->name = $faculty->name;
         $this->description = $faculty->description;
+        $this->status = $faculty->status;
     }
 
     public function submit()
@@ -52,6 +56,7 @@ class Edit extends Component
             $this->faculty->update([
                 'name' => $this->name,
                 'description' => $this->description,
+                'status' => $this->status->value
             ]);
 
             session()->flash('success', 'Cập nhật thành công!');
@@ -62,5 +67,12 @@ class Edit extends Component
         } finally {
             $this->isLoading = false;
         }
+    }
+
+    public function toggleStatus()
+    {
+        $this->status = $this->status == Status::Active
+            ? Status::Inactive
+            : Status::Active;
     }
 }

@@ -22,6 +22,12 @@
                         <b>Tên:</b> {{ $faculty->name }}
                     </p>
                 </div>
+
+                <div class="col-md-6 col-12">
+                    <p>
+                        <b>Trạng thái:</b> <x-status-badge :status="$faculty->status" />
+                    </p>
+                </div>
             </div>
         </div>
 

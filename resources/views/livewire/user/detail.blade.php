@@ -42,10 +42,10 @@
                         <b>Họ và tên:</b> {{ $user->fullName }}
                     </p>
                     <p>
-                        <b>Loại người dùng:</b> {{ $user->role->getLabel() }}
+                        <b>Loại người dùng:</b> <x-role-badge :role="$user->role" />
                     </p>
                     <p>
-                        <b>Trạng thái:</b> {{ $user->status->getLabel() }}
+                        <b>Trạng thái:</b> <x-status-badge :status="$user->status" />
                     </p>
                 </div>
             </div>

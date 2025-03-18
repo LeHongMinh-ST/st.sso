@@ -33,6 +33,6 @@
 
 
     <div class="content">
-        
+        <livewire:faculty.detail :faculty="$faculty" />
     </div>
 </x-admin-layout>

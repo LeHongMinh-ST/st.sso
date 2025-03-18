@@ -33,6 +33,18 @@
                                     @enderror
                                 </div>
                             </div>
+
+                            <div class="row">
+                                <div class="col">
+                                    <label for="description" class="col-form-label">
+                                        Trạng thái
+                                    </label>
+                                    <div class="mb-2 form-check form-switch">
+                                        <input type="checkbox" class="form-check-input" wire:click="toggleStatus" {{ $status == \App\Enums\Status::Active ? 'checked' : '' }}>
+                                        {{ $status->getLabel() }}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

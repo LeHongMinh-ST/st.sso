@@ -52,7 +52,7 @@
                         <i class="ph-floppy-disk fw-semibold"></i>
                         Lưu
                     </button>
-                    <a href="{{ route('faculty.show', $faculty->id) }}" type="button" class="btn btn-warning flex-fill fw-semibold"><i
+                    <a href="{{ route('faculty.index') }}" type="button" class="btn btn-warning flex-fill fw-semibold"><i
                            class="ph-arrow-counter-clockwise fw-semibold"></i> Trở lại</a>
                 </div>
             </div>
