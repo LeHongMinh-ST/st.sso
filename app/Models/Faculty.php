@@ -11,19 +11,22 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Laravolt\Avatar\Avatar;
 
 /**
- *
+ * 
  *
  * @property int $id
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property Status $status
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Department> $departments
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Department> $departments
  * @property-read int|null $departments_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, User> $users
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $teachers
+ * @property-read int|null $teachers_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $users
  * @property-read int|null $users_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Faculty newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Faculty newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Faculty query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Faculty search($search)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Faculty whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Faculty whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Faculty whereUpdatedAt($value)

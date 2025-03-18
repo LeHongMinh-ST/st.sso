@@ -7,7 +7,7 @@ namespace App\Models;
 use Laravel\Passport\Client as PassportClient;
 
 /**
- *
+ * 
  *
  * @property string $id
  * @property int|null $user_id
@@ -28,7 +28,7 @@ use Laravel\Passport\Client as PassportClient;
  * @property-read string|null $plain_secret
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Laravel\Passport\Token> $tokens
  * @property-read int|null $tokens_count
- * @property-read User|null $user
+ * @property-read \App\Models\User|null $user
  * @method static \Laravel\Passport\Database\Factories\ClientFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Client newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Client newQuery()
