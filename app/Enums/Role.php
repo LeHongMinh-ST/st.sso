@@ -15,7 +15,7 @@ enum Role: string
     public static function getDescription()
     {
         return [
-            self::SuperAdmin->value => 'Quản trị hệ thống',
+            self::SuperAdmin->value => 'Quản trị viên',
             self::Officer->value => 'Cán bộ khoa',
             self::Teacher->value => 'Giáo viên',
             self::Student->value => 'Học sinh',
