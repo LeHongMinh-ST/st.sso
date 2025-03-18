@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\DB;
 use Laravel\Passport\HasApiTokens;
 
 /**
@@ -144,5 +145,39 @@ class User extends Authenticatable
             'password' => 'hashed',
             'is_change_password' => 'boolean',
         ];
+    }
+
+    public function scopeSearch($query, $search)
+    {
+        if (empty($search)) {
+            return $query;
+        }
+        return $query->where(DB::raw("CONCAT(last_name, ' ', first_name)"), 'like', "%{$search}%")
+            ->orWhere('user_name', 'like', "%{$search}%")
+            ->orWhere('email', 'like', "%{$search}%")
+            ->orWhere('phone', 'like', "%{$search}%");
+    }
+
+    public function scopeFaculty($query, $facultyIds)
+    {
+        if (empty($facultyIds)) {
+            return $query;
+        }
+
+        $hasNull = in_array(null, $facultyIds, true);
+
+        $facultyIds = array_filter($facultyIds, fn($id) => !is_null($id));
+
+        return $query->when(!empty($facultyIds), fn($q) => $q->whereIn('faculty_id', $facultyIds))
+            ->when($hasNull, fn($q) => $q->orWhereNull('faculty_id'));
+    }
+
+    public function scopeRole($query, $roles)
+    {
+        if (empty($roles)) {
+            return $query;
+        }
+
+        return $query->whereIn('role', $roles);
     }
 }

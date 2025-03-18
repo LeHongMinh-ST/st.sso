@@ -33,7 +33,7 @@
                             <td class="text-center" width="5%">{{ $loop->index + 1 + $clients->perPage() * ($clients->currentPage() - 1) }}</td>
                             <td width="30%">
                                 <a href="{{ route('client.show', $item->id) }}">
-                                    <img src="{{ Avatar::create($item->name)->setShape('square')->toBase64() }}" class="w-31px h-32px" alt="">
+                                    <img src="{{ Avatar::create($item->name)->setShape('square')->toBase64() }}" class="w-32px h-32px" alt="">
                                     {{ $item->name }}
                                 </a>
                             </td>

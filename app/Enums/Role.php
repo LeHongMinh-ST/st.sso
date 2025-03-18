@@ -22,4 +22,9 @@ enum Role: string
             self::Normal->value => 'Người dùng khác',
         ];
     }
+
+    public function getLabel(): string
+    {
+        return self::getDescription()[$this->value];
+    }
 }

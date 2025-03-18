@@ -41,6 +41,18 @@
 
                 @if (auth()->user()->isSuperAdmin())
                     <li class="nav-item-header">
+                        <div class="opacity-50 text-uppercase fs-sm lh-sm sidebar-resize-hide">Ứng dụng</div>
+                        <i class="ph-dots-three sidebar-resize-show"></i>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ route('client.index') }}"
+                        class="nav-link {{ request()->routeIs('client.*') ? 'active' : '' }}">
+                            <i class="ph-package"></i>
+                            <span>Ứng dụng SSO</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item-header">
                         <div class="opacity-50 text-uppercase fs-sm lh-sm sidebar-resize-hide">Hệ thống</div>
                         <i class="ph-dots-three sidebar-resize-show"></i>
                     </li>
@@ -49,17 +61,19 @@
                         <a href="{{ route('faculty.index') }}"
                            class="nav-link {{ request()->routeIs('faculty.*') ? 'active' : '' }}">
                             <i class="ph-buildings"></i>
-                            <span>Quản lý Khoa</span>
+                            <span>Khoa</span>
                         </a>
                     </li>
 
                     <li class="nav-item">
-                        <a href="{{ route('client.index') }}"
-                           class="nav-link {{ request()->routeIs('client.*') ? 'active' : '' }}">
-                            <i class="ph-package"></i>
-                            <span>Ứng dụng SSO</span>
+                        <a href="{{ route('user.index') }}"
+                           class="nav-link {{ request()->routeIs('user.*') ? 'active' : '' }}">
+                            <i class="ph-user"></i>
+                            <span>Người dùng</span>
                         </a>
                     </li>
+
+                 
                 @endif
 
 

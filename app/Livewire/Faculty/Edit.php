@@ -4,14 +4,17 @@ namespace App\Livewire\Faculty;
 
 use Livewire\Component;
 use App\Models\Faculty;
+use Illuminate\Support\Facades\Log;
+use Livewire\Attributes\Validate;
+use Throwable;
 
 class Edit extends Component
 {
     #[Validate(as: 'tên khoa')]
-    public $name;
+    public string $name;
 
     #[Validate(as: 'mô tả')]
-    public $description;
+    public string $description;
 
     private bool $isLoading = false;
 
@@ -25,8 +28,8 @@ class Edit extends Component
     public function rules(): array
     {
         return [
-            'name' => 'required',
-            'description' => 'nullable',
+            'name' => 'required|max:255',
+            'description' => 'nullable|max:255',
         ];
     }
 

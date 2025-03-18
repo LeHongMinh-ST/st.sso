@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\ClientController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\FacultyController;
 use App\Http\Controllers\Admin\ProfileController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\AuthenticateController;
 use Illuminate\Support\Facades\Route;
 
@@ -36,6 +37,13 @@ Route::middleware(['auth', 'check.password'])->group(function (): void {
             Route::get('/create', [ClientController::class, 'create'])->name('client.create');
             Route::get('/{client}', [ClientController::class, 'show'])->name('client.show');
             Route::get('/{client}/edit', [ClientController::class, 'edit'])->name('client.edit');
+        });
+
+        Route::prefix('/users')->group(function (): void {
+            Route::get('/', [UserController::class, 'index'])->name('user.index');
+            Route::get('/create', [UserController::class, 'create'])->name('user.create');
+            Route::get('/{user}', [UserController::class, 'show'])->name('user.show');
+            Route::get('/{user}/edit', [UserController::class, 'edit'])->name('user.edit');
         });
     });
 });

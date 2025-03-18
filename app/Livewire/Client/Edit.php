@@ -39,8 +39,8 @@ class Edit extends Component
     public function rules(): array
     {
         return [
-            'name' => 'required',
-            'redirect' => 'required',
+            'name' => 'required|max:255',
+            'redirect' => 'required|max:255',
         ];
     }
 
