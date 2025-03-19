@@ -29,7 +29,7 @@ class FacultyController extends Controller
         return FacultyResource::collection($faculties);
     }
 
-    public function getUsers(Faculty $faculty)
+    public function getUsers(Faculty $faculty, Request $request)
     {
         if (!Auth::guard('api')->user()->isSuperAdmin() && $faculty->id !== Auth::guard('api')->user()->faculty_id) {
             return response()->json([
@@ -37,11 +37,13 @@ class FacultyController extends Controller
             ], 403);
         }
 
-        $users = $faculty->users()->paginate(Constants::PER_PAGE);
+        $users = $faculty->users()
+            ->search($request->get('q', ''))
+            ->paginate(Constants::PER_PAGE);
         return UserResource::collection($users);
     }
 
-    public function getTeachers(Faculty $faculty)
+    public function getTeachers(Faculty $faculty, Request $request)
     {
         if (!Auth::guard('api')->user()->isSuperAdmin() && $faculty->id !== Auth::guard('api')->user()->faculty_id) {
             return response()->json([
@@ -49,7 +51,9 @@ class FacultyController extends Controller
             ], 403);
         }
 
-        $teachers = $faculty->teachers()->paginate(Constants::PER_PAGE);
+        $teachers = $faculty->teachers()
+            ->search($request->get('q', ''))
+            ->paginate(Constants::PER_PAGE);
         return UserResource::collection($teachers);
     }
 }
