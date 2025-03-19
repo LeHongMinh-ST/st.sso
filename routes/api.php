@@ -13,10 +13,8 @@ Route::apiResource('users', UserController::class)
     ->middleware(['auth:api', 'check.superadmin.api']);
 
 Route::apiResource('faculties', FacultyController::class)
-    ->middleware(['auth:api', 'check.superadmin.api']);
-->only(['index'])
+    ->middleware(['auth:api', 'check.superadmin.api'])->only(['index']);
 Route::get('faculties/get-all', [FacultyController::class, 'all'])
-
     ->middleware(['auth:api']);
 Route::get('faculties/{faculty}/users', [FacultyController::class, 'getUsers'])
     ->middleware(['auth:api']);
