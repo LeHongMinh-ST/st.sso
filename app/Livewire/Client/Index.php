@@ -7,6 +7,7 @@ namespace App\Livewire\Client;
 use App\Helpers\Constants;
 use App\Models\Client;
 use App\Models\User;
+use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -14,6 +15,7 @@ class Index extends Component
 {
     use WithPagination;
 
+    #[Url(as: 'q')]
     public string $search = '';
 
     public function render()
@@ -27,7 +29,7 @@ class Index extends Component
         ]);
     }
 
-    public function toggleShowDashboard($id)
+    public function toggleShowDashboard($id): void
     {
         $client = Client::find($id);
         if (!$client) {
@@ -36,7 +38,7 @@ class Index extends Component
         }
         $client->is_show_dashboard = !$client->is_show_dashboard;
         $client->save();
-        
+
         // Clear all user dashboard caches
         $users = User::all();
         foreach ($users as $user) {

@@ -6,14 +6,15 @@ namespace App\Livewire\Faculty;
 
 use App\Helpers\Constants;
 use App\Models\Faculty;
-use Livewire\WithPagination;
-
+use Livewire\Attributes\Url;
 use Livewire\Component;
+use Livewire\WithPagination;
 
 class Index extends Component
 {
     use WithPagination;
 
+    #[Url(as: 'q')]
     public string $search = '';
 
     public function render()
