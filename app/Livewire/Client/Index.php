@@ -22,6 +22,7 @@ class Index extends Component
     {
         $clients = Client::query()
             ->search($this->search)
+            ->orderBy('created_at', 'desc')
             ->paginate(Constants::PER_PAGE_ADMIN);
 
         return view('livewire.client.index', [

@@ -40,6 +40,7 @@ class Index extends Component
             ->faculty($this->facultyId)
             ->role($this->role)
             ->with('faculty')
+            ->orderBy('created_at', 'desc')
             ->paginate(Constants::PER_PAGE);
 
         return view('livewire.user.index', [

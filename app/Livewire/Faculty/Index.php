@@ -21,6 +21,7 @@ class Index extends Component
     {
         $faculties = Faculty::query()
             ->search($this->search)
+            ->orderBy('created_at', 'desc')
             ->paginate(Constants::PER_PAGE);
 
         return view('livewire.faculty.index', [

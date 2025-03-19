@@ -39,6 +39,7 @@ class FacultyController extends Controller
 
         $users = $faculty->users()
             ->search($request->get('q', ''))
+            ->orderBy('users.created_at', 'desc')
             ->paginate(Constants::PER_PAGE);
         return UserResource::collection($users);
     }
@@ -53,6 +54,7 @@ class FacultyController extends Controller
 
         $teachers = $faculty->teachers()
             ->search($request->get('q', ''))
+            ->orderBy('users.created_at', 'desc')
             ->paginate(Constants::PER_PAGE);
         return UserResource::collection($teachers);
     }
