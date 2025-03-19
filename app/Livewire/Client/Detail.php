@@ -5,15 +5,12 @@ declare(strict_types=1);
 namespace App\Livewire\Client;
 
 use App\Models\Client;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 class Detail extends Component
 {
     public $client;
-
-    protected $listeners = [
-        'deleteClient' => 'delete',
-    ];
 
     public function render()
     {
@@ -25,6 +22,7 @@ class Detail extends Component
         $this->client = $client;
     }
 
+    #[On('deleteClient')]
     public function delete()
     {
         $this->client->delete();
