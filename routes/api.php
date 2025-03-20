@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/user', fn (Request $request) => $request->user())->middleware('auth:api');
 Route::apiResource('users', UserController::class)
     ->only(['index', 'show'])
-    ->middleware(['auth:api', 'check.superadmin.api']);
+    ->middleware(['auth:api']);
 
 Route::apiResource('faculties', FacultyController::class)
     ->middleware(['auth:api', 'check.superadmin.api'])->only(['index']);

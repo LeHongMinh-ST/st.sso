@@ -16,6 +16,12 @@ class UserController extends Controller
 {
     public function index(Request $request)
     {
+        if (!Auth::guard('api')->user()->isSuperAdmin()) {
+            return response()->json([
+                'message' => 'Forbidden',
+            ], 403);
+        }
+
         $users = User::query()
             ->search($request->search)
             ->faculty($request->facultyIds)
