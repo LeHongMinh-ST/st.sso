@@ -60,7 +60,7 @@
                         <th>Họ và tên</th>
                         <th>Email</th>
                         <th>Điện thoại</th>
-                        <th>Loại người dùng</th>
+                        <th>Loại tài khoản</th>
                         <th>Khoa</th>
                         <th>Trạng thái</th>
                         <th>Ngày tạo</th>
