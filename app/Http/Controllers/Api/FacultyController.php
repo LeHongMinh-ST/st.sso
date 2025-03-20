@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\Role;
 use App\Helpers\Constants;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Faculty\FacultyResource;
@@ -39,6 +40,7 @@ class FacultyController extends Controller
 
         $users = $faculty->users()
             ->search($request->get('q', ''))
+            ->whereNotIn('role', [Role::SuperAdmin, Role::Student])
             ->orderBy('users.created_at', 'desc')
             ->paginate(Constants::PER_PAGE);
         return UserResource::collection($users);
