@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Api;
 use App\Enums\Role;
 use App\Helpers\Constants;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\User\StoreUserRequest;
 use App\Http\Resources\User\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -48,5 +49,10 @@ class UserController extends Controller
         }
 
         return new UserResource($user);
+    }
+
+    public function store(StoreUserRequest $request)
+    {
+        return new UserResource(User::create($request->all()));
     }
 }
