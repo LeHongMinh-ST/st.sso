@@ -36,6 +36,7 @@ class StoreUserRequest extends FormRequest
             'code' => 'nullable|max:255|unique:users,code',
             'department_id' => 'nullable',
             'faculty_id' => 'nullable',
+            'password' => 'required|min:8|max:255',
         ];
     }
 }
