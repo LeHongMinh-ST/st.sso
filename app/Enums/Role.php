@@ -8,7 +8,6 @@ enum Role: string
 {
     case SuperAdmin = 'super_admin';
     case Officer = 'officer';
-    case Teacher = 'teacher';
     case Student = 'student';
     case Normal = 'normal';
 
@@ -16,8 +15,7 @@ enum Role: string
     {
         return [
             self::SuperAdmin->value => 'Quản trị viên',
-            self::Officer->value => 'Cán bộ khoa',
-            self::Teacher->value => 'Giáo viên',
+            self::Officer->value => 'Giảng viên - Cán bộ khoa',
             self::Student->value => 'Học sinh',
             self::Normal->value => 'Cơ bản',
         ];
