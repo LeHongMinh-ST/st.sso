@@ -44,4 +44,7 @@ return [
         'tenant' => env('MICROSOFT_APP_TENANT_ID'),
         'proxy' => env('PROXY'),  // optionally
     ],
+    'api' => [
+        'key' => env('API_KEY'),
+    ],
 ];
