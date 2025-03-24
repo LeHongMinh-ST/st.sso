@@ -12,14 +12,15 @@
 
                     </div>
                     <div class="col-xl-6">
-                        <div  class="login-form">
+                        <div class="login-form">
                             <div class="mb-3 text-center">
                                 <div class="gap-1 mt-2 mb-4 d-inline-flex align-items-center justify-content-center">
                                     <img src="{{ asset('assets/images/VNUA.png') }}" class="h-64px" alt="">
                                     <img src="{{ asset('assets/images/FITA.png') }}" class="h-64px" alt="">
                                     <img src="{{ asset('assets/images/logoST.jpg') }}" class="h-64px" alt="">
                                 </div>
-                                <span class="d-block text-muted">Hệ thống ST Single Sign-On</span>
+                                <span class="d-block text-muted">Khoa công nghệ thống tin - Học viện nông nghiệp Việt Nam</span>
+                                <h5 class="mb-0">Hệ thống ST Single Sign-On</h5>
                                 <h5 class="mb-0"><i class="ph-shield-check ph"></i> Uỷ quyền yêu cầu</h5>
                             </div>
 
@@ -39,7 +40,7 @@
                                 </div>
                             @endif
 
-                            <div class="buttons d-flex gap-2 justify-content-center">
+                            <div class="gap-2 buttons d-flex justify-content-center">
                                 <!-- Authorize Button -->
                                 <form method="post" action="{{ route('passport.authorizations.approve') }}">
                                     @csrf
