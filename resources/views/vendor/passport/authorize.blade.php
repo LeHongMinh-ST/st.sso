@@ -19,7 +19,7 @@
                                     <img src="{{ asset('assets/images/FITA.png') }}" class="h-64px" alt="">
                                     <img src="{{ asset('assets/images/logoST.jpg') }}" class="h-64px" alt="">
                                 </div>
-                                <span class="d-block text-muted">Khoa công nghệ thống tin - Học viện nông nghiệp Việt Nam</span>
+                                <span class="d-block text-muted">Khoa công nghệ thông tin - Học viện nông nghiệp Việt Nam</span>
                                 <h5 class="mb-0">Hệ thống ST Single Sign-On</h5>
                                 <h5 class="mb-0"><i class="ph-shield-check ph"></i> Uỷ quyền yêu cầu</h5>
                             </div>
