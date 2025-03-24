@@ -10,6 +10,9 @@
                         <div class="login-image-wrapper">
                             <img class="login-image" src="{{ asset('assets/images/login.svg') }}" alt="login">
                             <div class="line"></div>
+                            <div class="text-center text-muted">
+                                Lưu ý: Nếu bạn chưa có tài khoản xin vui lòng liên hệ với quản trị hệ thống hoặc đăng nhập với tài khoản edu để thiết lập tài khoản
+                            </div>
 
                         </div>
 
