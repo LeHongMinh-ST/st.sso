@@ -23,7 +23,7 @@ return new class () extends Migration {
             $table->string('phone')->nullable();
             $table->string('role');
             $table->string('status')->default(Status::Active->value);
-            $table->string('code')->nullable()->unique();
+            $table->string('code')->nullable();
             $table->boolean('is_change_password')->default(false);
             $table->unsignedBigInteger('department_id')->nullable()->constrained()->nullOnDelete();
             $table->unsignedBigInteger('faculty_id')->nullable()->constrained()->nullOnDelete();
