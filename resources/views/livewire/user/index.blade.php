@@ -78,7 +78,7 @@
                                             <div>
                                                 {{ $item->fullName }}
                                             </div>
-                                            <div>
+                                            <div class="text-muted">
                                                 {{ $item->email }}
                                             </div>
                                         </div>
