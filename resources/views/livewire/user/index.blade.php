@@ -58,7 +58,6 @@
                     <tr class="table-light">
                         <th>STT</th>
                         <th>Họ và tên</th>
-                        <th>Email</th>
                         <th>Điện thoại</th>
                         <th>Loại tài khoản</th>
                         <th>Khoa</th>
@@ -72,11 +71,20 @@
                             <td class="text-center" width="5%">{{ $loop->index + 1 + $users->perPage() * ($users->currentPage() - 1) }}</td>
                             <td width="30%">
                                 <a class="fw-semibold" href="{{ route('user.show', $item->id) }}">
-                                    <img src="{{ Avatar::create($item->fullName)->toBase64() }}" class="w-32px h-32px" alt="">
-                                    {{ $item->fullName }}
+                                    <div class="gap-2 d-flex align-items-center">
+
+                                        <img src="{{ Avatar::create($item->fullName)->toBase64() }}" class="w-32px h-32px" alt="">
+                                        <div class="flex-grow-1">
+                                            <div>
+                                                {{ $item->fullName }}
+                                            </div>
+                                            <div>
+                                                {{ $item->email }}
+                                            </div>
+                                        </div>
+                                    </div>
                                 </a>
                             </td>
-                            <td>{{ $item->email }}</td>
                             <td>{{ $item->phone }}</td>
                             <td>
                                 <x-role-badge :role="$item->role" />
