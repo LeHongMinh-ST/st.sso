@@ -16,13 +16,13 @@ class Roles extends Component
     public array $selectedRoles = [];
     public array $directPermissions = [];
     public array $availablePermissions = [];
-    
+
     private bool $isLoading = false;
 
     public function render()
     {
         $roles = Role::all();
-        
+
         return view('livewire.user.roles', [
             'roles' => $roles
         ]);
@@ -33,7 +33,7 @@ class Roles extends Component
         $this->user = $user;
         $this->selectedRoles = $this->user->roles->pluck('id')->toArray();
         $this->directPermissions = $this->user->getDirectPermissions()->pluck('name')->toArray();
-        
+
         // Lấy tất cả quyền có sẵn
         $this->availablePermissions = \Spatie\Permission\Models\Permission::all()
             ->groupBy('group')
@@ -45,17 +45,17 @@ class Roles extends Component
         if ($this->isLoading) {
             return;
         }
-        
+
         try {
             $this->isLoading = true;
-            
+
             // Cập nhật vai trò
             $roles = Role::whereIn('id', $this->selectedRoles)->get();
             $this->user->syncRoles($roles);
-            
+
             // Cập nhật quyền trực tiếp
             $this->user->syncPermissions($this->directPermissions);
-            
+
             session()->flash('success', 'Cập nhật vai trò và quyền thành công!');
             return redirect()->route('user.show', $this->user->id);
         } catch (Throwable $th) {

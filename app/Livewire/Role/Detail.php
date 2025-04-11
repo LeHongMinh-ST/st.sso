@@ -29,7 +29,7 @@ class Detail extends Component
     #[On('deleteRole')]
     public function delete()
     {
-        if ($this->role->name === 'super-admin') {
+        if ('super-admin' === $this->role->name) {
             session()->flash('error', 'Không thể xóa vai trò Super Admin!');
             return redirect()->route('role.show', $this->role->id);
         }

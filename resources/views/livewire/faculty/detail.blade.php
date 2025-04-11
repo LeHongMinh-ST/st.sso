@@ -32,7 +32,7 @@
         </div>
     </div>
 
-    @if($showCreateUserForm)
+    @if($showCreateUserForm && auth()->user()->can('user.create'))
         <div class="mb-3">
             <livewire:faculty.create-user :faculty="$faculty" />
         </div>
@@ -42,9 +42,11 @@
         <div class="py-3 card-header">
             <div class="d-flex justify-content-between align-items-center mb-2">
                 <h5 class="mb-0"><i class="ph-users me-1"></i> Danh sách người dùng trong khoa</h5>
+                @can('user.create')
                 <button wire:click="toggleCreateUserForm()" class="btn btn-primary btn-icon">
                     <i class="ph-{{ $showCreateUserForm ? 'minus' : 'user-plus' }}"></i>
                 </button>
+                @endcan
             </div>
             <div class="gap-2 d-flex">
                 <div>

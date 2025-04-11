@@ -50,6 +50,9 @@ class Detail extends Component
 
     public function toggleCreateUserForm(): void
     {
+        if (!auth()->user()->can('user.create')) {
+            return;
+        }
         $this->showCreateUserForm = !$this->showCreateUserForm;
     }
 

@@ -19,7 +19,7 @@ class CheckApiPermission
     public function handle(Request $request, Closure $next, string $permission): Response
     {
         $user = Auth::guard('api')->user();
-        
+
         if (!$user || !$user->hasPermissionTo($permission)) {
             return response()->json([
                 'success' => false,
