@@ -38,6 +38,11 @@ class Detail extends Component
     #[On('deleteFaculty')]
     public function delete()
     {
+        if (!auth()->user()->can('faculty.delete')) {
+            session()->flash('error', 'Bạn không có quyền xóa khoa!');
+            return;
+        }
+
         $this->faculty->delete();
         session()->flash('success', 'Xoá thành công!');
         return redirect()->route('faculty.index');
@@ -45,6 +50,9 @@ class Detail extends Component
 
     public function openDeleteModal(): void
     {
+        if (!auth()->user()->can('faculty.delete')) {
+            return;
+        }
         $this->dispatch('onOpenDeleteModal');
     }
 
