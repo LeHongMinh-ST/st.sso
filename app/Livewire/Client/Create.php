@@ -48,6 +48,10 @@ class Create extends Component
             return;
         }
 
+        if (!auth()->user()->can('client.create')) {
+            $this->dispatch('alert', type: 'error', message: 'Bạn không có quyền tạo ứng dụng!');
+            return;
+        }
 
         DB::beginTransaction();
         try {

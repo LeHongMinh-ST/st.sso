@@ -29,6 +29,11 @@ class Detail extends Component
     #[On('deleteRole')]
     public function delete()
     {
+        if (!auth()->user()->can('role.delete')) {
+            session()->flash('error', 'Bạn không có quyền xóa vai trò!');
+            return redirect()->route('role.show', $this->role->id);
+        }
+
         if ('super-admin' === $this->role->name) {
             session()->flash('error', 'Không thể xóa vai trò Super Admin!');
             return redirect()->route('role.show', $this->role->id);
@@ -41,6 +46,10 @@ class Detail extends Component
 
     public function openDeleteModal(): void
     {
+        if (!auth()->user()->can('role.delete') || 'super-admin' === $this->role->name) {
+            return;
+        }
+
         $this->dispatch('onOpenDeleteModal');
     }
 }

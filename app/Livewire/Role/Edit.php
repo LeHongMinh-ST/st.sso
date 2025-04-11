@@ -51,6 +51,17 @@ class Edit extends Component
         if ($this->isLoading) {
             return;
         }
+
+        if (!auth()->user()->can('role.edit')) {
+            $this->dispatch('alert', type: 'error', message: 'Bạn không có quyền chỉnh sửa vai trò!');
+            return;
+        }
+
+        if ('super-admin' === $this->role->name) {
+            $this->dispatch('alert', type: 'error', message: 'Không thể chỉnh sửa vai trò Super Admin!');
+            return;
+        }
+
         try {
             $this->isLoading = true;
             $this->validate();

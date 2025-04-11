@@ -38,6 +38,12 @@ class Create extends Component
         if ($this->isLoading) {
             return;
         }
+
+        if (!auth()->user()->can('faculty.create')) {
+            $this->dispatch('alert', type: 'error', message: 'Bạn không có quyền tạo khoa!');
+            return;
+        }
+
         try {
             $this->isLoading = true;
             $this->validate();

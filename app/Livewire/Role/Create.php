@@ -42,6 +42,12 @@ class Create extends Component
         if ($this->isLoading) {
             return;
         }
+
+        if (!auth()->user()->can('role.create')) {
+            $this->dispatch('alert', type: 'error', message: 'Bạn không có quyền tạo vai trò!');
+            return;
+        }
+
         try {
             $this->isLoading = true;
             $this->validate();

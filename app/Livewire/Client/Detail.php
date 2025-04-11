@@ -25,6 +25,11 @@ class Detail extends Component
     #[On('deleteClient')]
     public function delete()
     {
+        if (!auth()->user()->can('client.delete')) {
+            session()->flash('error', 'Bạn không có quyền xóa ứng dụng!');
+            return;
+        }
+
         $this->client->delete();
         session()->flash('success', 'Xoá thành công ứng dụng!');
         return redirect()->route('client.index');
@@ -32,6 +37,10 @@ class Detail extends Component
 
     public function openDeleteModal(): void
     {
+        if (!auth()->user()->can('client.delete')) {
+            return;
+        }
+
         $this->dispatch('onOpenDeleteModal');
     }
 }

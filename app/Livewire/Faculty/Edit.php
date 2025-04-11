@@ -51,6 +51,12 @@ class Edit extends Component
         if ($this->isLoading) {
             return;
         }
+
+        if (!auth()->user()->can('faculty.edit')) {
+            $this->dispatch('alert', type: 'error', message: 'Bạn không có quyền chỉnh sửa khoa!');
+            return;
+        }
+
         try {
             $this->isLoading = true;
             $this->validate();
@@ -73,6 +79,10 @@ class Edit extends Component
 
     public function toggleStatus(): void
     {
+        if (!auth()->user()->can('faculty.edit')) {
+            return;
+        }
+
         $this->status = Status::Active === $this->status
             ? Status::Inactive
             : Status::Active;

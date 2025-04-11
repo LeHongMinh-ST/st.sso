@@ -46,6 +46,11 @@ class Roles extends Component
             return;
         }
 
+        if (!auth()->user()->can('role.assign_users')) {
+            $this->dispatch('alert', type: 'error', message: 'Bạn không có quyền gán vai trò cho người dùng!');
+            return;
+        }
+
         try {
             $this->isLoading = true;
 

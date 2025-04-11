@@ -46,6 +46,11 @@ class Edit extends Component
 
     public function submit(): void
     {
+        if (!auth()->user()->can('client.edit')) {
+            $this->dispatch('alert', type: 'error', message: 'Bạn không có quyền chỉnh sửa ứng dụng!');
+            return;
+        }
+
         $this->validate();
 
         $this->client->update([
