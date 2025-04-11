@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Faculty;
 
 use App\Enums\Status;
-use Livewire\Component;
 use App\Models\Faculty;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Validate;
+use Livewire\Component;
 use Throwable;
 
 class Edit extends Component
@@ -19,9 +21,9 @@ class Edit extends Component
 
     public Status $status = Status::Active;
 
-    private bool $isLoading = false;
-
     public Faculty $faculty;
+
+    private bool $isLoading = false;
 
     public function render()
     {
@@ -36,7 +38,7 @@ class Edit extends Component
         ];
     }
 
-    public function mount(Faculty $faculty)
+    public function mount(Faculty $faculty): void
     {
         $this->faculty = $faculty;
         $this->name = $faculty->name;
@@ -69,9 +71,9 @@ class Edit extends Component
         }
     }
 
-    public function toggleStatus()
+    public function toggleStatus(): void
     {
-        $this->status = $this->status == Status::Active
+        $this->status = Status::Active === $this->status
             ? Status::Inactive
             : Status::Active;
     }

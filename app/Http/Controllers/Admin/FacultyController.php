@@ -5,18 +5,18 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Faculty;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\RedirectResponse;
-use App\Models\Faculty;
 
 class FacultyController extends Controller
 {
     public function index(): View|Application|Factory|RedirectResponse
     {
         return view('pages.faculty.index');
-    }   
+    }
 
     public function create(): View|Application|Factory|RedirectResponse
     {

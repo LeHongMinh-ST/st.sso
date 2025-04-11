@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Livewire\Faculty;
 
-use Livewire\Component;
 use App\Models\Faculty;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Validate;
+use Livewire\Component;
 use Throwable;
 
 class Create extends Component
@@ -19,7 +19,7 @@ class Create extends Component
     public $description;
 
     private bool $isLoading = false;
-    
+
     public function render()
     {
         return view('livewire.faculty.create');

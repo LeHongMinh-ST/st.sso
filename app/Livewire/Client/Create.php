@@ -25,9 +25,9 @@ class Create extends Component
     #[Validate(as: 'mô tả')]
     public string $description = '';
 
-    private bool $isLoading = false;
-
     public array $allowed_roles = [Role::SuperAdmin->value];
+
+    private bool $isLoading = false;
 
     public function rules(): array
     {
@@ -47,7 +47,7 @@ class Create extends Component
         if ($this->isLoading) {
             return;
         }
-        
+
 
         DB::beginTransaction();
         try {

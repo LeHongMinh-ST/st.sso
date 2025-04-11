@@ -35,10 +35,10 @@ use Laravel\Passport\HasApiTokens;
  * @property string|null $remember_token
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Client> $clients
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Client> $clients
  * @property-read int|null $clients_count
- * @property-read \App\Models\Department|null $department
- * @property-read \App\Models\Faculty|null $faculty
+ * @property-read Department|null $department
+ * @property-read Faculty|null $faculty
  * @property-read string $full_name
  * @property-read \Illuminate\Notifications\DatabaseNotificationCollection<int, \Illuminate\Notifications\DatabaseNotification> $notifications
  * @property-read int|null $notifications_count
@@ -136,20 +136,6 @@ class User extends Authenticatable
         return Role::SuperAdmin === $this->role;
     }
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-            'is_change_password' => 'boolean',
-        ];
-    }
-
     public function scopeSearch($query, $search)
     {
         if (empty($search)) {
@@ -163,10 +149,10 @@ class User extends Authenticatable
 
     public function scopeFaculty($query, $facultyId)
     {
-        $hasNull = $facultyId === "0";
+        $hasNull = "0" === $facultyId;
 
-        return $query->when(!empty($facultyId), fn($q) => $q->where('faculty_id', $facultyId))
-            ->when($hasNull, fn($q) => $q->orWhereNull('faculty_id'));
+        return $query->when(!empty($facultyId), fn ($q) => $q->where('faculty_id', $facultyId))
+            ->when($hasNull, fn ($q) => $q->orWhereNull('faculty_id'));
     }
 
     public function scopeRole($query, $roles)
@@ -176,5 +162,19 @@ class User extends Authenticatable
         }
 
         return $query->where('role', $roles);
+    }
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+            'is_change_password' => 'boolean',
+        ];
     }
 }

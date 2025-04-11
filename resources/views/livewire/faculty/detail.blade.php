@@ -1,18 +1,14 @@
 <div>
-    <div class="card">
+    <div class="card mb-3">
         <div class="py-3 card-header d-flex justify-content-between">
+            <h5 class="mb-0"><i class="ph-buildings me-1"></i> Thông tin khoa</h5>
             <div class="gap-2 d-flex">
-                <div>
-                    <a href="{{ route('faculty.edit', $faculty->id) }}" type="button" class="px-2 shadow btn fw-semibold btn-primary btn-icon">
-                        <i class="px-1 ph-note-pencil fw-semibold"></i><span>Chỉnh sửa</span>
-                    </a>
-                </div>
-
-                <div>
-                    <button wire:click="openDeleteModal()" class="px-2 shadow btn btn-danger btn-icon fw-semibold">
-                        <i class="px-1 ph-trash fw-semibold"></i><span>Xoá</span>
-                    </button>
-                </div>
+                <a href="{{ route('faculty.edit', $faculty->id) }}" type="button" class="px-2 shadow btn fw-semibold btn-primary btn-icon">
+                    <i class="px-1 ph-note-pencil fw-semibold"></i><span>Chỉnh sửa</span>
+                </a>
+                <button wire:click="openDeleteModal()" class="px-2 shadow btn btn-danger btn-icon fw-semibold">
+                    <i class="px-1 ph-trash fw-semibold"></i><span>Xoá</span>
+                </button>
             </div>
         </div>
         <div class="card-body">
@@ -30,7 +26,81 @@
                 </div>
             </div>
         </div>
+    </div>
 
+    @if($showCreateUserForm)
+        <div class="mb-3">
+            <livewire:faculty.create-user :faculty="$faculty" />
+        </div>
+    @endif
+
+    <div class="card">
+        <div class="py-3 card-header">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h5 class="mb-0"><i class="ph-users me-1"></i> Danh sách người dùng trong khoa</h5>
+                <button wire:click="toggleCreateUserForm()" class="btn btn-primary btn-icon">
+                    <i class="ph-{{ $showCreateUserForm ? 'minus' : 'user-plus' }}"></i>
+                </button>
+            </div>
+            <div class="gap-2 d-flex">
+                <div>
+                    <input wire:model.live.debounce.500ms="search" type="text" class="form-control" placeholder="Tìm kiếm người dùng...">
+                </div>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <div wire:loading class="my-3 text-center w-100">
+                <span class="spinner-border spinner-border-sm"></span> Đang tải dữ liệu...
+            </div>
+            <table class="table fs-table" wire:loading.remove>
+                <thead>
+                    <tr class="table-light">
+                        <th>STT</th>
+                        <th>Họ và tên</th>
+                        <th>Điện thoại</th>
+                        <th>Loại tài khoản</th>
+                        <th>Trạng thái</th>
+                        <th>Ngày tạo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($users as $item)
+                        <tr>
+                            <td class="text-center" width="5%">{{ $loop->index + 1 + $users->perPage() * ($users->currentPage() - 1) }}</td>
+                            <td width="30%">
+                                <a class="fw-semibold" href="{{ route('user.show', $item->id) }}">
+                                    <div class="gap-2 d-flex align-items-center">
+                                        <img src="{{ Avatar::create($item->fullName)->toBase64() }}" class="w-32px h-32px" alt="">
+                                        <div class="flex-grow-1">
+                                            <div>
+                                                {{ $item->fullName }}
+                                            </div>
+                                            <div class="text-muted">
+                                                {{ $item->email }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </td>
+                            <td>{{ $item->phone }}</td>
+                            <td>
+                                <x-role-badge :role="$item->role" />
+                            </td>
+                            <td>
+                                <x-status-badge :status="$item->status" />
+                            </td>
+                            <td width="10%">{{ $item->created_at->format('d/m/Y') }}</td>
+                        </tr>
+                    @empty
+                        <x-table-empty :colspan="6" />
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+        <div class="card-footer">
+            {{ $users->links('vendor.pagination.theme') }}
+        </div>
     </div>
 </div>
 @script

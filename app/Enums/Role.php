@@ -16,7 +16,7 @@ enum Role: string
         return [
             self::SuperAdmin->value => 'Quản trị viên',
             self::Officer->value => 'Giảng viên - Cán bộ khoa',
-            self::Student->value => 'Học sinh',
+            self::Student->value => 'Sinh viên',
             self::Normal->value => 'Cơ bản',
         ];
     }

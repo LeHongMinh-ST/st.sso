@@ -39,12 +39,10 @@ class AppServiceProvider extends ServiceProvider
             URL::forceScheme('https');
         }
 
-        LogViewer::auth(function ($request) {
-            return $request->user()
+        LogViewer::auth(fn ($request) => $request->user()
                 && in_array($request->user()->role, [
                     Role::SuperAdmin,
-                ]);
-        });
+                ]));
 
         Event::listen(function (\SocialiteProviders\Manager\SocialiteWasCalled $event): void {
             $event->extendSocialite('azure', \SocialiteProviders\Azure\Provider::class);

@@ -1,16 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\User;
 
 use App\Enums\Role;
 use App\Enums\Status;
 use App\Models\Faculty;
 use App\Models\User;
+use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Throwable;
-use Illuminate\Support\Facades\Log;
-
 
 class Edit extends Component
 {
@@ -40,9 +41,9 @@ class Edit extends Component
 
     public int|null|string $faculty_id = null;
 
-    private bool $isLoading = false;
-
     public Status $status = Status::Active;
+
+    private bool $isLoading = false;
 
     public function render()
     {
@@ -119,9 +120,9 @@ class Edit extends Component
         $this->role = Role::from($value);
     }
 
-    public function toggleStatus()
+    public function toggleStatus(): void
     {
-        $this->status = $this->status == Status::Active
+        $this->status = Status::Active === $this->status
             ? Status::Inactive
             : Status::Active;
     }
