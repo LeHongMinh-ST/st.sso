@@ -2,7 +2,10 @@
 
 declare(strict_types=1);
 
+use App\Http\Middleware\CheckApiPermission;
 use App\Http\Middleware\CheckPasswordChanged;
+use App\Http\Middleware\CheckPermission;
+use App\Http\Middleware\CheckRole;
 use App\Http\Middleware\CheckSuperAdmin;
 use App\Http\Middleware\CheckSuperAdminApi;
 use Illuminate\Foundation\Application;
@@ -20,7 +23,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'check.password' => CheckPasswordChanged::class,
             'check.superadmin' => CheckSuperAdmin::class,
-            'check.superadmin.api' => CheckSuperAdminApi::class
+            'check.superadmin.api' => CheckSuperAdminApi::class,
+            'permission' => CheckPermission::class,
+            'role' => CheckRole::class,
+            'api.permission' => CheckApiPermission::class
         ]);
 
     })

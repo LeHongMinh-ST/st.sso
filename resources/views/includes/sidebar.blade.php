@@ -39,42 +39,56 @@
                 </li>
 
 
-                @if (auth()->user()->isSuperAdmin())
-                    <li class="nav-item-header">
-                        <div class="opacity-50 text-uppercase fs-sm lh-sm sidebar-resize-hide">Ứng dụng</div>
-                        <i class="ph-dots-three sidebar-resize-show"></i>
-                    </li>
-                    <li class="nav-item">
-                        <a href="{{ route('client.index') }}"
-                        class="nav-link {{ request()->routeIs('client.*') ? 'active' : '' }}">
-                            <i class="ph-package"></i>
-                            <span>Ứng dụng SSO</span>
-                        </a>
-                    </li>
+                @canany(['client.view', 'faculty.view', 'user.view', 'role.view'])
+                    @canany(['client.view'])
+                        <li class="nav-item-header">
+                            <div class="opacity-50 text-uppercase fs-sm lh-sm sidebar-resize-hide">Ứng dụng</div>
+                            <i class="ph-dots-three sidebar-resize-show"></i>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('client.index') }}"
+                            class="nav-link {{ request()->routeIs('client.*') ? 'active' : '' }}">
+                                <i class="ph-package"></i>
+                                <span>Ứng dụng SSO</span>
+                            </a>
+                        </li>
+                    @endcanany
 
                     <li class="nav-item-header">
                         <div class="opacity-50 text-uppercase fs-sm lh-sm sidebar-resize-hide">Hệ thống</div>
                         <i class="ph-dots-three sidebar-resize-show"></i>
                     </li>
 
-                    <li class="nav-item">
-                        <a href="{{ route('faculty.index') }}"
-                           class="nav-link {{ request()->routeIs('faculty.*') ? 'active' : '' }}">
-                            <i class="ph-buildings"></i>
-                            <span>Khoa</span>
-                        </a>
-                    </li>
+                    @can('faculty.view')
+                        <li class="nav-item">
+                            <a href="{{ route('faculty.index') }}"
+                               class="nav-link {{ request()->routeIs('faculty.*') ? 'active' : '' }}">
+                                <i class="ph-buildings"></i>
+                                <span>Khoa</span>
+                            </a>
+                        </li>
+                    @endcan
 
-                    <li class="nav-item">
-                        <a href="{{ route('user.index') }}"
-                           class="nav-link {{ request()->routeIs('user.*') ? 'active' : '' }}">
-                            <i class="ph-user"></i>
-                            <span>Người dùng</span>
-                        </a>
-                    </li>
+                    @can('user.view')
+                        <li class="nav-item">
+                            <a href="{{ route('user.index') }}"
+                               class="nav-link {{ request()->routeIs('user.*') ? 'active' : '' }}">
+                                <i class="ph-user"></i>
+                                <span>Người dùng</span>
+                            </a>
+                        </li>
+                    @endcan
 
-                 
-                @endif
+                    @can('role.view')
+                        <li class="nav-item">
+                            <a href="{{ route('role.index') }}"
+                               class="nav-link {{ request()->routeIs('role.*') ? 'active' : '' }}">
+                                <i class="ph-shield"></i>
+                                <span>Vai trò & Phân quyền</span>
+                            </a>
+                        </li>
+                    @endcan
+                @endcanany
 
 
             </ul>

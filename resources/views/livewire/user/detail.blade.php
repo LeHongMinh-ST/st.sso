@@ -2,23 +2,36 @@
     <div class="card">
         <div class="py-3 card-header d-flex justify-content-between">
             <div class="gap-2 d-flex">
+                @can('user.edit')
                 <div>
                     <a href="{{ route('user.edit', $user->id) }}" type="button" class="px-2 btn btn-primary btn-icon">
                         <i class="px-1 ph-note-pencil"></i><span>Chỉnh sửa</span>
                     </a>
                 </div>
+                @endcan
 
                 @if ($user->id != Auth::user()->id)
+                    @can('role.assign_users')
+                        <div>
+                            <a href="{{ route('user.roles.edit', $user->id) }}" class="px-2 btn btn-info btn-icon">
+                                <i class="px-1 ph-shield"></i><span>Quản lý vai trò</span>
+                            </a>
+                        </div>
+                    @endcan
+                    @can('user.reset_password')
                     <div>
                         <button wire:click="openResetPasswordModal()" class="px-2 btn btn-warning btn-icon">
                             <i class="px-1 ph-key"></i><span>Reset mật khẩu</span>
                         </button>
                     </div>
+                    @endcan
+                    @can('user.delete')
                     <div>
                         <button wire:click="openDeleteModal()" class="px-2 btn btn-danger btn-icon">
                             <i class="px-1 ph-trash"></i><span>Xoá</span>
                         </button>
                     </div>
+                    @endcan
                 @endif
             </div>
         </div>
@@ -48,6 +61,14 @@
                     </p>
                     <p>
                         <b>Loại người dùng:</b> <x-role-badge :role="$user->role" />
+                    </p>
+                    <p>
+                        <b>Vai trò:</b>
+                        @forelse($user->roles as $role)
+                            <span class="badge bg-primary me-1">{{ $role->name }}</span>
+                        @empty
+                            <span class="text-muted">Chưa có vai trò</span>
+                        @endforelse
                     </p>
                     <p>
                         <b>Trạng thái:</b> <x-status-badge :status="$user->status" />

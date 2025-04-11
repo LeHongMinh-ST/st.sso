@@ -3,12 +3,16 @@
         <div class="py-3 card-header d-flex justify-content-between">
             <h5 class="mb-0"><i class="ph-buildings me-1"></i> Thông tin khoa</h5>
             <div class="gap-2 d-flex">
+                @can('faculty.edit')
                 <a href="{{ route('faculty.edit', $faculty->id) }}" type="button" class="px-2 shadow btn fw-semibold btn-primary btn-icon">
                     <i class="px-1 ph-note-pencil fw-semibold"></i><span>Chỉnh sửa</span>
                 </a>
+                @endcan
+                @can('faculty.delete')
                 <button wire:click="openDeleteModal()" class="px-2 shadow btn btn-danger btn-icon fw-semibold">
                     <i class="px-1 ph-trash fw-semibold"></i><span>Xoá</span>
                 </button>
+                @endcan
             </div>
         </div>
         <div class="card-body">
@@ -96,9 +100,11 @@
                                 <a href="{{ route('user.show', $item->id) }}" class="btn btn-sm btn-primary" title="Xem chi tiết">
                                     <i class="ph-eye"></i>
                                 </a>
+                                @can('user.reset_password')
                                 <button class="btn btn-sm btn-warning reset-password-btn" data-id="{{ $item->id }}" title="Reset mật khẩu">
                                     <i class="ph-key"></i>
                                 </button>
+                                @endcan
                             </td>
                         </tr>
                     @empty

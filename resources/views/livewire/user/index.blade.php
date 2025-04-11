@@ -16,11 +16,13 @@
                     </div>
                 </div>
                 <div class="gap-2 d-flex">
+                    @can('user.create')
                     <div>
                         <a href="{{ route('user.create') }}" type="button" class="px-2 shadow btn btn-primary btn-icon fw-semibold">
                             <i class="px-1 ph-plus-circle fw-semibold"></i><span>Thêm mới</span>
                         </a>
                     </div>
+                    @endcan
                 </div>
             </div>
             <div class="collapse @if ($isShowFilter) show @endif" id="filter-collapsed">
