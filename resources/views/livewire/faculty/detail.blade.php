@@ -62,6 +62,7 @@
                         <th>Loại tài khoản</th>
                         <th>Trạng thái</th>
                         <th>Ngày tạo</th>
+                        <th>Hành động</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -91,9 +92,17 @@
                                 <x-status-badge :status="$item->status" />
                             </td>
                             <td width="10%">{{ $item->created_at->format('d/m/Y') }}</td>
+                            <td width="10%">
+                                <a href="{{ route('user.show', $item->id) }}" class="btn btn-sm btn-primary" title="Xem chi tiết">
+                                    <i class="ph-eye"></i>
+                                </a>
+                                <button class="btn btn-sm btn-warning reset-password-btn" data-id="{{ $item->id }}" title="Reset mật khẩu">
+                                    <i class="ph-key"></i>
+                                </button>
+                            </td>
                         </tr>
                     @empty
-                        <x-table-empty :colspan="6" />
+                        <x-table-empty :colspan="7" />
                     @endforelse
                 </tbody>
             </table>
@@ -119,5 +128,57 @@
                 }
             })
         })
+
+        // Xử lý sự kiện reset mật khẩu
+        document.addEventListener('click', function(event) {
+            if (event.target.closest('.reset-password-btn')) {
+                const button = event.target.closest('.reset-password-btn');
+                const userId = button.getAttribute('data-id');
+
+                new swal({
+                    title: "Reset mật khẩu?",
+                    text: "Mật khẩu sẽ được đặt lại thành 'password' và người dùng sẽ được yêu cầu đổi mật khẩu khi đăng nhập lần sau!",
+                    showCancelButton: true,
+                    confirmButtonColor: "#FF9800",
+                    confirmButtonText: "Đồng ý!",
+                    cancelButtonText: "Đóng!"
+                }).then((value) => {
+                    if (value.isConfirmed) {
+                        // Gọi API để reset mật khẩu
+                        fetch(`/api/users/${userId}/reset-password`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                new swal({
+                                    title: "Thành công!",
+                                    text: "Mật khẩu đã được reset thành công!",
+                                    icon: "success"
+                                });
+                            } else {
+                                new swal({
+                                    title: "Lỗi!",
+                                    text: data.message || "Có lỗi xảy ra khi reset mật khẩu!",
+                                    icon: "error"
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            new swal({
+                                title: "Lỗi!",
+                                text: "Có lỗi xảy ra khi reset mật khẩu!",
+                                icon: "error"
+                            });
+                        });
+                    }
+                });
+            }
+        });
     </script>
 @endscript

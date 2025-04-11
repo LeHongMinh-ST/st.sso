@@ -11,6 +11,7 @@ Route::get('/user', fn (Request $request) => $request->user())->middleware('auth
 Route::apiResource('users', UserController::class)
     ->only(['index', 'show'])
     ->middleware(['auth:api']);
+Route::post('users/{user}/reset-password', [UserController::class, 'resetPassword']);
 
 Route::apiResource('faculties', FacultyController::class)
     ->middleware(['auth:api', 'check.superadmin.api'])->only(['index']);

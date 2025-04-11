@@ -10,6 +10,11 @@
 
                 @if ($user->id != Auth::user()->id)
                     <div>
+                        <button wire:click="openResetPasswordModal()" class="px-2 btn btn-warning btn-icon">
+                            <i class="px-1 ph-key"></i><span>Reset mật khẩu</span>
+                        </button>
+                    </div>
+                    <div>
                         <button wire:click="openDeleteModal()" class="px-2 btn btn-danger btn-icon">
                             <i class="px-1 ph-trash"></i><span>Xoá</span>
                         </button>
@@ -66,6 +71,21 @@
             }).then((value) => {
                 if (value.isConfirmed) {
                     Livewire.dispatch('deleteUser')
+                }
+            })
+        })
+
+        window.addEventListener('onOpenResetPasswordModal', () => {
+            new swal({
+                title: "Reset mật khẩu?",
+                text: "Mật khẩu sẽ được đặt lại thành 'password' và người dùng sẽ được yêu cầu đổi mật khẩu khi đăng nhập lần sau!",
+                showCancelButton: true,
+                confirmButtonColor: "#FF9800",
+                confirmButtonText: "Đồng ý!",
+                cancelButtonText: "Đóng!"
+            }).then((value) => {
+                if (value.isConfirmed) {
+                    @this.resetPassword()
                 }
             })
         })
