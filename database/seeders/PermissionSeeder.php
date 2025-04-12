@@ -49,11 +49,11 @@ class PermissionSeeder extends Seeder
         Permission::create(['name' => 'role.assign_users', 'group' => 'role']);
 
         // Module API
-        Permission::create(['name' => 'api.user', 'group' => 'api']);
-        Permission::create(['name' => 'api.faculty', 'group' => 'api']);
-        Permission::create(['name' => 'api.client', 'group' => 'api']);
-        Permission::create(['name' => 'api.role', 'group' => 'api']);
-        Permission::create(['name' => 'api.auth', 'group' => 'api']);
+        Permission::create(['name' => 'api.user', 'group' => 'api' , 'guard_name' => 'api']);
+        Permission::create(['name' => 'api.faculty', 'group' => 'api', 'guard_name' => 'api']);
+        Permission::create(['name' => 'api.client', 'group' => 'api', 'guard_name' => 'api']);
+        Permission::create(['name' => 'api.role', 'group' => 'api', 'guard_name' => 'api']);
+        Permission::create(['name' => 'api.auth', 'group' => 'api', 'guard_name' => 'api']);
 
         // Tạo các vai trò
         $superAdminRole = Role::create(['name' => 'super-admin']);
