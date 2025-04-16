@@ -48,12 +48,12 @@ class PermissionSeeder extends Seeder
         Permission::create(['name' => 'role.assign_permissions', 'group' => 'role']);
         Permission::create(['name' => 'role.assign_users', 'group' => 'role']);
 
-        // Module API
-        Permission::create(['name' => 'api.user', 'group' => 'api']);
-        Permission::create(['name' => 'api.faculty', 'group' => 'api']);
-        Permission::create(['name' => 'api.client', 'group' => 'api']);
-        Permission::create(['name' => 'api.role', 'group' => 'api']);
-        Permission::create(['name' => 'api.auth', 'group' => 'api']);
+        // // Module API
+        // Permission::create(['name' => 'api.user', 'group' => 'api']);
+        // Permission::create(['name' => 'api.faculty', 'group' => 'api']);
+        // Permission::create(['name' => 'api.client', 'group' => 'api']);
+        // Permission::create(['name' => 'api.role', 'group' => 'api']);
+        // Permission::create(['name' => 'api.auth', 'group' => 'api']);
 
         // Tạo các vai trò
         $superAdminRole = Role::create(['name' => 'super-admin']);
@@ -72,14 +72,14 @@ class PermissionSeeder extends Seeder
             'faculty.view', 'faculty.create', 'faculty.edit',
             'client.view',
             'role.view',
-            'api.user', 'api.faculty', 'api.auth'
+            // 'api.user', 'api.faculty', 'api.auth'
         ]);
 
         // Gán quyền cho vai trò faculty-admin
         $facultyAdminRole->givePermissionTo([
             'user.view', 'user.create', 'user.edit', 'user.reset_password',
             'faculty.view',
-            'api.user', 'api.faculty', 'api.auth'
+            // 'api.user', 'api.faculty', 'api.auth'
         ]);
 
         // Gán quyền cho vai trò teacher

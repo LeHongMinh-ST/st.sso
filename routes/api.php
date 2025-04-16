@@ -11,10 +11,8 @@ Route::get('/user', fn (Request $request) => $request->user())->middleware('auth
 Route::middleware(['auth:api'])->group(function (): void {
     // User API
     Route::apiResource('users', UserController::class)
-        ->only(['index', 'show', 'store'])
-        ->middleware(['api.permission:api.user']);
-    Route::post('users/{user}/reset-password', [UserController::class, 'resetPassword'])
-        ->middleware(['api.permission:api.user']);
+        ->only(['index', 'show', 'store']);
+    Route::post('users/{user}/reset-password', [UserController::class, 'resetPassword']);
 });
 
 Route::apiResource('faculties', FacultyController::class)

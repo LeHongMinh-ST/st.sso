@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Api\User;
 
+use App\Enums\Role;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
@@ -15,7 +16,7 @@ class StoreUserRequest extends FormRequest
     public function authorize(): bool
     {
         $user = Auth::guard('api')->user();
-        return $user && $user->can('user.create');
+        return $user && Role::SuperAdmin === $user->role;
     }
 
     /**
