@@ -60,18 +60,30 @@ class AuthenticateController extends Controller
         $azureUser = Socialite::driver('azure')->stateless()->user();
 
         $user = User::where('email', $azureUser->getEmail())->first();
-
         if (! $user) {
             $name = Helper::splitFullName($azureUser->getName());
+
+            // Set role and code based on jobTitle
+            $role = Role::Officer->value;
+            $code = 'ST-OFFICER-' . time();
+
+            // If user is a student (jobTitle is "Sinh viên")
+            if (isset($azureUser->user['jobTitle']) && $azureUser->user['jobTitle'] === 'Sinh viên') {
+                $role = Role::Student->value;
+                // Extract student ID from email (part before @)
+                $emailParts = explode('@', $azureUser->getEmail());
+                $code = $emailParts[0];
+            }
+
             $user = User::create([
                 'user_name' => $azureUser->getEmail(),
                 'last_name' => $name['last_name'],
                 'first_name' => $name['first_name'],
                 'email' => $azureUser->getEmail(),
                 'password' => 'password',
-                'role' => Role::Officer->value,
+                'role' => $role,
                 'status' => 'active',
-                'code' => 'ST-OFFICER-' . time(),
+                'code' => $code,
             ]);
         }
 
