@@ -56,7 +56,7 @@ class Faculty extends Model
     public function teachers(): HasMany
     {
         return $this->hasMany(User::class)
-            ->where('role', Role::Teacher->value);
+            ->where('role', Role::Officer->value);
     }
 
     public function scopeSearch($query, $search)
