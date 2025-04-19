@@ -68,7 +68,7 @@ class AuthenticateController extends Controller
             $code = 'ST-OFFICER-' . time();
 
             // If user is a student (jobTitle is "Sinh viên")
-            if (isset($azureUser->user['jobTitle']) && $azureUser->user['jobTitle'] === 'Sinh viên') {
+            if (isset($azureUser->user['jobTitle']) && 'Sinh viên' === $azureUser->user['jobTitle']) {
                 $role = Role::Student->value;
                 // Extract student ID from email (part before @)
                 $emailParts = explode('@', $azureUser->getEmail());

@@ -21,4 +21,5 @@ Route::get('faculties/get-all', [FacultyController::class, 'all'])
     ->middleware(['auth:api']);
 Route::get('faculties/{faculty}/users', [FacultyController::class, 'getUsers'])
     ->middleware(['auth:api']);
-Route::get('faculties/{faculty}/teachers', [FacultyController::class, 'getTeachers'])->middleware(['auth:api']);
+Route::get('faculties/{faculty}/teachers', [FacultyController::class, 'getTeachers'])
+    ->middleware(['auth:api']);
