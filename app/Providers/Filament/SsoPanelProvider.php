@@ -32,7 +32,7 @@ class SsoPanelProvider extends PanelProvider
             ->default()
             ->id('sso')
             ->path('')
-            ->login(false)
+            ->login(null)
             ->maxContentWidth('full')
             ->colors([
                 'primary' => '#0d6efd', // Màu primary từ trang login
