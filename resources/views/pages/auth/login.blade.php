@@ -18,7 +18,7 @@
 
                     </div>
                     <div class="col-xl-6">
-                        <form action="{{ route('handleLogin') }}" class="login-form" method="POST">
+                        <form action="{{ route('filament.sso.auth.login.store') }}" class="login-form" method="POST">
                             @csrf
                             <div class="mb-3 text-center">
                                 <div class="gap-1 mt-2 mb-4 d-inline-flex align-items-center justify-content-center">
@@ -29,6 +29,12 @@
                                 <span class="d-block text-muted">Khoa công nghệ thông tin - Học viện nông nghiệp Việt Nam</span>
                                 <h5 class="mb-0">Hệ thống ST Single Sign-On</h5>
                             </div>
+
+                            @if ($errors->has('message'))
+                                <div class="alert alert-danger">
+                                    {{ $errors->first('message') }}
+                                </div>
+                            @endif
 
                             <div class="mb-3">
                                 <label class="form-label">Tài khoản/Email</label>

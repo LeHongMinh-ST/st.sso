@@ -58,6 +58,8 @@ class Client extends PassportClient
         'password_client' => 'bool',
         'revoked' => 'bool',
         'allowed_roles' => 'array',
+        'is_show_dashboard' => 'bool',
+        'status' => '\App\Enums\Status',
     ];
 
     protected $fillable = [
@@ -72,6 +74,9 @@ class Client extends PassportClient
         'allowed_roles',
         'grant_types',
         'scopes',
+        'is_show_dashboard',
+        'status',
+        'logo',
     ];
 
     public function getBaseRedirectUrlAttribute()

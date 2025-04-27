@@ -8,6 +8,8 @@ namespace App\Models;
 
 use App\Enums\Role;
 use App\Enums\Status;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -71,7 +73,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereUserName($value)
  * @mixin \Eloquent
  */
-class User extends Authenticatable
+class User extends Authenticatable implements FilamentUser
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasApiTokens;
@@ -116,7 +118,18 @@ class User extends Authenticatable
 
     protected $appends = [
         'full_name',
+        'name',
+        'display_name',
+        'filament_user_name',
     ];
+
+    /**
+     * Convert the model to its string representation.
+     */
+    public function __toString(): string
+    {
+        return $this->getFullNameAttribute() ?: $this->user_name ?: $this->email ?: 'User';
+    }
 
     public function department(): BelongsTo
     {
@@ -133,9 +146,137 @@ class User extends Authenticatable
         return "{$this->last_name} {$this->first_name}";
     }
 
+    public function getNameAttribute(): string
+    {
+        return $this->getFullNameAttribute() ?: $this->user_name ?: $this->email ?: 'User';
+    }
+
+    public function getDisplayNameAttribute(): string
+    {
+        return $this->getFullNameAttribute() ?: $this->user_name ?: $this->email ?: 'User';
+    }
+
+    public function getEmail(): string
+    {
+        return $this->email ?: '';
+    }
+
+    public function getEmailAttribute(): string
+    {
+        return $this->attributes['email'] ?: '';
+    }
+
+    public function getUserNameAttribute(): string
+    {
+        return $this->attributes['user_name'] ?: '';
+    }
+
+    public function getFirstNameAttribute(): string
+    {
+        return $this->attributes['first_name'] ?: '';
+    }
+
+    public function getLastNameAttribute(): string
+    {
+        return $this->attributes['last_name'] ?: '';
+    }
+
+    public function getFilamentUserNameAttribute(): string
+    {
+        return $this->getFullNameAttribute() ?: $this->user_name ?: $this->email ?: 'User';
+    }
+
     public function isSuperAdmin(): bool
     {
         return Role::SuperAdmin === $this->role;
+    }
+
+    /**
+     * Determine if the user can access the given Filament panel.
+     */
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return true; // Tất cả người dùng đều có thể truy cập panel
+    }
+
+    /**
+     * Get the name that should be used when displaying this user in Filament.
+     */
+    public function getFilamentName(): string
+    {
+        return $this->getFullNameAttribute() ?: $this->user_name ?: $this->email ?: 'User';
+    }
+
+    /**
+     * Get the user's name.
+     */
+    public function getUserName(): string
+    {
+        return $this->getFullNameAttribute() ?: $this->user_name ?: $this->email ?: 'User';
+    }
+
+    /**
+     * Get the user's name.
+     */
+    public function getName(): string
+    {
+        return $this->getFullNameAttribute() ?: $this->user_name ?: $this->email ?: 'User';
+    }
+
+    /**
+     * Get the user's name.
+     */
+    public function name(): string
+    {
+        return $this->getFullNameAttribute() ?: $this->user_name ?: $this->email ?: 'User';
+    }
+
+    /**
+     * Get the name of the unique identifier for the user.
+     */
+    public function getAuthIdentifierName(): string
+    {
+        return 'id';
+    }
+
+    /**
+     * Get the unique identifier for the user.
+     */
+    public function getAuthIdentifier()
+    {
+        return $this->{$this->getAuthIdentifierName()};
+    }
+
+    /**
+     * Get the password for the user.
+     */
+    public function getAuthPassword(): string
+    {
+        return $this->password;
+    }
+
+    /**
+     * Get the token value for the "remember me" session.
+     */
+    public function getRememberToken(): ?string
+    {
+        return $this->{$this->getRememberTokenName()};
+    }
+
+    /**
+     * Set the token value for the "remember me" session.
+     */
+    public function setRememberToken($value): void
+    {
+        $this->{$this->getRememberTokenName()} = $value;
+    }
+
+    /**
+     * Get the column name for the "remember me" token.
+     */
+    public function getRememberTokenName(): string
+    {
+        return 'remember_token';
     }
 
     public function scopeSearch($query, $search)

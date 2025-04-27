@@ -3,11 +3,13 @@
 declare(strict_types=1);
 
 use App\Http\Middleware\CheckApiPermission;
+use App\Http\Middleware\CheckMaintenanceMode;
 use App\Http\Middleware\CheckPasswordChanged;
 use App\Http\Middleware\CheckPermission;
 use App\Http\Middleware\CheckRole;
 use App\Http\Middleware\CheckSuperAdmin;
 use App\Http\Middleware\CheckSuperAdminApi;
+use App\Http\Middleware\FilamentAuthenticate;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -21,12 +23,18 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
-            'check.password' => CheckPasswordChanged::class,
+            //            'check.password' => CheckPasswordChanged::class,
             'check.superadmin' => CheckSuperAdmin::class,
             'check.superadmin.api' => CheckSuperAdminApi::class,
             'permission' => CheckPermission::class,
             'role' => CheckRole::class,
-            'api.permission' => CheckApiPermission::class
+            'api.permission' => CheckApiPermission::class,
+            'maintenance.mode' => CheckMaintenanceMode::class
+        ]);
+
+        $middleware->web(append: [
+            CheckMaintenanceMode::class,
+            FilamentAuthenticate::class,
         ]);
 
     })
