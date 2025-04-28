@@ -180,17 +180,30 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('user_name')
-                    ->label('Tên đăng nhập')
-                    ->searchable(),
+                // Nhóm cột họ tên và ảnh đại diện
+                Tables\Columns\ImageColumn::make('avatar_url')
+                    ->label('')
+                    ->circular()
+                    ->size(40)
+                    ->extraAttributes(['class' => 'filament-user-avatar']),
                 Tables\Columns\TextColumn::make('full_name')
                     ->label('Họ tên')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('email')
-                    ->searchable(),
+                    ->searchable(['first_name', 'last_name'])
+                    ->sortable(
+                        query: fn (\Illuminate\Database\Eloquent\Builder $query, string $direction): \Illuminate\Database\Eloquent\Builder =>
+                        $query->orderBy('first_name', $direction)
+                    )
+                    ->description(fn (User $record): string => $record->email)
+                    ->wrap()
+                    ->extraAttributes(['class' => 'filament-user-info']),
+                Tables\Columns\TextColumn::make('user_name')
+                    ->label('Tên đăng nhập')
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('phone')
                     ->label('Số điện thoại')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('role')
                     ->label('Loại tài khoản')
                     ->formatStateUsing(fn (RoleEnum $state): string => $state->getLabel())
@@ -201,17 +214,44 @@ class UserResource extends Resource
                         RoleEnum::Student => 'success',
                         default => 'gray',
                     }),
-                Tables\Columns\TextColumn::make('roles_count')
-                    ->label('Số vai trò')
-                    ->counts('roles')
-                    ->badge()
-                    ->description(fn (User $record): string => $record->roles->pluck('name')->implode(', ')),
+                Tables\Columns\TextColumn::make('roles')
+                    ->label('Vai trò')
+                    ->formatStateUsing(fn (User $record) => '')
+                    ->description(function (User $record): string {
+                        $roles = $record->roles;
+
+                        if ($roles->isEmpty()) {
+                            return '';
+                        }
+
+                        // Hiển thị 2 vai trò đầu tiên
+                        $visibleRoles = $roles->take(2)->pluck('name')->implode(', ');
+
+                        // Nếu có nhiều hơn 2 vai trò, thêm dấu ...
+                        if ($roles->count() > 2) {
+                            $visibleRoles .= '...';
+                        }
+
+                        return $visibleRoles;
+                    })
+                    ->tooltip(function (User $record): ?string {
+                        $roles = $record->roles;
+
+                        if ($roles->count() <= 2) {
+                            return null; // Không cần tooltip nếu ít hơn hoặc bằng 2 vai trò
+                        }
+
+                        // Hiển thị tất cả vai trò trong tooltip
+                        return $roles->pluck('name')->implode(', ');
+                    }),
                 Tables\Columns\TextColumn::make('faculty.name')
                     ->label('Khoa')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(),
                 Tables\Columns\IconColumn::make('is_change_password')
                     ->label('Đã thay đổi mật khẩu')
-                    ->boolean(),
+                    ->boolean()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('status')
                     ->label('Trạng thái')
                     ->formatStateUsing(fn (Status $state): string => $state->getLabel())
@@ -226,19 +266,42 @@ class UserResource extends Resource
                     ->sortable(),
             ])
             ->filters([
+                Tables\Filters\Filter::make('search')
+                    ->form([
+                        Forms\Components\TextInput::make('search')
+                            ->label('Tìm kiếm')
+                            ->placeholder('Tìm theo tên, email, tên đăng nhập...')
+                            ->columnSpan(2),
+                    ])
+                    ->query(fn (\Illuminate\Database\Eloquent\Builder $query, array $data): \Illuminate\Database\Eloquent\Builder => $query
+                        ->when(
+                            $data['search'],
+                            fn (\Illuminate\Database\Eloquent\Builder $query, $search): \Illuminate\Database\Eloquent\Builder =>
+                            $query->where(fn (\Illuminate\Database\Eloquent\Builder $query): \Illuminate\Database\Eloquent\Builder => $query
+                                ->where('first_name', 'like', "%{$search}%")
+                                ->orWhere('last_name', 'like', "%{$search}%")
+                                ->orWhere('email', 'like', "%{$search}%")
+                                ->orWhere('user_name', 'like', "%{$search}%")
+                                ->orWhere('phone', 'like', "%{$search}%"))
+                        )),
                 Tables\Filters\SelectFilter::make('role')
                     ->label('Loại tài khoản')
-                    ->options(RoleEnum::getDescription()),
+                    ->options(RoleEnum::getDescription())
+                    ->preload(),
                 Tables\Filters\SelectFilter::make('roles')
                     ->label('Vai trò')
                     ->relationship('roles', 'name')
-                    ->multiple(),
+                    ->multiple()
+                    ->preload(),
                 Tables\Filters\SelectFilter::make('faculty_id')
                     ->label('Khoa')
-                    ->relationship('faculty', 'name'),
+                    ->relationship('faculty', 'name')
+                    ->searchable()
+                    ->preload(),
                 Tables\Filters\SelectFilter::make('status')
                     ->label('Trạng thái')
-                    ->options(Status::getDescription()),
+                    ->options(Status::getDescription())
+                    ->preload(),
             ])
             ->actions([
                 Tables\Actions\EditAction::make()

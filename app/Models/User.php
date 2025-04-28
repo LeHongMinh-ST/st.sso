@@ -120,6 +120,7 @@ class User extends Authenticatable implements FilamentUser
         'name',
         'display_name',
         'filament_user_name',
+        'avatar_url',
     ];
 
     /**
@@ -143,6 +144,15 @@ class User extends Authenticatable implements FilamentUser
     public function getFullNameAttribute(): string
     {
         return "{$this->last_name} {$this->first_name}";
+    }
+
+    /**
+     * Get the user's avatar URL.
+     */
+    public function getAvatarUrlAttribute(): ?string
+    {
+        // Sử dụng Gravatar nếu không có avatar được lưu trữ
+        return 'https://www.gravatar.com/avatar/' . md5(mb_strtolower(trim($this->email))) . '?d=mp';
     }
 
     public function getNameAttribute(): string

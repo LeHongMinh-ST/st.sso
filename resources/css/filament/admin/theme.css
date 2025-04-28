@@ -25,3 +25,12 @@
 .filament-profile-tabs .fi-tabs-content {
     @apply flex-1;
 }
+
+/* Tùy chỉnh hiển thị ảnh và thông tin trong cùng một hàng */
+.filament-user-avatar {
+    @apply inline-flex;
+}
+
+.filament-user-info {
+    @apply -ml-2;
+}
