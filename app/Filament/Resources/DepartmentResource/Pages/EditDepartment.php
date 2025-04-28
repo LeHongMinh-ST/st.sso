@@ -15,7 +15,9 @@ class EditDepartment extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            Actions\DeleteAction::make()
+                ->label('Xóa bộ môn')
+                ->icon('heroicon-o-trash'),
         ];
     }
 }

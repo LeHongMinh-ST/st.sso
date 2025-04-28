@@ -15,7 +15,9 @@ class ListDepartments extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()
+                ->label('Thêm bộ môn')
+                ->icon('heroicon-o-plus-circle'),
         ];
     }
 }

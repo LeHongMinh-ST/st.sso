@@ -15,7 +15,9 @@ class ListRoles extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()
+                ->label('Thêm vai trò')
+                ->icon('heroicon-o-plus-circle'),
         ];
     }
 }

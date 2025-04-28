@@ -15,7 +15,9 @@ class EditRole extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            Actions\DeleteAction::make()
+                ->label('Xóa vai trò')
+                ->icon('heroicon-o-trash'),
         ];
     }
 }

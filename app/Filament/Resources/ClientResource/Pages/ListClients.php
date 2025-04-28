@@ -15,7 +15,9 @@ class ListClients extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()
+                ->label('Thêm ứng dụng')
+                ->icon('heroicon-o-plus-circle'),
         ];
     }
 }

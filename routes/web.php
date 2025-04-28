@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\UserRoleController;
 use App\Http\Controllers\Auth\AuthenticateController;
 use App\Http\Controllers\Filament\Auth\LoginController;
 use App\Http\Controllers\Filament\Auth\LogoutController;
+use App\Http\Controllers\TemplateController;
 use Illuminate\Support\Facades\Route;
 
 // Chuyển hướng từ route cũ sang route mới
@@ -26,6 +27,10 @@ Route::post('/logout', LogoutController::class)
 
 Route::get('/authorize/azure', [AuthenticateController::class, 'redirectToSocialite'])->name('login.microsoft');
 Route::get('/authorize/azure/callback', [AuthenticateController::class, 'handleSocialteCallback']);
+
+// Templates download
+Route::get('/templates/teachers', [TemplateController::class, 'downloadTeachersTemplate'])->name('templates.teachers');
+Route::get('/templates/students', [TemplateController::class, 'downloadStudentsTemplate'])->name('templates.students');
 
 //Route::middleware(['auth', 'check.password'])->group(function (): void {
 //

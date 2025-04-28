@@ -15,7 +15,9 @@ class EditFaculty extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            Actions\DeleteAction::make()
+                ->label('Xóa khoa')
+                ->icon('heroicon-o-trash'),
         ];
     }
 }

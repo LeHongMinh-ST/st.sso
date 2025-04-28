@@ -15,7 +15,9 @@ class ListFaculties extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()
+                ->label('Thêm khoa')
+                ->icon('heroicon-o-plus-circle'),
         ];
     }
 }
