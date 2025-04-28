@@ -3,5 +3,6 @@
 @tailwind utilities;
 @tailwind variants;
 @import '../../../../vendor/filament/filament/resources/css/base.css';
+@import './custom.css';
 
 @config 'tailwind.config.js';

@@ -10,12 +10,19 @@ use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\UserRoleController;
 use App\Http\Controllers\Auth\AuthenticateController;
+use App\Http\Controllers\Filament\Auth\LoginController;
+use App\Http\Controllers\Filament\Auth\LogoutController;
 use Illuminate\Support\Facades\Route;
 
 // Chuyển hướng từ route cũ sang route mới
-Route::redirect('/login', '/login')->name('login');
-Route::redirect('/logout', '/logout')->name('handleLogout');
-Route::redirect('/handleLogin', '/login')->name('handleLogin');
+Route::get('/login', [LoginController::class, 'create'])
+    ->name('filament.sso.auth.login');
+
+Route::post('/login', [LoginController::class, 'store'])
+    ->name('filament.sso.auth.login.store');
+
+Route::post('/logout', LogoutController::class)
+    ->name('filament.sso.auth.logout');
 
 Route::get('/authorize/azure', [AuthenticateController::class, 'redirectToSocialite'])->name('login.microsoft');
 Route::get('/authorize/azure/callback', [AuthenticateController::class, 'handleSocialteCallback']);

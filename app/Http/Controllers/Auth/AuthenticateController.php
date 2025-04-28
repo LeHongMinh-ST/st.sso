@@ -22,7 +22,7 @@ class AuthenticateController extends Controller
     public function showLoginForm(): View|Application|Factory|RedirectResponse
     {
         if (Auth::check()) {
-            return redirect()->route('dashboard');
+            return redirect()->route('filament.sso.pages.dashboard');
         }
 
         return view('pages.auth.login');
@@ -45,7 +45,7 @@ class AuthenticateController extends Controller
     {
         Auth::logout();
 
-        return redirect()->route('login');
+        return redirect()->route('filament.sso.auth.login');
     }
 
     public function redirectToSocialite(Request $request): RedirectResponse
@@ -88,7 +88,7 @@ class AuthenticateController extends Controller
 
         Auth::login($user, true);
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        return redirect()->intended(route('filament.sso.pages.dashboard', absolute: false));
     }
 
     private function username(): string

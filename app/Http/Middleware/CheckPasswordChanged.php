@@ -20,8 +20,8 @@ class CheckPasswordChanged
     {
         $user = Auth::user();
 
-        if ($user && !$user->is_change_password && !$request->routeIs('profile')) {
-            return redirect()->route('profile');
+        if ($user && !$user->is_change_password && !$request->routeIs('filament.sso.pages.profile')) {
+            return redirect()->route('filament.sso.pages.profile');
         }
         return $next($request);
     }
