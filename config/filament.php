@@ -23,4 +23,8 @@ return [
             'web',
         ],
     ],
+
+    // Cấu hình ngôn ngữ
+    'default_locale' => 'vi',
+    'locale' => 'vi',
 ];
