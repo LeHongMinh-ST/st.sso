@@ -36,10 +36,6 @@ class FacultyResource extends Resource
                             ->label('Tên khoa')
                             ->required()
                             ->maxLength(255),
-                        Forms\Components\TextInput::make('code')
-                            ->label('Mã khoa')
-                            ->required()
-                            ->maxLength(255),
                         Forms\Components\TextInput::make('description')
                             ->label('Mô tả')
                             ->maxLength(255),
@@ -57,9 +53,6 @@ class FacultyResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->label('Tên khoa')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('code')
-                    ->label('Mã khoa')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('description')
                     ->label('Mô tả')
