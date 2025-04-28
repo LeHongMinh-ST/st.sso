@@ -31,7 +31,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'api.permission' => CheckApiPermission::class,
             'maintenance.mode' => CheckMaintenanceMode::class
         ]);
-
+        $middleware->redirectGuestsTo('/login');
         $middleware->web(append: [
             CheckMaintenanceMode::class,
             FilamentAuthenticate::class,

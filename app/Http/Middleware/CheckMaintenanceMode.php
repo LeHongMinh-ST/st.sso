@@ -22,7 +22,7 @@ class CheckMaintenanceMode
         if ($maintenanceMode && auth()->check() && Role::SuperAdmin !== auth()->user()->role) {
             auth()->logout();
 
-            return redirect()->route('login')->with('error', 'Hệ thống đang trong chế độ bảo trì. Vui lòng quay lại sau.');
+            return redirect()->route('filament.sso.auth.login')->with('error', 'Hệ thống đang trong chế độ bảo trì. Vui lòng quay lại sau.');
         }
 
         return $next($request);

@@ -14,6 +14,6 @@ class LogoutResponse implements LogoutResponseContract
      */
     public function toResponse($request): RedirectResponse
     {
-        return redirect()->route('login');
+        return redirect()->route('filament.sso.auth.login');
     }
 }
