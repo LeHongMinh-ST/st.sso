@@ -6,6 +6,7 @@ namespace App\Filament\Resources;
 
 use App\Enums\Role as RoleEnum;
 use App\Enums\Status;
+use App\Filament\Resources\UserResource\Actions\ResetPasswordAction;
 use App\Filament\Resources\UserResource\Pages;
 use App\Models\Faculty;
 use App\Models\Role;
@@ -313,6 +314,7 @@ class UserResource extends Resource
                     ->icon('heroicon-o-shield-check')
                     ->color('success')
                     ->url(fn (User $record): string => static::getUrl('edit', ['record' => $record]) . '?activeTab=phân-quyền'),
+                ResetPasswordAction::make('reset_password'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
