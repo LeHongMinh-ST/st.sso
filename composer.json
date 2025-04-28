@@ -19,7 +19,8 @@
         "maatwebsite/excel": "^3.1",
         "opcodesio/log-viewer": "^3.15",
         "socialiteproviders/microsoft-azure": "^5.2",
-        "spatie/laravel-permission": "^6.17"
+        "spatie/laravel-permission": "^6.17",
+        "webbingbrasil/filament-copyactions": "^3.0"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.15",

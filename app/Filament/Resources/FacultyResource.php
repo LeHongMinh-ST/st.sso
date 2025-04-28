@@ -54,9 +54,7 @@ class FacultyResource extends Resource
                 Tables\Columns\TextColumn::make('name')
                     ->label('Tên khoa')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('description')
-                    ->label('Mô tả')
-                    ->limit(50),
+
                 Tables\Columns\TextColumn::make('status')
                     ->label('Trạng thái')
                     ->formatStateUsing(fn (Status $state): string => $state->getLabel())
@@ -76,10 +74,17 @@ class FacultyResource extends Resource
                     ->options(Status::getDescription()),
             ])
             ->actions([
-                Tables\Actions\EditAction::make()
-                    ->label('Chỉnh sửa')
-                    ->icon('heroicon-o-pencil-square')
-                    ->color('primary'),
+                Tables\Actions\ActionGroup::make([
+                    Tables\Actions\EditAction::make()
+                        ->label('Chỉnh sửa')
+                        ->icon('heroicon-o-pencil-square'),
+                    Tables\Actions\DeleteAction::make()
+                        ->label('Xóa')
+                        ->icon('heroicon-o-trash'),
+                ])
+                ->label('Hành động')
+                ->icon('heroicon-m-ellipsis-vertical')
+                ->color('gray')
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

@@ -13,6 +13,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Webbingbrasil\FilamentCopyActions\Forms\Actions\CopyAction;
 
 class ClientResource extends Resource
 {
@@ -40,11 +41,13 @@ class ClientResource extends Resource
                             ->label('Client ID')
                             ->disabled()
                             ->dehydrated(false)
+                            ->suffixAction(CopyAction::make()->successNotificationMessage('Client ID đã được sao chép'))
                             ->visible(fn ($record) => null !== $record),
                         Forms\Components\TextInput::make('secret')
                             ->label('Client Secret')
                             ->disabled()
                             ->dehydrated(false)
+                            ->suffixAction(CopyAction::make()->successNotificationMessage('Client Secret đã được sao chép'))
                             ->visible(fn ($record) => null !== $record),
                         Forms\Components\TextInput::make('redirect')
                             ->label('Redirect URI')
@@ -82,12 +85,16 @@ class ClientResource extends Resource
                 Tables\Columns\TextColumn::make('id')
                     ->label('Client ID')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('secret')
+                    ->label('Client Secret')
+                    ->copyable()
+                    ->copyMessage('Client Secret đã được sao chép')
+                    ->copyMessageDuration(1500)
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('redirect')
                     ->label('Redirect URI')
                     ->limit(30),
-                Tables\Columns\TextColumn::make('description')
-                    ->label('Mô tả')
-                    ->limit(30),
+
                 Tables\Columns\IconColumn::make('is_show_dashboard')
                     ->label('Hiển thị trên dashboard')
                     ->boolean(),
@@ -111,10 +118,17 @@ class ClientResource extends Resource
                     ->options(Status::getDescription()),
             ])
             ->actions([
-                Tables\Actions\EditAction::make()
-                    ->label('Chỉnh sửa')
-                    ->icon('heroicon-o-pencil-square')
-                    ->color('primary'),
+                Tables\Actions\ActionGroup::make([
+                    Tables\Actions\EditAction::make()
+                        ->label('Chỉnh sửa')
+                        ->icon('heroicon-o-pencil-square'),
+                    Tables\Actions\DeleteAction::make()
+                        ->label('Xóa')
+                        ->icon('heroicon-o-trash'),
+                ])
+                ->label('Hành động')
+                ->icon('heroicon-m-ellipsis-vertical')
+                ->color('gray')
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

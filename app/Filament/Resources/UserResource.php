@@ -305,16 +305,22 @@ class UserResource extends Resource
                     ->preload(),
             ])
             ->actions([
-                Tables\Actions\EditAction::make()
-                    ->label('Chỉnh sửa')
-                    ->icon('heroicon-o-pencil-square')
-                    ->color('primary'),
-                Tables\Actions\Action::make('assign_roles')
-                    ->label('Phân quyền')
-                    ->icon('heroicon-o-shield-check')
-                    ->color('success')
-                    ->url(fn (User $record): string => static::getUrl('edit', ['record' => $record]) . '?activeTab=phân-quyền'),
-                ResetPasswordAction::make('reset_password'),
+                Tables\Actions\ActionGroup::make([
+                    Tables\Actions\EditAction::make()
+                        ->label('Chỉnh sửa')
+                        ->icon('heroicon-o-pencil-square'),
+                    Tables\Actions\Action::make('assign_roles')
+                        ->label('Phân quyền')
+                        ->icon('heroicon-o-shield-check')
+                        ->url(fn (User $record): string => static::getUrl('edit', ['record' => $record]) . '?activeTab=phân-quyền'),
+                    ResetPasswordAction::make('reset_password'),
+                    Tables\Actions\DeleteAction::make()
+                        ->label('Xóa')
+                        ->icon('heroicon-o-trash'),
+                ])
+                ->label('Hành động')
+                ->icon('heroicon-m-ellipsis-vertical')
+                ->color('gray')
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
