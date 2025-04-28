@@ -5,23 +5,19 @@ declare(strict_types=1);
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\PermissionResource\Pages;
+use App\Models\Permission;
+use App\Models\PermissionGroup;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Spatie\Permission\Models\Permission;
 
 class PermissionResource extends Resource
 {
     protected static ?string $model = Permission::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-key';
-
-    protected static ?string $navigationLabel = 'Quyền hạn';
-
-    protected static ?int $navigationSort = 6;
-
+    // Resource này chỉ được sử dụng trong code, không hiển thị trong menu
     protected static bool $shouldRegisterNavigation = false;
 
     public static function form(Form $form): Form
@@ -33,13 +29,16 @@ class PermissionResource extends Resource
                         Forms\Components\TextInput::make('name')
                             ->label('Tên quyền hạn')
                             ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('code')
+                            ->label('Mã quyền hạn')
+                            ->required()
                             ->maxLength(255)
                             ->unique(ignoreRecord: true),
-                        Forms\Components\TextInput::make('guard_name')
-                            ->label('Guard')
-                            ->default('web')
-                            ->required()
-                            ->maxLength(255),
+                        Forms\Components\Select::make('group_code')
+                            ->label('Nhóm quyền')
+                            ->options(PermissionGroup::pluck('name', 'code'))
+                            ->required(),
                         Forms\Components\Textarea::make('description')
                             ->label('Mô tả')
                             ->maxLength(255),
@@ -53,10 +52,15 @@ class PermissionResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->label('Tên quyền hạn')
+                    ->description(fn (Permission $record): string => "[{$record->code}]")
                     ->searchable(),
-                Tables\Columns\TextColumn::make('guard_name')
-                    ->label('Guard')
+                Tables\Columns\TextColumn::make('code')
+                    ->label('Mã quyền hạn')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('group.name')
+                    ->label('Nhóm quyền')
+                    ->description(fn (Permission $record): string => "[{$record->group_code}]")
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('description')
                     ->label('Mô tả')
                     ->limit(50),
@@ -66,7 +70,9 @@ class PermissionResource extends Resource
                     ->sortable(),
             ])
             ->filters([
-
+                Tables\Filters\SelectFilter::make('group_code')
+                    ->label('Nhóm quyền')
+                    ->options(PermissionGroup::pluck('name', 'code')),
             ])
             ->actions([
                 Tables\Actions\EditAction::make()

@@ -6,17 +6,17 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
-use App\Enums\Role;
+use App\Enums\Role as RoleEnum;
 use App\Enums\Status;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\DB;
 use Laravel\Passport\HasApiTokens;
-use Spatie\Permission\Traits\HasRoles;
 
 /**
  *
@@ -28,7 +28,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property string $email
  * @property string $password
  * @property string|null $phone
- * @property Role $role
+ * @property RoleEnum $role
  * @property Status $status
  * @property string $code
  * @property bool $is_change_password
@@ -78,7 +78,6 @@ class User extends Authenticatable implements FilamentUser
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasApiTokens;
     use HasFactory;
-    use HasRoles;
     use Notifiable;
 
     /**
@@ -112,7 +111,7 @@ class User extends Authenticatable implements FilamentUser
     ];
 
     protected $casts = [
-        'role' => Role::class,
+        'role' => RoleEnum::class,
         'status' => Status::class,
     ];
 
@@ -188,7 +187,116 @@ class User extends Authenticatable implements FilamentUser
 
     public function isSuperAdmin(): bool
     {
-        return Role::SuperAdmin === $this->role;
+        return RoleEnum::SuperAdmin === $this->role;
+    }
+
+    /**
+     * Get the roles that belong to the user
+     */
+    public function roles(): BelongsToMany
+    {
+        return $this->belongsToMany(Role::class, 'user_roles');
+    }
+
+    /**
+     * Check if the user has the given role
+     */
+    public function hasRole(string $roleCode): bool
+    {
+        return $this->roles()->where('code', $roleCode)->exists();
+    }
+
+    /**
+     * Check if the user has any of the given roles
+     */
+    public function hasAnyRole(array $roleCodes): bool
+    {
+        return $this->roles()->whereIn('code', $roleCodes)->exists();
+    }
+
+    /**
+     * Check if the user has all of the given roles
+     */
+    public function hasAllRoles(array $roleCodes): bool
+    {
+        return $this->roles()->whereIn('code', $roleCodes)->count() === count($roleCodes);
+    }
+
+    /**
+     * Assign the given role to the user
+     */
+    public function assignRole(string $roleCode): void
+    {
+        $role = Role::where('code', $roleCode)->first();
+        if ($role && !$this->hasRole($roleCode)) {
+            $this->roles()->attach($role->id);
+        }
+    }
+
+    /**
+     * Remove the given role from the user
+     */
+    public function removeRole(string $roleCode): void
+    {
+        $role = Role::where('code', $roleCode)->first();
+        if ($role) {
+            $this->roles()->detach($role->id);
+        }
+    }
+
+    /**
+     * Sync the given roles to the user
+     */
+    public function syncRoles(array $roleCodes): void
+    {
+        $roleIds = Role::whereIn('code', $roleCodes)->pluck('id')->toArray();
+        $this->roles()->sync($roleIds);
+    }
+
+    /**
+     * Check if the user has the given permission
+     */
+    public function hasPermission(string $permissionCode): bool
+    {
+        foreach ($this->roles as $role) {
+            if ($role->hasPermission($permissionCode)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Check if the user has any of the given permissions
+     */
+    public function hasAnyPermission(array $permissionCodes): bool
+    {
+        foreach ($this->roles as $role) {
+            if ($role->hasAnyPermission($permissionCodes)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Check if the user has all of the given permissions
+     */
+    public function hasAllPermissions(array $permissionCodes): bool
+    {
+        $userPermissions = [];
+        foreach ($this->roles as $role) {
+            $rolePermissions = $role->permissions()->pluck('code')->toArray();
+            $userPermissions = array_merge($userPermissions, $rolePermissions);
+        }
+        $userPermissions = array_unique($userPermissions);
+
+        foreach ($permissionCodes as $permissionCode) {
+            if (!in_array($permissionCode, $userPermissions)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**

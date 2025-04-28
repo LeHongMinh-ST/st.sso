@@ -1,0 +1,27 @@
+@import '../../../../vendor/filament/filament/resources/css/theme.css';
+
+/* Tùy chỉnh khoảng cách cho tab sidebar */
+.filament-profile-tabs {
+    @apply flex flex-col md:flex-row md:gap-6;
+}
+
+.filament-profile-tabs .fi-tabs {
+    @apply md:w-64 flex-shrink-0;
+}
+
+.filament-profile-tabs .fi-tabs-item {
+    @apply rounded-lg px-3 py-2 transition;
+}
+
+.filament-profile-tabs .fi-tabs-item[aria-selected=true] {
+    @apply bg-primary-50 text-primary-600 dark:bg-primary-500/20 dark:text-primary-400;
+}
+
+.filament-profile-tabs .fi-tabs-item:not([aria-selected=true]) {
+    @apply hover:bg-gray-50 dark:hover:bg-gray-700;
+}
+
+/* Tùy chỉnh khoảng cách giữa sidebar và nội dung */
+.filament-profile-tabs .fi-tabs-content {
+    @apply flex-1;
+}

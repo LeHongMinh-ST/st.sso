@@ -10,6 +10,7 @@ use App\Http\Middleware\CheckRole;
 use App\Http\Middleware\CheckSuperAdmin;
 use App\Http\Middleware\CheckSuperAdminApi;
 use App\Http\Middleware\FilamentAuthenticate;
+use App\Providers\PermissionServiceProvider;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -40,4 +41,8 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions): void {
 
-    })->create();
+    })
+    ->withProviders([
+        PermissionServiceProvider::class,
+    ])
+    ->create();

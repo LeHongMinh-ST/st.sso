@@ -1,4 +1,5 @@
 import "./bootstrap";
+import "./filament/user-tabs";
 
 Noty.overrideDefaults({
     theme: 'limitless',

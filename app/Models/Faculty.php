@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Enums\Role;
+use App\Enums\Role as RoleEnum;
 use App\Enums\Status;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -56,7 +56,7 @@ class Faculty extends Model
     public function teachers(): HasMany
     {
         return $this->hasMany(User::class)
-            ->where('role', Role::Officer->value);
+            ->where('role', RoleEnum::Officer->value);
     }
 
     public function scopeSearch($query, $search)

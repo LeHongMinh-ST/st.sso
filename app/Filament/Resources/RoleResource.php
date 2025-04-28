@@ -4,14 +4,16 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources;
 
+use App\Enums\Status;
 use App\Filament\Resources\RoleResource\Pages;
+use App\Models\Permission;
+use App\Models\PermissionGroup;
+use App\Models\Role;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
 
 class RoleResource extends Resource
 {
@@ -34,30 +36,79 @@ class RoleResource extends Resource
                         Forms\Components\TextInput::make('name')
                             ->label('Tên vai trò')
                             ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('code')
+                            ->label('Mã vai trò')
+                            ->required()
                             ->maxLength(255)
                             ->unique(ignoreRecord: true),
-                        Forms\Components\TextInput::make('guard_name')
-                            ->label('Guard')
-                            ->default('web')
-                            ->required()
-                            ->maxLength(255),
                         Forms\Components\Textarea::make('description')
                             ->label('Mô tả')
                             ->maxLength(255),
-                    ]),
+                        Forms\Components\Select::make('status')
+                            ->label('Trạng thái')
+                            ->options(Status::getDescription())
+                            ->default(Status::Active->value)
+                            ->required(),
+                    ])->columns(2),
                 Forms\Components\Section::make('Quyền hạn')
+                    ->headerActions([
+                        // Nút chọn tất cả các quyền
+                        Forms\Components\Actions\Action::make('select_all_permissions')
+                            ->label('Chọn tất cả quyền')
+                            ->icon('heroicon-o-check-circle')
+                            ->color('success')
+                            ->action(function (Forms\Set $set): void {
+                                // Lấy tất cả ID của quyền
+                                $allPermissionIds = Permission::pluck('id')->toArray();
+                                $set('permissions', $allPermissionIds);
+                            }),
+
+                        // Nút bỏ chọn tất cả các quyền
+                        Forms\Components\Actions\Action::make('deselect_all_permissions')
+                            ->label('Bỏ chọn tất cả')
+                            ->icon('heroicon-o-x-circle')
+                            ->color('danger')
+                            ->action(function (Forms\Set $set): void {
+                                $set('permissions', []);
+                            }),
+                    ])
                     ->schema([
-                        Forms\Components\CheckboxList::make('permissions')
-                            ->label('Quyền hạn')
-                            ->relationship('permissions', 'name')
-                            ->options(
-                                Permission::query()
-                                    ->get()
-                                    ->mapWithKeys(fn (Permission $permission) => [$permission->id => $permission->name])
-                                    ->toArray()
+                        // Nhóm quyền và quyền hạn
+                        Forms\Components\Grid::make()
+                            ->schema(
+                                function () {
+                                    $schema = [];
+                                    $permissionGroups = PermissionGroup::with('permissions')
+                                        ->orderBy('name')
+                                        ->get();
+
+                                    foreach ($permissionGroups as $group) {
+                                        // Tạo một section cho mỗi nhóm quyền
+                                        $schema[] = Forms\Components\Section::make("[{$group->code}] {$group->name} ({$group->permissions->count()})")
+                                            ->description($group->description)
+                                            ->collapsible()
+                                            ->icon('heroicon-o-folder')
+                                            ->schema([
+                                                // Danh sách các quyền trong nhóm
+                                                Forms\Components\CheckboxList::make('permissions')
+                                                    ->label('')
+                                                    ->bulkToggleable()
+                                                    ->relationship('permissions', 'name')
+                                                    ->options(
+                                                        $group->permissions
+                                                            ->mapWithKeys(fn (Permission $permission) => [$permission->id => "[{$permission->code}] {$permission->name}"])
+                                                            ->toArray()
+                                                    )
+                                                    ->columns(2)
+                                            ])
+                                            ->columnSpanFull();
+                                    }
+
+                                    return $schema;
+                                }
                             )
-                            ->columns(3)
-                            ->searchable(),
+                            ->columnSpanFull(),
                     ]),
             ]);
     }
@@ -68,13 +119,22 @@ class RoleResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->label('Tên vai trò')
+                    ->description(fn (Role $record): string => "[{$record->code}]")
                     ->searchable(),
-                Tables\Columns\TextColumn::make('guard_name')
-                    ->label('Guard')
+                Tables\Columns\TextColumn::make('code')
+                    ->label('Mã vai trò')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('description')
                     ->label('Mô tả')
                     ->limit(50),
+                Tables\Columns\TextColumn::make('status')
+                    ->label('Trạng thái')
+                    ->badge()
+                    ->formatStateUsing(fn (Status $state): string => $state->getLabel())
+                    ->color(fn (Status $state): string => match ($state) {
+                        Status::Active => 'success',
+                        Status::Inactive => 'danger',
+                    }),
                 Tables\Columns\TextColumn::make('permissions_count')
                     ->label('Số quyền hạn')
                     ->counts('permissions')

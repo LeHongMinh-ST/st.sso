@@ -18,7 +18,7 @@ class CheckPermission
      */
     public function handle(Request $request, Closure $next, string $permission): Response
     {
-        if (!Auth::user()->hasPermissionTo($permission)) {
+        if (!Auth::user()->hasPermission($permission)) {
             abort(403, 'Bạn không có quyền truy cập trang này.');
         }
 

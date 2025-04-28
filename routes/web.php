@@ -8,7 +8,6 @@ use App\Http\Controllers\Admin\FacultyController;
 use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\Admin\UserRoleController;
 use App\Http\Controllers\Auth\AuthenticateController;
 use App\Http\Controllers\Filament\Auth\LoginController;
 use App\Http\Controllers\Filament\Auth\LogoutController;
@@ -61,7 +60,7 @@ Route::get('/templates/students', [TemplateController::class, 'downloadStudentsT
 //        Route::get('/create', [UserController::class, 'create'])->name('user.create')->middleware('permission:user.create');
 //        Route::get('/{user}', [UserController::class, 'show'])->name('user.show')->middleware('permission:user.view');
 //        Route::get('/{user}/edit', [UserController::class, 'edit'])->name('user.edit')->middleware('permission:user.edit');
-//        Route::get('/{user}/roles', [UserRoleController::class, 'edit'])->name('user.roles.edit')->middleware('permission:role.assign_users');
+
 //    });
 //
 //    // Quản lý vai trò và phân quyền
