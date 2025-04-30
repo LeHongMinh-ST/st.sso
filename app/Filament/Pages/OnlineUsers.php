@@ -120,9 +120,9 @@ class OnlineUsers extends Page implements HasTable
                                 ->send();
                         }),
                 ])
-                ->label('Hành động')
-                ->icon('heroicon-m-ellipsis-vertical')
-                ->color('gray'),
+                    ->label('Hành động')
+                    ->icon('heroicon-m-ellipsis-vertical')
+                    ->color('gray'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkAction::make('logout_selected')

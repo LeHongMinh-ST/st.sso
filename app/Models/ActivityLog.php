@@ -33,25 +33,6 @@ class ActivityLog extends Model
     ];
 
     /**
-     * Boot the model.
-     */
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::creating(function (self $model) {
-            // Giới hạn kích thước dữ liệu JSON để tránh lỗi bộ nhớ
-            if (is_array($model->before) && json_encode($model->before) && strlen(json_encode($model->before)) > 65000) {
-                $model->before = ['message' => 'Data too large to store', 'size' => strlen(json_encode($model->before))];
-            }
-
-            if (is_array($model->after) && json_encode($model->after) && strlen(json_encode($model->after)) > 65000) {
-                $model->after = ['message' => 'Data too large to store', 'size' => strlen(json_encode($model->after))];
-            }
-        });
-    }
-
-    /**
      * Lấy người dùng thực hiện hành động
      */
     public function user(): BelongsTo
@@ -89,5 +70,24 @@ class ActivityLog extends Model
     public function scopeOnModel($query, $modelType)
     {
         return $query->where('model_type', $modelType);
+    }
+
+    /**
+     * Boot the model.
+     */
+    protected static function boot(): void
+    {
+        parent::boot();
+
+        static::creating(function (self $model): void {
+            // Giới hạn kích thước dữ liệu JSON để tránh lỗi bộ nhớ
+            if (is_array($model->before) && json_encode($model->before) && mb_strlen(json_encode($model->before)) > 65000) {
+                $model->before = ['message' => 'Data too large to store', 'size' => mb_strlen(json_encode($model->before))];
+            }
+
+            if (is_array($model->after) && json_encode($model->after) && mb_strlen(json_encode($model->after)) > 65000) {
+                $model->after = ['message' => 'Data too large to store', 'size' => mb_strlen(json_encode($model->after))];
+            }
+        });
     }
 }
