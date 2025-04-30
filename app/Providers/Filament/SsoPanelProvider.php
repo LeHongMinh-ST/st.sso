@@ -51,7 +51,6 @@ class SsoPanelProvider extends PanelProvider
             ->pages([
                 \App\Filament\Pages\Dashboard::class,
                 \App\Filament\Pages\Profile::class,
-                \App\Filament\Pages\Logs::class,
                 \App\Filament\Pages\Backups::class,
                 \App\Filament\Pages\OnlineUsers::class,
             ])

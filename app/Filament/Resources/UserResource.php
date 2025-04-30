@@ -316,7 +316,7 @@ class UserResource extends Resource
                     Tables\Actions\Action::make('view_activities')
                         ->label('Xem hoạt động')
                         ->icon('heroicon-o-clipboard-document-list')
-                        ->url(fn (User $record): string => route('filament.sso.resources.activity-logs.index', ['tableFilters[user_id][value]' => $record->id])),
+                        ->url(fn (User $record): string => route('filament.sso.resources.logs.index', ['tableFilters[user_id][value]' => $record->id])),
                     ResetPasswordAction::make('reset_password'),
                     Tables\Actions\DeleteAction::make()
                         ->label('Xóa')

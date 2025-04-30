@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Pages;
 
 use Exception;
+use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
@@ -69,9 +70,16 @@ class Backups extends Page
                 '--compression' => 'zip',
             ]);
 
-            $this->notify('success', 'Đã tạo bản sao lưu thành công.');
+            Notification::make()
+                ->success()
+                ->title('Đã tạo bản sao lưu thành công')
+                ->send();
         } catch (Exception $e) {
-            $this->notify('danger', 'Lỗi khi tạo bản sao lưu: ' . $e->getMessage());
+            Notification::make()
+                ->danger()
+                ->title('Lỗi khi tạo bản sao lưu')
+                ->body($e->getMessage())
+                ->send();
         }
 
         $this->isCreating = false;
@@ -86,9 +94,16 @@ class Backups extends Page
     {
         try {
             Storage::disk('local')->delete($path);
-            $this->notify('success', 'Đã xóa bản sao lưu thành công.');
+            Notification::make()
+                ->success()
+                ->title('Đã xóa bản sao lưu thành công')
+                ->send();
         } catch (Exception $e) {
-            $this->notify('danger', 'Lỗi khi xóa bản sao lưu: ' . $e->getMessage());
+            Notification::make()
+                ->danger()
+                ->title('Lỗi khi xóa bản sao lưu')
+                ->body($e->getMessage())
+                ->send();
         }
     }
 

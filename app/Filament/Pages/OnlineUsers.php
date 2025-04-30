@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Pages;
 
 use App\Models\User;
+use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Tables;
 use Filament\Tables\Concerns\InteractsWithTable;
@@ -97,17 +98,31 @@ class OnlineUsers extends Page implements HasTable
 
             ])
             ->actions([
-                Tables\Actions\Action::make('logout')
-                    ->label('Đăng xuất')
-                    ->color('danger')
-                    ->icon('heroicon-o-arrow-left-on-rectangle')
-                    ->action(function (User $record): void {
-                        DB::table('sessions')
-                            ->where('user_id', $record->id)
-                            ->delete();
+                Tables\Actions\ActionGroup::make([
+                    Tables\Actions\Action::make('view_activities')
+                        ->label('Xem nhật ký hoạt động')
+                        ->icon('heroicon-o-clipboard-document-list')
+                        ->color('info')
+                        ->url(fn (User $record): string => route('filament.sso.resources.logs.index', ['tableFilters[user_id][value]' => $record->id])),
 
-                        $this->notify('success', 'Đã đăng xuất người dùng.');
-                    }),
+                    Tables\Actions\Action::make('logout')
+                        ->label('Đăng xuất')
+                        ->color('danger')
+                        ->icon('heroicon-o-arrow-left-on-rectangle')
+                        ->action(function (User $record): void {
+                            DB::table('sessions')
+                                ->where('user_id', $record->id)
+                                ->delete();
+
+                            Notification::make()
+                                ->success()
+                                ->title('Đã đăng xuất người dùng')
+                                ->send();
+                        }),
+                ])
+                    ->label('Hành động')
+                    ->icon('heroicon-m-ellipsis-vertical')
+                    ->color('gray'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkAction::make('logout_selected')
@@ -121,7 +136,10 @@ class OnlineUsers extends Page implements HasTable
                             ->whereIn('user_id', $userIds)
                             ->delete();
 
-                        $this->notify('success', 'Đã đăng xuất các người dùng đã chọn.');
+                        Notification::make()
+                            ->success()
+                            ->title('Đã đăng xuất các người dùng đã chọn')
+                            ->send();
                     }),
             ])
             ->poll('10s');
