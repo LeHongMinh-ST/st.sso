@@ -6,7 +6,6 @@ namespace App\Filament\Resources\ClientResource\Pages;
 
 use App\Filament\Resources\ClientResource;
 use App\Models\Client;
-use Exception;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Passport\ClientRepository;
@@ -14,6 +13,15 @@ use Laravel\Passport\ClientRepository;
 class CreateClient extends CreateRecord
 {
     protected static string $resource = ClientResource::class;
+
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        $data['personal_access_client'] = false;
+        $data['password_client'] = false;
+        $data['revoked'] = false;
+
+        return $data;
+    }
 
     public function create(bool $another = false): void
     {
@@ -40,7 +48,7 @@ class CreateClient extends CreateRecord
             $this->record = $client;
 
             $this->callHook('afterCreate');
-        } catch (Exception $exception) {
+        } catch (\Exception $exception) {
             $this->handleRecordCreationException($exception);
 
             return;
@@ -58,14 +66,5 @@ class CreateClient extends CreateRecord
         }
 
         $this->redirect($this->getRedirectUrl());
-    }
-
-    protected function mutateFormDataBeforeCreate(array $data): array
-    {
-        $data['personal_access_client'] = false;
-        $data['password_client'] = false;
-        $data['revoked'] = false;
-
-        return $data;
     }
 }

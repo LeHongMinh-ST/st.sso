@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Models\ActivityLog;
-use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -32,7 +31,7 @@ class ActivityLogService
     ): int {
         // Tránh vòng lặp vô hạn - không ghi log cho chính model ActivityLog
         if ($model instanceof ActivityLog) {
-            throw new Exception('Cannot log ActivityLog model to prevent infinite recursion');
+            throw new \Exception('Cannot log ActivityLog model to prevent infinite recursion');
         }
 
         $user = Auth::user();
@@ -58,19 +57,21 @@ class ActivityLogService
         }
 
         // Sử dụng DB::raw để tránh các sự kiện model
-        $id = DB::transaction(fn () => DB::table('activity_logs')->insertGetId([
-            'user_id' => $user?->id,
-            'action' => $action,
-            'model_type' => $model ? get_class($model) : null,
-            'model_id' => $model?->getKey(),
-            'before' => $before ? json_encode($before) : null,
-            'after' => $after ? json_encode($after) : null,
-            'ip_address' => Request::ip(),
-            'user_agent' => Request::userAgent(),
-            'description' => $description,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]));
+        $id = DB::transaction(function() use ($user, $action, $model, $before, $after, $description) {
+            return DB::table('activity_logs')->insertGetId([
+                'user_id' => $user?->id,
+                'action' => $action,
+                'model_type' => $model ? get_class($model) : null,
+                'model_id' => $model?->getKey(),
+                'before' => $before ? json_encode($before) : null,
+                'after' => $after ? json_encode($after) : null,
+                'ip_address' => Request::ip(),
+                'user_agent' => Request::userAgent(),
+                'description' => $description,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        });
 
         // Trả về ID thay vì model để tránh vòng lặp vô hạn
         return $id;
@@ -235,8 +236,8 @@ class ActivityLogService
             }
 
             // Giảm kích thước các chuỗi dài
-            if (is_string($value) && mb_strlen($value) > 200) {
-                $filteredData[$key] = mb_substr($value, 0, 200) . '... [truncated]';
+            if (is_string($value) && strlen($value) > 200) {
+                $filteredData[$key] = substr($value, 0, 200) . '... [truncated]';
                 continue;
             }
 

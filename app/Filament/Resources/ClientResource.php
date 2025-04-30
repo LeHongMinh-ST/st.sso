@@ -48,7 +48,12 @@ class ClientResource extends Resource
                             ->disabled()
                             ->dehydrated(false)
                             ->suffixAction(CopyAction::make()->successNotificationMessage('Client Secret đã được sao chép'))
-                            ->visible(fn ($record) => null !== $record),
+                            ->visible(fn ($record) => null !== $record)
+                            ->afterStateHydrated(function ($component, $state, $record) {
+                                if ($record) {
+                                    $component->state($record->getAttribute('secret'));
+                                }
+                            }),
                         Forms\Components\TextInput::make('redirect')
                             ->label('Redirect URI')
                             ->required()
@@ -126,9 +131,9 @@ class ClientResource extends Resource
                         ->label('Xóa')
                         ->icon('heroicon-o-trash'),
                 ])
-                    ->label('Hành động')
-                    ->icon('heroicon-m-ellipsis-vertical')
-                    ->color('gray')
+                ->label('Hành động')
+                ->icon('heroicon-m-ellipsis-vertical')
+                ->color('gray')
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

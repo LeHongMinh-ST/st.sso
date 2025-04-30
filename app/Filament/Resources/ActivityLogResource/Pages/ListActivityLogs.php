@@ -11,13 +11,13 @@ class ListActivityLogs extends ListRecords
 {
     protected static string $resource = ActivityLogResource::class;
 
-    public function getTitle(): string
-    {
-        return 'Nhật ký hệ thống';
-    }
-
     protected function getHeaderActions(): array
     {
         return [];
+    }
+
+    public function getTitle(): string
+    {
+        return 'Nhật ký hệ thống';
     }
 }

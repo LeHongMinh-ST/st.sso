@@ -80,8 +80,8 @@ class User extends Authenticatable implements FilamentUser
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasApiTokens;
     use HasFactory;
-    use LogsActivity;
     use Notifiable;
+    use LogsActivity;
 
     /**
      * The attributes that are mass assignable.
@@ -429,14 +429,6 @@ class User extends Authenticatable implements FilamentUser
     }
 
     /**
-     * Lấy nhật ký hoạt động của người dùng
-     */
-    public function activityLogs(): HasMany
-    {
-        return $this->hasMany(ActivityLog::class);
-    }
-
-    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
@@ -448,5 +440,13 @@ class User extends Authenticatable implements FilamentUser
             'password' => 'hashed',
             'is_change_password' => 'boolean',
         ];
+    }
+
+    /**
+     * Lấy nhật ký hoạt động của người dùng
+     */
+    public function activityLogs(): HasMany
+    {
+        return $this->hasMany(ActivityLog::class);
     }
 }

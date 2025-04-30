@@ -11,6 +11,11 @@ class ViewActivityLog extends ViewRecord
 {
     protected static string $resource = ActivityLogResource::class;
 
+    protected function getHeaderActions(): array
+    {
+        return [];
+    }
+
     public function getTitle(): string
     {
         $userName = 'Người dùng';
@@ -18,10 +23,5 @@ class ViewActivityLog extends ViewRecord
             $userName = $this->record->user->full_name;
         }
         return "Hoạt động của {$userName}";
-    }
-
-    protected function getHeaderActions(): array
-    {
-        return [];
     }
 }

@@ -6,9 +6,7 @@ namespace App\Traits;
 
 use App\Models\ActivityLog;
 use App\Services\ActivityLogService;
-use Exception;
 use Illuminate\Database\Eloquent\Model;
-use Log;
 
 trait LogsActivity
 {
@@ -18,11 +16,11 @@ trait LogsActivity
     public static function bootLogsActivity(): void
     {
         // Tránh vòng lặp đệ quy - không ghi log cho chính model ActivityLog
-        if (ActivityLog::class === static::class) {
+        if (static::class === ActivityLog::class) {
             return;
         }
 
-        static::created(function (Model $model): void {
+        static::created(function (Model $model) {
             try {
                 // Kiểm tra xem model có phải là ActivityLog không
                 if ($model instanceof ActivityLog) {
@@ -36,13 +34,13 @@ trait LogsActivity
                 );
 
                 ActivityLogService::logCreated($model, $attributes);
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 // Ghi log lỗi nhưng không làm ảnh hưởng đến luồng chính
-                Log::error('Error logging activity: ' . $e->getMessage());
+                \Log::error('Error logging activity: ' . $e->getMessage());
             }
         });
 
-        static::updated(function (Model $model): void {
+        static::updated(function (Model $model) {
             try {
                 // Kiểm tra xem model có phải là ActivityLog không
                 if ($model instanceof ActivityLog) {
@@ -63,13 +61,13 @@ trait LogsActivity
                 if (!empty($oldAttributes)) {
                     ActivityLogService::logUpdated($model, $oldAttributes);
                 }
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 // Ghi log lỗi nhưng không làm ảnh hưởng đến luồng chính
-                Log::error('Error logging activity: ' . $e->getMessage());
+                \Log::error('Error logging activity: ' . $e->getMessage());
             }
         });
 
-        static::deleted(function (Model $model): void {
+        static::deleted(function (Model $model) {
             try {
                 // Kiểm tra xem model có phải là ActivityLog không
                 if ($model instanceof ActivityLog) {
@@ -83,9 +81,9 @@ trait LogsActivity
                 );
 
                 ActivityLogService::logDeleted($model, $basicAttributes);
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 // Ghi log lỗi nhưng không làm ảnh hưởng đến luồng chính
-                Log::error('Error logging activity: ' . $e->getMessage());
+                \Log::error('Error logging activity: ' . $e->getMessage());
             }
         });
     }
