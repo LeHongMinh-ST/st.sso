@@ -2,12 +2,6 @@
 
 declare(strict_types=1);
 
-use App\Http\Controllers\Admin\ClientController;
-use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\FacultyController;
-use App\Http\Controllers\Admin\ProfileController;
-use App\Http\Controllers\Admin\RoleController;
-use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\AuthenticateController;
 use App\Http\Controllers\Filament\Auth\LoginController;
 use App\Http\Controllers\Filament\Auth\LogoutController;

@@ -5,21 +5,13 @@ declare(strict_types=1);
 namespace App\Filament\Resources\ClientResource\Pages;
 
 use App\Filament\Resources\ClientResource;
+use Exception;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 
 class EditClient extends EditRecord
 {
     protected static string $resource = ClientResource::class;
-
-    protected function getHeaderActions(): array
-    {
-        return [
-            Actions\DeleteAction::make()
-                ->label('Xóa ứng dụng')
-                ->icon('heroicon-o-trash'),
-        ];
-    }
 
     public function save(bool $shouldRedirect = true, bool $shouldSendSavedNotification = true): void
     {
@@ -43,7 +35,7 @@ class EditClient extends EditRecord
             ]);
 
             $this->callHook('afterSave');
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             $this->handleRecordUpdateException($exception);
 
             return;
@@ -54,5 +46,14 @@ class EditClient extends EditRecord
         if ($shouldRedirect && ($redirectUrl = $this->getRedirectUrl())) {
             $this->redirect($redirectUrl);
         }
+    }
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            Actions\DeleteAction::make()
+                ->label('Xóa ứng dụng')
+                ->icon('heroicon-o-trash'),
+        ];
     }
 }

@@ -313,14 +313,18 @@ class UserResource extends Resource
                         ->label('Phân quyền')
                         ->icon('heroicon-o-shield-check')
                         ->url(fn (User $record): string => static::getUrl('edit', ['record' => $record]) . '?activeTab=phân-quyền'),
+                    Tables\Actions\Action::make('view_activities')
+                        ->label('Xem hoạt động')
+                        ->icon('heroicon-o-clipboard-document-list')
+                        ->url(fn (User $record): string => route('filament.sso.resources.activity-logs.index', ['tableFilters[user_id][value]' => $record->id])),
                     ResetPasswordAction::make('reset_password'),
                     Tables\Actions\DeleteAction::make()
                         ->label('Xóa')
                         ->icon('heroicon-o-trash'),
                 ])
-                ->label('Hành động')
-                ->icon('heroicon-m-ellipsis-vertical')
-                ->color('gray')
+                    ->label('Hành động')
+                    ->icon('heroicon-m-ellipsis-vertical')
+                    ->color('gray')
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

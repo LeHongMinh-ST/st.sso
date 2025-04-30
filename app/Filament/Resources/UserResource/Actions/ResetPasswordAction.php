@@ -24,15 +24,15 @@ class ResetPasswordAction extends Action
             ->modalSubmitActionLabel('Đặt lại mật khẩu')
             ->modalCancelActionLabel('Hủy')
             ->visible(fn (User $record): bool => auth()->user()->can('resetPassword', $record))
-            ->action(function (User $user) {
+            ->action(function (User $user): void {
                 // Tạo mật khẩu ngẫu nhiên 8 số
                 $newPassword = (string) rand(10000000, 99999999);
-                
+
                 // Cập nhật mật khẩu
                 $user->password = Hash::make($newPassword);
                 $user->is_change_password = false;
                 $user->save();
-                
+
                 // Hiển thị thông báo với mật khẩu mới
                 Notification::make()
                     ->title('Đặt lại mật khẩu thành công')

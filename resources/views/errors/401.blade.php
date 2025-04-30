@@ -1,4 +1,4 @@
-<x-admin-layout>
+<x-client-layout>
     <div class="content d-flex justify-content-center align-items-center">
 
         <!-- Container -->
@@ -15,4 +15,4 @@
         <!-- /container -->
 
     </div>
-</x-admin-layout>
+</x-client-layout>

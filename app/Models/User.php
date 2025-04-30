@@ -8,11 +8,13 @@ namespace App\Models;
 
 use App\Enums\Role as RoleEnum;
 use App\Enums\Status;
+use App\Traits\LogsActivity;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\DB;
@@ -78,6 +80,7 @@ class User extends Authenticatable implements FilamentUser
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasApiTokens;
     use HasFactory;
+    use LogsActivity;
     use Notifiable;
 
     /**
@@ -423,6 +426,14 @@ class User extends Authenticatable implements FilamentUser
         }
 
         return $query->where('role', $roles);
+    }
+
+    /**
+     * Lấy nhật ký hoạt động của người dùng
+     */
+    public function activityLogs(): HasMany
+    {
+        return $this->hasMany(ActivityLog::class);
     }
 
     /**

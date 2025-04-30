@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Resources\FacultyResource\RelationManagers;
 
 use Filament\Forms;
@@ -7,8 +9,6 @@ use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class DepartmentsRelationManager extends RelationManager
 {
@@ -32,7 +32,7 @@ class DepartmentsRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('department_id'),
             ])
             ->filters([
-                //
+
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make(),

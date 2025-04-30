@@ -126,9 +126,9 @@ class ClientResource extends Resource
                         ->label('Xóa')
                         ->icon('heroicon-o-trash'),
                 ])
-                ->label('Hành động')
-                ->icon('heroicon-m-ellipsis-vertical')
-                ->color('gray')
+                    ->label('Hành động')
+                    ->icon('heroicon-m-ellipsis-vertical')
+                    ->color('gray')
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

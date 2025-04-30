@@ -10,6 +10,7 @@ use App\Http\Middleware\CheckRole;
 use App\Http\Middleware\CheckSuperAdmin;
 use App\Http\Middleware\CheckSuperAdminApi;
 use App\Http\Middleware\FilamentAuthenticate;
+use App\Providers\EventServiceProvider;
 use App\Providers\PermissionServiceProvider;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -44,5 +45,6 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withProviders([
         PermissionServiceProvider::class,
+        EventServiceProvider::class,
     ])
     ->create();

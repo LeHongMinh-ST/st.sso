@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Traits\LogsActivity;
 use Laravel\Passport\Client as PassportClient;
 
 /**
@@ -51,6 +52,7 @@ use Laravel\Passport\Client as PassportClient;
  */
 class Client extends PassportClient
 {
+    use LogsActivity;
     protected $casts = [
         'grant_types' => 'array',
         'scopes' => 'array',
