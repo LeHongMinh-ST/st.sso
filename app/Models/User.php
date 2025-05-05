@@ -75,7 +75,6 @@ class User extends Authenticatable
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasApiTokens;
     use HasFactory;
-
     use Notifiable;
 
     /**
@@ -164,6 +163,21 @@ class User extends Authenticatable
             }
         }
         return false;
+    }
+
+    /**
+     * Assign a role to the user.
+     */
+    public function assignRole(string $roleName): void
+    {
+        $role = \App\Models\Role::where('name', $roleName)->first();
+
+        if ($role) {
+            // Check if the user already has this role
+            if (!$this->hasRole($roleName)) {
+                $this->roles()->attach($role->id);
+            }
+        }
     }
 
     public function scopeSearch($query, $search)
