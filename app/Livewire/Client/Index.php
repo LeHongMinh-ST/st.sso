@@ -7,6 +7,7 @@ namespace App\Livewire\Client;
 use App\Helpers\Constants;
 use App\Models\Client;
 use App\Models\User;
+use Illuminate\Support\Facades\Gate;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -37,6 +38,12 @@ class Index extends Component
             $this->dispatch('error', ['message' => 'Có lỗi xảy ra vui lòng thử lại sau']);
             return;
         }
+
+        if (!Gate::allows('update', $client)) {
+            $this->dispatch('error', ['message' => 'Bạn không có quyền cập nhật ứng dụng này']);
+            return;
+        }
+
         $client->is_show_dashboard = !$client->is_show_dashboard;
         $client->save();
 

@@ -15,8 +15,13 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
+        // First create users
         $this->call(UserTableSeeder::class);
+
+        // Then create permissions and roles
         $this->call(PermissionSeeder::class);
+
+        // Finally assign roles to users
         $this->call(RoleUserSeeder::class);
     }
 }

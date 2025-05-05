@@ -18,7 +18,9 @@ class CheckRole
      */
     public function handle(Request $request, Closure $next, string $role): Response
     {
-        if (!Auth::user()->hasRole($role)) {
+        $user = Auth::user();
+
+        if (!$user || !$user->hasRole($role)) {
             abort(403, 'Bạn không có quyền truy cập trang này.');
         }
 

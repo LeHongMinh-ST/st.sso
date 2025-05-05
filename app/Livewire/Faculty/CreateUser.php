@@ -64,7 +64,7 @@ class CreateUser extends Component
         // Mã sinh viên là bắt buộc nếu loại tài khoản là sinh viên
         if (Role::Student === $this->role) {
             $rules['code'] = 'required|max:255|unique:users,code';
-        } elseif (Role::Teacher === $this->role) {
+        } elseif (Role::Officer === $this->role) {
             $rules['code'] = 'required|max:255|unique:users,code';
         } else {
             $rules['code'] = 'nullable|max:255';

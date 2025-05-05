@@ -28,6 +28,11 @@ class Detail extends Component
     #[On('deleteUser')]
     public function delete()
     {
+        if (!auth()->user()->can('delete', $this->user)) {
+            session()->flash('error', 'Bạn không có quyền xóa người dùng!');
+            return;
+        }
+
         $this->user->delete();
         session()->flash('success', 'Xoá thành công!');
         return redirect()->route('user.index');
@@ -35,11 +40,19 @@ class Detail extends Component
 
     public function openDeleteModal(): void
     {
+        if (!auth()->user()->can('delete', $this->user)) {
+            return;
+        }
         $this->dispatch('onOpenDeleteModal');
     }
 
     public function resetPassword(): void
     {
+        if (!auth()->user()->can('resetPassword', $this->user)) {
+            $this->dispatch('alert', type: 'error', message: 'Bạn không có quyền đặt lại mật khẩu!');
+            return;
+        }
+
         try {
             $this->user->update([
                 'password' => Hash::make('password'),

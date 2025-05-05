@@ -7,8 +7,6 @@ namespace App\Models;
 use Laravel\Passport\Client as PassportClient;
 
 /**
- *
- *
  * @property string $id
  * @property int|null $user_id
  * @property string $name
@@ -29,6 +27,7 @@ use Laravel\Passport\Client as PassportClient;
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Laravel\Passport\Token> $tokens
  * @property-read int|null $tokens_count
  * @property-read User|null $user
+ *
  * @method static \Laravel\Passport\Database\Factories\ClientFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Client newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Client newQuery()
@@ -47,6 +46,7 @@ use Laravel\Passport\Client as PassportClient;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Client whereThumbnail($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Client whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Client whereUserId($value)
+ *
  * @mixin \Eloquent
  */
 class Client extends PassportClient
@@ -76,7 +76,7 @@ class Client extends PassportClient
 
     public function getBaseRedirectUrlAttribute()
     {
-        if (!$this->redirect) {
+        if (! $this->redirect) {
             return null;
         }
 

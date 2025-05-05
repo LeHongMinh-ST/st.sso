@@ -16,7 +16,7 @@
                     </div>
                 </div>
                 <div class="gap-2 d-flex">
-                    @can('user.create')
+                    @can('create', App\Models\User::class)
                     <div>
                         <a href="{{ route('user.create') }}" type="button" class="px-2 shadow btn btn-primary btn-icon fw-semibold">
                             <i class="px-1 ph-plus-circle fw-semibold"></i><span>Thêm mới</span>

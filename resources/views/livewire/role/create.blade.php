@@ -33,10 +33,10 @@
                                                     <div class="card-body">
                                                         @foreach($items as $permission)
                                                             <div class="form-check mb-2">
-                                                                <input class="form-check-input" type="checkbox" wire:model="selectedPermissions" value="{{ $permission->name }}" id="permission_{{ $permission->id }}">
+                                                                <input class="form-check-input" type="checkbox" wire:model="selectedPermissions" value="{{ $permission->code }}" id="permission_{{ $permission->id }}">
                                                                 <label class="form-check-label" for="permission_{{ $permission->id }}">
                                                                     @php
-                                                                        $action = explode('.', $permission->name)[1];
+                                                                        $action = explode('.', $permission->code)[1] ?? '';
                                                                         switch($action) {
                                                                             case 'view':
                                                                                 $actionText = 'Xem';
@@ -57,7 +57,7 @@
                                                                                 $actionText = 'Phân quyền';
                                                                                 break;
                                                                             default:
-                                                                                $actionText = $action;
+                                                                                $actionText = $permission->name;
                                                                         }
                                                                     @endphp
                                                                     {{ $actionText }}

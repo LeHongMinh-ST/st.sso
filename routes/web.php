@@ -28,34 +28,34 @@ Route::middleware(['auth', 'check.password'])->group(function (): void {
 
     // Quản lý khoa
     Route::prefix('/faculties')->group(function (): void {
-        Route::get('/', [FacultyController::class, 'index'])->name('faculty.index')->middleware('permission:faculty.view');
-        Route::get('/create', [FacultyController::class, 'create'])->name('faculty.create')->middleware('permission:faculty.create');
-        Route::get('/{faculty}', [FacultyController::class, 'show'])->name('faculty.show')->middleware('permission:faculty.view');
-        Route::get('/{faculty}/edit', [FacultyController::class, 'edit'])->name('faculty.edit')->middleware('permission:faculty.edit');
+        Route::get('/', [FacultyController::class, 'index'])->name('faculty.index')->middleware('can:viewAny,App\Models\Faculty');
+        Route::get('/create', [FacultyController::class, 'create'])->name('faculty.create')->middleware('can:create,App\Models\Faculty');
+        Route::get('/{faculty}', [FacultyController::class, 'show'])->name('faculty.show')->middleware('can:view,faculty');
+        Route::get('/{faculty}/edit', [FacultyController::class, 'edit'])->name('faculty.edit')->middleware('can:update,faculty');
     });
 
     // Quản lý ứng dụng
     Route::prefix('/clients')->group(function (): void {
-        Route::get('/', [ClientController::class, 'index'])->name('client.index')->middleware('permission:client.view');
-        Route::get('/create', [ClientController::class, 'create'])->name('client.create')->middleware('permission:client.create');
-        Route::get('/{client}', [ClientController::class, 'show'])->name('client.show')->middleware('permission:client.view');
-        Route::get('/{client}/edit', [ClientController::class, 'edit'])->name('client.edit')->middleware('permission:client.edit');
+        Route::get('/', [ClientController::class, 'index'])->name('client.index')->middleware('can:viewAny,App\Models\Client');
+        Route::get('/create', [ClientController::class, 'create'])->name('client.create')->middleware('can:create,App\Models\Client');
+        Route::get('/{client}', [ClientController::class, 'show'])->name('client.show')->middleware('can:view,client');
+        Route::get('/{client}/edit', [ClientController::class, 'edit'])->name('client.edit')->middleware('can:update,client');
     });
 
     // Quản lý người dùng
     Route::prefix('/users')->group(function (): void {
-        Route::get('/', [UserController::class, 'index'])->name('user.index')->middleware('permission:user.view');
-        Route::get('/create', [UserController::class, 'create'])->name('user.create')->middleware('permission:user.create');
-        Route::get('/{user}', [UserController::class, 'show'])->name('user.show')->middleware('permission:user.view');
-        Route::get('/{user}/edit', [UserController::class, 'edit'])->name('user.edit')->middleware('permission:user.edit');
-        Route::get('/{user}/roles', [UserRoleController::class, 'edit'])->name('user.roles.edit')->middleware('permission:role.assign_users');
+        Route::get('/', [UserController::class, 'index'])->name('user.index')->middleware('can:viewAny,App\Models\User');
+        Route::get('/create', [UserController::class, 'create'])->name('user.create')->middleware('can:create,App\Models\User');
+        Route::get('/{user}', [UserController::class, 'show'])->name('user.show')->middleware('can:view,user');
+        Route::get('/{user}/edit', [UserController::class, 'edit'])->name('user.edit')->middleware('can:update,user');
+        Route::get('/{user}/roles', [UserRoleController::class, 'edit'])->name('user.roles.edit')->middleware('can:viewAny,App\Models\Role');
     });
 
     // Quản lý vai trò và phân quyền
     Route::prefix('/roles')->group(function (): void {
-        Route::get('/', [RoleController::class, 'index'])->name('role.index')->middleware('permission:role.view');
-        Route::get('/create', [RoleController::class, 'create'])->name('role.create')->middleware('permission:role.create');
-        Route::get('/{role}', [RoleController::class, 'show'])->name('role.show')->middleware('permission:role.view');
-        Route::get('/{role}/edit', [RoleController::class, 'edit'])->name('role.edit')->middleware('permission:role.edit');
+        Route::get('/', [RoleController::class, 'index'])->name('role.index')->middleware('can:viewAny,App\Models\Role');
+        Route::get('/create', [RoleController::class, 'create'])->name('role.create')->middleware('can:create,App\Models\Role');
+        Route::get('/{role}', [RoleController::class, 'show'])->name('role.show')->middleware('can:view,role');
+        Route::get('/{role}/edit', [RoleController::class, 'edit'])->name('role.edit')->middleware('can:update,role');
     });
 });

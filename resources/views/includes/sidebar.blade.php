@@ -39,8 +39,8 @@
                 </li>
 
 
-                @canany(['client.view', 'faculty.view', 'user.view', 'role.view'])
-                    @canany(['client.view'])
+                @if(auth()->check())
+                    @can('viewAny', App\Models\Client::class)
                         <li class="nav-item-header">
                             <div class="opacity-50 text-uppercase fs-sm lh-sm sidebar-resize-hide">Ứng dụng</div>
                             <i class="ph-dots-three sidebar-resize-show"></i>
@@ -52,14 +52,18 @@
                                 <span>Ứng dụng SSO</span>
                             </a>
                         </li>
-                    @endcanany
+                    @endcan
 
-                    <li class="nav-item-header">
-                        <div class="opacity-50 text-uppercase fs-sm lh-sm sidebar-resize-hide">Hệ thống</div>
-                        <i class="ph-dots-three sidebar-resize-show"></i>
-                    </li>
+                    @if(auth()->user()->can('viewAny', App\Models\Faculty::class) ||
+                        auth()->user()->can('viewAny', App\Models\User::class) ||
+                        auth()->user()->can('viewAny', App\Models\Role::class))
+                        <li class="nav-item-header">
+                            <div class="opacity-50 text-uppercase fs-sm lh-sm sidebar-resize-hide">Hệ thống</div>
+                            <i class="ph-dots-three sidebar-resize-show"></i>
+                        </li>
+                    @endif
 
-                    @can('faculty.view')
+                    @can('viewAny', App\Models\Faculty::class)
                         <li class="nav-item">
                             <a href="{{ route('faculty.index') }}"
                                class="nav-link {{ request()->routeIs('faculty.*') ? 'active' : '' }}">
@@ -69,7 +73,7 @@
                         </li>
                     @endcan
 
-                    @can('user.view')
+                    @can('viewAny', App\Models\User::class)
                         <li class="nav-item">
                             <a href="{{ route('user.index') }}"
                                class="nav-link {{ request()->routeIs('user.*') ? 'active' : '' }}">
@@ -79,7 +83,7 @@
                         </li>
                     @endcan
 
-                    @can('role.view')
+                    @can('viewAny', App\Models\Role::class)
                         <li class="nav-item">
                             <a href="{{ route('role.index') }}"
                                class="nav-link {{ request()->routeIs('role.*') ? 'active' : '' }}">
@@ -88,7 +92,7 @@
                             </a>
                         </li>
                     @endcan
-                @endcanany
+                @endif
 
 
             </ul>

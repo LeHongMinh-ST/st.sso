@@ -7,7 +7,7 @@
                 </div>
             </div>
             <div class="gap-2 d-flex">
-                @can('faculty.create')
+                @can('create', App\Models\Faculty::class)
                 <div>
                     <a href="{{ route('faculty.create') }}" type="button" class="px-2 shadow btn btn-primary btn-icon fw-semibold">
                         <i class="px-1 ph-plus-circle fw-semibold"></i><span>Thêm mới</span>

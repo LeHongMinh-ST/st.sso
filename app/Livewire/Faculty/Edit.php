@@ -52,7 +52,7 @@ class Edit extends Component
             return;
         }
 
-        if (!auth()->user()->can('faculty.edit')) {
+        if (!auth()->user()->can('update', $this->faculty)) {
             $this->dispatch('alert', type: 'error', message: 'Bạn không có quyền chỉnh sửa khoa!');
             return;
         }
@@ -79,7 +79,7 @@ class Edit extends Component
 
     public function toggleStatus(): void
     {
-        if (!auth()->user()->can('faculty.edit')) {
+        if (!auth()->user()->can('update', $this->faculty)) {
             return;
         }
 

@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
+use App\Models\Permission;
+use App\Models\PermissionGroup;
+use App\Models\Role;
 use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
-use Spatie\Permission\PermissionRegistrar;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Schema;
 
 class PermissionSeeder extends Seeder
 {
@@ -16,86 +18,55 @@ class PermissionSeeder extends Seeder
      */
     public function run(): void
     {
-        // Reset cached roles and permissions
-        app()[PermissionRegistrar::class]->forgetCachedPermissions();
+        // Check if the required tables exist
+        if (!Schema::hasTable('permission_groups') || !Schema::hasTable('permissions') || !Schema::hasTable('roles') || !Schema::hasTable('role_permissions')) {
+            $this->command->info('One or more required tables do not exist. Skipping permission seeding.');
+            return;
+        }
 
-        // Tạo các quyền theo module
+        // Get permission configuration
+        $permissionGroups = Config::get('permissions.groups');
+        $roles = Config::get('permissions.roles');
+        $rolePermissions = Config::get('permissions.role_permissions');
 
-        // Module User
-        Permission::create(['name' => 'user.view', 'group' => 'user']);
-        Permission::create(['name' => 'user.create', 'group' => 'user']);
-        Permission::create(['name' => 'user.edit', 'group' => 'user']);
-        Permission::create(['name' => 'user.delete', 'group' => 'user']);
-        Permission::create(['name' => 'user.reset_password', 'group' => 'user']);
+        // Create permission groups and permissions
+        foreach ($permissionGroups as $groupData) {
+            $group = PermissionGroup::create([
+                'name' => $groupData['name'],
+                'code' => $groupData['code'],
+                'display_name' => $groupData['name'],
+            ]);
 
-        // Module Faculty
-        Permission::create(['name' => 'faculty.view', 'group' => 'faculty']);
-        Permission::create(['name' => 'faculty.create', 'group' => 'faculty']);
-        Permission::create(['name' => 'faculty.edit', 'group' => 'faculty']);
-        Permission::create(['name' => 'faculty.delete', 'group' => 'faculty']);
+            foreach ($groupData['permissions'] as $permissionData) {
+                Permission::create([
+                    'name' => $permissionData['name'],
+                    'code' => $permissionData['code'],
+                    'display_name' => $permissionData['name'],
+                    'permission_group_id' => $group->id,
+                ]);
+            }
+        }
 
-        // Module Client
-        Permission::create(['name' => 'client.view', 'group' => 'client']);
-        Permission::create(['name' => 'client.create', 'group' => 'client']);
-        Permission::create(['name' => 'client.edit', 'group' => 'client']);
-        Permission::create(['name' => 'client.delete', 'group' => 'client']);
+        // Create roles
+        $roleModels = [];
+        foreach ($roles as $roleData) {
+            $roleModels[$roleData['name']] = Role::create([
+                'name' => $roleData['name'],
+                'display_name' => $roleData['display_name'],
+                'description' => $roleData['description'],
+            ]);
+        }
 
-        // Module Role
-        Permission::create(['name' => 'role.view', 'group' => 'role']);
-        Permission::create(['name' => 'role.create', 'group' => 'role']);
-        Permission::create(['name' => 'role.edit', 'group' => 'role']);
-        Permission::create(['name' => 'role.delete', 'group' => 'role']);
-        Permission::create(['name' => 'role.assign_permissions', 'group' => 'role']);
-        Permission::create(['name' => 'role.assign_users', 'group' => 'role']);
+        // Assign permissions to roles
+        foreach ($rolePermissions as $roleName => $permissionCodes) {
+            if (isset($roleModels[$roleName])) {
+                $role = $roleModels[$roleName];
+                $permissions = Permission::whereIn('code', $permissionCodes)->get();
 
-        // // Module API
-        // Permission::create(['name' => 'api.user', 'group' => 'api']);
-        // Permission::create(['name' => 'api.faculty', 'group' => 'api']);
-        // Permission::create(['name' => 'api.client', 'group' => 'api']);
-        // Permission::create(['name' => 'api.role', 'group' => 'api']);
-        // Permission::create(['name' => 'api.auth', 'group' => 'api']);
-
-        // Tạo các vai trò
-        $superAdminRole = Role::create(['name' => 'super-admin']);
-        $adminRole = Role::create(['name' => 'admin']);
-        $facultyAdminRole = Role::create(['name' => 'faculty-admin']);
-        $teacherRole = Role::create(['name' => 'teacher']);
-        $studentRole = Role::create(['name' => 'student']);
-        $normalRole = Role::create(['name' => 'normal']);
-
-        // Gán quyền cho vai trò super-admin (tất cả quyền)
-        $superAdminRole->givePermissionTo(Permission::all());
-
-        // Gán quyền cho vai trò admin
-        $adminRole->givePermissionTo([
-            'user.view', 'user.create', 'user.edit', 'user.reset_password',
-            'faculty.view', 'faculty.create', 'faculty.edit',
-            'client.view',
-            'role.view',
-            // 'api.user', 'api.faculty', 'api.auth'
-        ]);
-
-        // Gán quyền cho vai trò faculty-admin
-        $facultyAdminRole->givePermissionTo([
-            'user.view', 'user.create', 'user.edit', 'user.reset_password',
-            'faculty.view',
-            // 'api.user', 'api.faculty', 'api.auth'
-        ]);
-
-        // Gán quyền cho vai trò teacher
-        $teacherRole->givePermissionTo([
-            'user.view',
-            'faculty.view'
-        ]);
-
-        // Gán quyền cho vai trò student
-        $studentRole->givePermissionTo([
-            'faculty.view'
-        ]);
-
-        // Gán quyền cho vai trò normal
-        $normalRole->givePermissionTo([
-            'faculty.view'
-        ]);
+                foreach ($permissions as $permission) {
+                    $role->permissions()->attach($permission->id);
+                }
+            }
+        }
     }
 }

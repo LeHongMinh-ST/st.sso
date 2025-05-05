@@ -7,7 +7,7 @@
                 </div>
             </div>
             <div class="gap-2 d-flex">
-                @can('client.create')
+                @can('create', App\Models\Client::class)
                 <div>
                     <a href="{{ route('client.create') }}" type="button" class="px-2 shadow btn btn-primary btn-icon fw-semibold">
                         <i class="px-1 ph-plus-circle fw-semibold"></i><span>Thêm mới</span>

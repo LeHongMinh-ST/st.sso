@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Livewire\Role;
 
+use App\Models\Permission;
+use App\Models\Role;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
-use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
 use Throwable;
 
 class Create extends Component
@@ -22,7 +22,7 @@ class Create extends Component
 
     public function render()
     {
-        $permissions = Permission::all()->groupBy('group');
+        $permissions = Permission::all()->groupBy(fn ($item) => $item->group ? $item->group->name : 'Other');
 
         return view('livewire.role.create', [
             'permissions' => $permissions
@@ -54,10 +54,14 @@ class Create extends Component
 
             $role = Role::create([
                 'name' => $this->name,
+                'display_name' => $this->name,
             ]);
 
             if (!empty($this->selectedPermissions)) {
-                $role->syncPermissions($this->selectedPermissions);
+                $permissions = Permission::whereIn('code', $this->selectedPermissions)->get();
+                foreach ($permissions as $permission) {
+                    $role->permissions()->attach($permission->id);
+                }
             }
 
             session()->flash('success', 'Tạo mới vai trò thành công!');

@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Livewire\Role;
 
+use App\Models\Permission;
+use App\Models\Role;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
-use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
 use Throwable;
 
 class Edit extends Component
@@ -24,7 +24,7 @@ class Edit extends Component
 
     public function render()
     {
-        $permissions = Permission::all()->groupBy('group');
+        $permissions = Permission::all()->groupBy(fn ($item) => $item->group ? $item->group->name : 'Other');
 
         return view('livewire.role.edit', [
             'permissions' => $permissions
@@ -35,7 +35,7 @@ class Edit extends Component
     {
         $this->role = $role;
         $this->name = $role->name;
-        $this->selectedPermissions = $role->permissions->pluck('name')->toArray();
+        $this->selectedPermissions = $role->permissions->pluck('code')->toArray();
     }
 
     public function rules(): array
@@ -68,9 +68,19 @@ class Edit extends Component
 
             $this->role->update([
                 'name' => $this->name,
+                'display_name' => $this->name,
             ]);
 
-            $this->role->syncPermissions($this->selectedPermissions);
+            // Detach all current permissions
+            $this->role->permissions()->detach();
+
+            // Attach selected permissions
+            if (!empty($this->selectedPermissions)) {
+                $permissions = Permission::whereIn('code', $this->selectedPermissions)->get();
+                foreach ($permissions as $permission) {
+                    $this->role->permissions()->attach($permission->id);
+                }
+            }
 
             session()->flash('success', 'Cập nhật vai trò thành công!');
             return redirect()->route('role.show', $this->role->id);

@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Livewire\Role;
 
 use App\Helpers\Constants;
+use App\Models\Role;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
-use Spatie\Permission\Models\Role;
 
 class Index extends Component
 {

@@ -3,13 +3,13 @@
         <div class="py-3 card-header d-flex justify-content-between">
             <h5 class="mb-0"><i class="ph-shield me-1"></i> Thông tin vai trò</h5>
             <div class="gap-2 d-flex">
-                @can('role.edit')
+                @can('update', $role)
                 <a href="{{ route('role.edit', $role->id) }}" type="button" class="px-2 shadow btn fw-semibold btn-primary btn-icon">
                     <i class="px-1 ph-note-pencil fw-semibold"></i><span>Chỉnh sửa</span>
                 </a>
                 @endcan
                 @if($role->name !== 'super-admin')
-                    @can('role.delete')
+                    @can('delete', $role)
                     <button wire:click="openDeleteModal()" class="px-2 shadow btn btn-danger btn-icon fw-semibold">
                         <i class="px-1 ph-trash fw-semibold"></i><span>Xoá</span>
                     </button>
@@ -51,7 +51,7 @@
                                         <li class="mb-2">
                                             <i class="ph-check-circle text-success me-1"></i>
                                             @php
-                                                $action = explode('.', $permission->name)[1];
+                                                $action = explode('.', $permission->code)[1] ?? '';
                                                 switch($action) {
                                                     case 'view':
                                                         $actionText = 'Xem';
@@ -72,7 +72,7 @@
                                                         $actionText = 'Phân quyền';
                                                         break;
                                                     default:
-                                                        $actionText = $action;
+                                                        $actionText = $permission->name;
                                                 }
                                             @endphp
                                             {{ $actionText }}

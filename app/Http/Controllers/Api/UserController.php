@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api;
 
-use App\Enums\Role;
 use App\Helpers\Constants;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\User\StoreUserRequest;
@@ -21,7 +20,7 @@ class UserController extends Controller
 {
     public function index(Request $request)
     {
-        if (!Auth::guard('api')->user()->isSuperAdmin()) {
+        if (!Auth::guard('api')->user()->can('viewAny', User::class)) {
             return response()->json([
                 'message' => 'Forbidden',
             ], 403);
@@ -40,13 +39,7 @@ class UserController extends Controller
 
     public function show(User $user)
     {
-        if (!Auth::guard('api')->user()->isSuperAdmin() && $user->faculty_id !== Auth::guard('api')->user()->faculty_id) {
-            return response()->json([
-                'message' => 'Forbidden',
-            ], 403);
-        }
-
-        if (Role::Student === Auth::guard('api')->user()->role) {
+        if (!Auth::guard('api')->user()->can('view', $user)) {
             return response()->json([
                 'message' => 'Forbidden',
             ], 403);

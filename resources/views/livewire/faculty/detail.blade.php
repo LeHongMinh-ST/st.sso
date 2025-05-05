@@ -3,12 +3,12 @@
         <div class="py-3 card-header d-flex justify-content-between">
             <h5 class="mb-0"><i class="ph-buildings me-1"></i> Thông tin khoa</h5>
             <div class="gap-2 d-flex">
-                @can('faculty.edit')
+                @can('update', $faculty)
                 <a href="{{ route('faculty.edit', $faculty->id) }}" type="button" class="px-2 shadow btn fw-semibold btn-primary btn-icon">
                     <i class="px-1 ph-note-pencil fw-semibold"></i><span>Chỉnh sửa</span>
                 </a>
                 @endcan
-                @can('faculty.delete')
+                @can('delete', $faculty)
                 <button wire:click="openDeleteModal()" class="px-2 shadow btn btn-danger btn-icon fw-semibold">
                     <i class="px-1 ph-trash fw-semibold"></i><span>Xoá</span>
                 </button>
@@ -32,7 +32,7 @@
         </div>
     </div>
 
-    @if($showCreateUserForm && auth()->user()->can('user.create'))
+    @if($showCreateUserForm && auth()->user()->can('create', App\Models\User::class))
         <div class="mb-3">
             <livewire:faculty.create-user :faculty="$faculty" />
         </div>
@@ -42,7 +42,7 @@
         <div class="py-3 card-header">
             <div class="d-flex justify-content-between align-items-center mb-2">
                 <h5 class="mb-0"><i class="ph-users me-1"></i> Danh sách người dùng trong khoa</h5>
-                @can('user.create')
+                @can('create', App\Models\User::class)
                 <button wire:click="toggleCreateUserForm()" class="btn btn-primary btn-icon">
                     <i class="ph-{{ $showCreateUserForm ? 'minus' : 'user-plus' }}"></i>
                 </button>
@@ -102,7 +102,7 @@
                                 <a href="{{ route('user.show', $item->id) }}" class="btn btn-sm btn-primary" title="Xem chi tiết">
                                     <i class="ph-eye"></i>
                                 </a>
-                                @can('user.reset_password')
+                                @can('resetPassword', $item)
                                 <button class="btn btn-sm btn-warning reset-password-btn" data-id="{{ $item->id }}" title="Reset mật khẩu">
                                     <i class="ph-key"></i>
                                 </button>

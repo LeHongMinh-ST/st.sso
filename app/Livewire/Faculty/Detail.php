@@ -6,6 +6,7 @@ namespace App\Livewire\Faculty;
 
 use App\Helpers\Constants;
 use App\Models\Faculty;
+use App\Models\User;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -38,7 +39,7 @@ class Detail extends Component
     #[On('deleteFaculty')]
     public function delete()
     {
-        if (!auth()->user()->can('faculty.delete')) {
+        if (!auth()->user()->can('delete', $this->faculty)) {
             session()->flash('error', 'Bạn không có quyền xóa khoa!');
             return;
         }
@@ -50,7 +51,7 @@ class Detail extends Component
 
     public function openDeleteModal(): void
     {
-        if (!auth()->user()->can('faculty.delete')) {
+        if (!auth()->user()->can('delete', $this->faculty)) {
             return;
         }
         $this->dispatch('onOpenDeleteModal');
@@ -58,7 +59,7 @@ class Detail extends Component
 
     public function toggleCreateUserForm(): void
     {
-        if (!auth()->user()->can('user.create')) {
+        if (!auth()->user()->can('create', User::class)) {
             return;
         }
         $this->showCreateUserForm = !$this->showCreateUserForm;

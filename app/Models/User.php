@@ -14,7 +14,6 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\DB;
 use Laravel\Passport\HasApiTokens;
-use Spatie\Permission\Traits\HasRoles;
 
 /**
  *
@@ -76,7 +75,7 @@ class User extends Authenticatable
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasApiTokens;
     use HasFactory;
-    use HasRoles;
+
     use Notifiable;
 
     /**
@@ -136,6 +135,35 @@ class User extends Authenticatable
     public function isSuperAdmin(): bool
     {
         return Role::SuperAdmin === $this->role;
+    }
+
+    /**
+     * The roles that belong to the user.
+     */
+    public function roles()
+    {
+        return $this->belongsToMany(\App\Models\Role::class, 'user_roles');
+    }
+
+    /**
+     * Check if the user has the given role.
+     */
+    public function hasRole(string $roleName): bool
+    {
+        return $this->roles()->where('name', $roleName)->exists();
+    }
+
+    /**
+     * Check if the user has the given permission.
+     */
+    public function hasPermissionTo(string $permissionCode): bool
+    {
+        foreach ($this->roles as $role) {
+            if ($role->hasPermission($permissionCode)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public function scopeSearch($query, $search)

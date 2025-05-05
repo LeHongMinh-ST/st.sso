@@ -89,6 +89,11 @@ class Edit extends Component
             return;
         }
 
+        if (!auth()->user()->can('update', $this->user)) {
+            $this->dispatch('alert', type: 'error', message: 'Bạn không có quyền chỉnh sửa người dùng!');
+            return;
+        }
+
         $this->validate();
         try {
             $this->isLoading = true;

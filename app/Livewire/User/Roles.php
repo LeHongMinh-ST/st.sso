@@ -4,18 +4,16 @@ declare(strict_types=1);
 
 namespace App\Livewire\User;
 
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
 use Livewire\Component;
-use Spatie\Permission\Models\Role;
 use Throwable;
 
 class Roles extends Component
 {
     public User $user;
     public array $selectedRoles = [];
-    public array $directPermissions = [];
-    public array $availablePermissions = [];
 
     private bool $isLoading = false;
 
@@ -31,13 +29,7 @@ class Roles extends Component
     public function mount(User $user): void
     {
         $this->user = $user;
-        $this->selectedRoles = $this->user->roles->pluck('id')->toArray();
-        $this->directPermissions = $this->user->getDirectPermissions()->pluck('name')->toArray();
-
-        // Lấy tất cả quyền có sẵn
-        $this->availablePermissions = \Spatie\Permission\Models\Permission::all()
-            ->groupBy('group')
-            ->toArray();
+        $this->selectedRoles = $this->user->roles()->pluck('roles.id')->toArray();
     }
 
     public function updateRoles()
@@ -46,7 +38,7 @@ class Roles extends Component
             return;
         }
 
-        if (!auth()->user()->can('role.assign_users')) {
+        if (!auth()->user()->can('viewAny', Role::class)) {
             $this->dispatch('alert', type: 'error', message: 'Bạn không có quyền gán vai trò cho người dùng!');
             return;
         }
@@ -54,18 +46,21 @@ class Roles extends Component
         try {
             $this->isLoading = true;
 
-            // Cập nhật vai trò
-            $roles = Role::whereIn('id', $this->selectedRoles)->get();
-            $this->user->syncRoles($roles);
+            // Detach all current roles
+            $this->user->roles()->detach();
 
-            // Cập nhật quyền trực tiếp
-            $this->user->syncPermissions($this->directPermissions);
+            // Attach selected roles
+            if (!empty($this->selectedRoles)) {
+                foreach ($this->selectedRoles as $roleId) {
+                    $this->user->roles()->attach($roleId);
+                }
+            }
 
-            session()->flash('success', 'Cập nhật vai trò và quyền thành công!');
+            session()->flash('success', 'Cập nhật vai trò thành công!');
             return redirect()->route('user.show', $this->user->id);
         } catch (Throwable $th) {
             Log::error($th->getMessage());
-            $this->dispatch('alert', type: 'error', message: 'Cập nhật vai trò và quyền thất bại!');
+            $this->dispatch('alert', type: 'error', message: 'Cập nhật vai trò thất bại!');
         } finally {
             $this->isLoading = false;
         }

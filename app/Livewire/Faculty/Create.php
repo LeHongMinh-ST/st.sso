@@ -39,7 +39,7 @@ class Create extends Component
             return;
         }
 
-        if (!auth()->user()->can('faculty.create')) {
+        if (!auth()->user()->can('create', Faculty::class)) {
             $this->dispatch('alert', type: 'error', message: 'Bạn không có quyền tạo khoa!');
             return;
         }

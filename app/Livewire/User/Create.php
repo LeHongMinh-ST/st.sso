@@ -70,6 +70,12 @@ class Create extends Component
         if ($this->isLoading) {
             return;
         }
+
+        if (!auth()->user()->can('create', User::class)) {
+            $this->dispatch('alert', type: 'error', message: 'Bạn không có quyền tạo người dùng!');
+            return;
+        }
+
         $this->validate();
 
         try {
