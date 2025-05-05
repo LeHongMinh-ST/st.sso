@@ -7,7 +7,6 @@ namespace App\Livewire\Faculty;
 use App\Imports\StudentsImport;
 use App\Models\Faculty;
 use Illuminate\Support\Facades\Log;
-use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Maatwebsite\Excel\Facades\Excel;
@@ -82,10 +81,10 @@ class ImportStudents extends Component
         }
     }
 
-    #[On('closeImportForm')]
     public function closeImportForm(): void
     {
         $this->showImportForm = false;
         $this->reset('file');
+        $this->dispatch('closeImportForm');
     }
 }

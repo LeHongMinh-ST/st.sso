@@ -76,6 +76,12 @@ class Detail extends Component
         $this->showCreateUserForm = false;
     }
 
+    #[On('closeImportForm')]
+    public function closeImportForm(): void
+    {
+        $this->showImportStudentsForm = false;
+    }
+
     #[On('userCreated')]
     #[On('studentsImported')]
     public function refreshUsers(): void
