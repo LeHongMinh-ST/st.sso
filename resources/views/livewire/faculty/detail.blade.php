@@ -38,14 +38,26 @@
         </div>
     @endif
 
+    @if($showImportStudentsForm && auth()->user()->can('create', App\Models\User::class))
+        <div class="mb-3">
+            <livewire:faculty.import-students :faculty="$faculty" />
+        </div>
+    @endif
+
     <div class="card">
         <div class="py-3 card-header">
             <div class="d-flex justify-content-between align-items-center mb-2">
                 <h5 class="mb-0"><i class="ph-users me-1"></i> Danh sách người dùng trong khoa</h5>
                 @can('create', App\Models\User::class)
-                <button wire:click="toggleCreateUserForm()" class="btn btn-primary btn-icon">
-                    <i class="ph-{{ $showCreateUserForm ? 'minus' : 'user-plus' }}"></i>
-                </button>
+                <div class="d-flex gap-2">
+                    <button wire:click="toggleImportStudentsForm()" class="btn btn-success btn-icon fw-semibold" title="Nhập sinh viên từ Excel">
+                        <i class="ph-{{ $showImportStudentsForm ? 'minus' : 'microsoft-excel-logo' }} me-1"></i>
+                        <span>Nhập sinh viên</span>
+                    </button>
+                    <button wire:click="toggleCreateUserForm()" class="btn btn-primary btn-icon" title="Thêm người dùng">
+                        <i class="ph-{{ $showCreateUserForm ? 'minus' : 'user-plus' }}"></i>
+                    </button>
+                </div>
                 @endcan
             </div>
             <div class="gap-2 d-flex">

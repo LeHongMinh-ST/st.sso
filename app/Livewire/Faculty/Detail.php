@@ -18,6 +18,7 @@ class Detail extends Component
     public Faculty $faculty;
     public string $search = '';
     public bool $showCreateUserForm = false;
+    public bool $showImportStudentsForm = false;
 
     public function render()
     {
@@ -63,9 +64,20 @@ class Detail extends Component
             return;
         }
         $this->showCreateUserForm = !$this->showCreateUserForm;
+        $this->showImportStudentsForm = false;
+    }
+
+    public function toggleImportStudentsForm(): void
+    {
+        if (!auth()->user()->can('create', User::class)) {
+            return;
+        }
+        $this->showImportStudentsForm = !$this->showImportStudentsForm;
+        $this->showCreateUserForm = false;
     }
 
     #[On('userCreated')]
+    #[On('studentsImported')]
     public function refreshUsers(): void
     {
         $this->resetPage();

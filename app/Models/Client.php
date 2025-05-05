@@ -74,7 +74,7 @@ class Client extends PassportClient
         'scopes',
     ];
 
-    public function getBaseRedirectUrlAttribute()
+    public function getBaseRedirectUrlAttribute(): ?string
     {
         if (! $this->redirect) {
             return null;
