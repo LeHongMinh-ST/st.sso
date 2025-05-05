@@ -20,7 +20,6 @@ class Password extends Component
     #[Validate(as: 'xác nhận mật khẩu')]
     public string $password_confirmation = '';
 
-
     public function render()
     {
         return view('livewire.profile.password');
@@ -38,27 +37,32 @@ class Password extends Component
             ],
             'password_confirmation' => [
                 'required',
-            ]
+            ],
         ];
     }
 
-    public function submit(): void
+    public function submit(): ?\Illuminate\Http\RedirectResponse
     {
         $this->validate();
 
         if (mb_trim($this->password_confirmation) !== mb_trim($this->new_password)) {
             $this->addError('password_confirmation', 'Mật khẩu không trùng khớp');
-            return;
+
+            return null;
         }
 
-        if (!Hash::check($this->password, Auth::user()->password)) {
+        if (! Hash::check($this->password, Auth::user()->password)) {
             $this->addError('password', 'Mật khẩu không chính xác');
-            return;
+
+            return null;
         }
 
         Auth::user()->update(['password' => Hash::make($this->new_password), 'is_change_password' => true]);
-        $this->dispatch('alert', type: 'success', message: 'Lưu thành công!');
         $this->clearForm();
+        $this->dispatch('alert', type: 'success', message: 'Lưu thành công!');
+        Auth::logout();
+
+        return redirect()->route('login');
     }
 
     public function clearForm(): void

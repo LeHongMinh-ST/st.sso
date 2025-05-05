@@ -30,7 +30,7 @@ class Edit extends Component
     public string $email;
 
     #[Validate(as: 'số điện thoại')]
-    public string $phone = '';
+    public string|null $phone = '';
 
     public Role $role = Role::Normal;
 
