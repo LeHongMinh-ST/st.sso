@@ -1,7 +1,7 @@
 <div class="d-lg-flex align-items-lg-start">
 
     <!-- Left sidebar component -->
-    <div class="sidebar sidebar-component sidebar-expand-lg bg-transparent shadow-none me-lg-3">
+    <div class="sidebar sidebar-expand-lg bg-transparent shadow-none me-lg-3">
 
         <!-- Sidebar content -->
         <div class="sidebar-content">
