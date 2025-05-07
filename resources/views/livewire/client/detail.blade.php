@@ -66,7 +66,11 @@
                 showCancelButton: true,
                 confirmButtonColor: "#EE4444",
                 confirmButtonText: "Đồng ý!",
-                cancelButtonText: "Đóng!"
+                cancelButtonText: "Đóng!",
+                customClass: {
+                    confirmButton: 'btn btn-primary',
+                    cancelButton: 'btn btn-light',
+                }
             }).then((value) => {
                 if (value.isConfirmed) {
                     Livewire.dispatch('deleteClient')
