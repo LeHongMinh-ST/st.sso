@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Livewire\Profile;
 
+use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 
@@ -41,7 +43,7 @@ class Password extends Component
         ];
     }
 
-    public function submit(): ?\Illuminate\Http\RedirectResponse
+    public function submit()
     {
         $this->validate();
 
@@ -56,13 +58,16 @@ class Password extends Component
 
             return null;
         }
-
-        Auth::user()->update(['password' => Hash::make($this->new_password), 'is_change_password' => true]);
-        $this->clearForm();
-        $this->dispatch('alert', type: 'success', message: 'Lưu thành công!');
-        Auth::logout();
-
-        return redirect()->route('login');
+        try {
+            Auth::user()->update(['password' => Hash::make($this->new_password), 'is_change_password' => true]);
+            $this->clearForm();
+            $this->dispatch('alert', type: 'success', message: 'Lưu thành công!');
+            Auth::logout();
+            return redirect()->route('login');
+        } catch (Exception $e) {
+            Log::error($e->getMessage());
+            $this->dispatch('alert', type: 'error', message: 'Lưu thất bại!');
+        }
     }
 
     public function clearForm(): void
