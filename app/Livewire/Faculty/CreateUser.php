@@ -107,9 +107,6 @@ class CreateUser extends Component
                     $user->assignRole('super-admin');
                     break;
                 case Role::Officer:
-                    $user->assignRole('faculty-admin');
-                    break;
-                case Role::Teacher:
                     $user->assignRole('teacher');
                     break;
                 case Role::Student:
