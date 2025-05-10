@@ -93,23 +93,7 @@ class Create extends Component
                 'department_id' => $this->department_id,
                 'faculty_id' => $this->faculty_id,
             ]);
-
-            // Gán vai trò cho người dùng mới
-            switch ($this->role) {
-                case Role::SuperAdmin:
-                    $user->assignRole('super-admin');
-                    break;
-                case Role::Officer:
-                    $user->assignRole('teacher');
-                    break;
-                case Role::Student:
-                    $user->assignRole('student');
-                    break;
-                default:
-                    $user->assignRole('normal');
-                    break;
-            }
-
+            
             session()->flash('success', 'Tạo mới thành công!');
             return redirect()->route('user.show', $user->id);
         } catch (Throwable $th) {

@@ -70,9 +70,7 @@ class AuthenticateController extends Controller
 
             // If user is a student (jobTitle is "Sinh viên")
             if (isset($emailParts[1]) && 'sv.vnua.edu.vn' === $emailParts[1]) {
-                $role = Role::Student->value;
-                // Extract student ID from email (part before @)
-                $code = $emailParts[0];
+                return redirect()->route('login')->withErrors(['message' => ['Tài khoản sinh viên chưa tồn tại']]);
             }
 
             $user = User::create([

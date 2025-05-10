@@ -101,22 +101,6 @@ class CreateUser extends Component
                 'status' => Status::Active->value,
             ]);
 
-            // Gán vai trò cho người dùng mới
-            switch ($this->role) {
-                case Role::SuperAdmin:
-                    $user->assignRole('super-admin');
-                    break;
-                case Role::Officer:
-                    $user->assignRole('teacher');
-                    break;
-                case Role::Student:
-                    $user->assignRole('student');
-                    break;
-                default:
-                    $user->assignRole('normal');
-                    break;
-            }
-
             session()->flash('success', 'Tạo mới người dùng thành công!');
             $this->reset(['user_name', 'first_name', 'last_name', 'email', 'phone', 'code']);
             $this->role = Role::Normal;
