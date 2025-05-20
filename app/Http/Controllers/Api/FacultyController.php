@@ -32,7 +32,8 @@ class FacultyController extends Controller
 
     public function getUsers(Faculty $faculty, Request $request)
     {
-        if (!Auth::guard('api')->user()->can('view', $faculty)) {
+        $user = Auth::guard('api')->user();
+        if (!$user->isSuperAdmin() || $user->faculty_id !== $faculty->id) {
             return response()->json([
                 'message' => 'Forbidden',
             ], 403);
@@ -48,7 +49,8 @@ class FacultyController extends Controller
 
     public function getTeachers(Faculty $faculty, Request $request)
     {
-        if (!Auth::guard('api')->user()->can('view', $faculty)) {
+        $user = Auth::guard('api')->user();
+        if (!$user->isSuperAdmin() || $user->faculty_id !== $faculty->id) {
             return response()->json([
                 'message' => 'Forbidden',
             ], 403);

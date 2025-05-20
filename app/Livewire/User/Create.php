@@ -93,7 +93,7 @@ class Create extends Component
                 'department_id' => $this->department_id,
                 'faculty_id' => $this->faculty_id,
             ]);
-            
+
             session()->flash('success', 'Tạo mới thành công!');
             return redirect()->route('user.show', $user->id);
         } catch (Throwable $th) {
