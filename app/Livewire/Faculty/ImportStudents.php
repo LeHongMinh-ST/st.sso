@@ -7,6 +7,7 @@ namespace App\Livewire\Faculty;
 use App\Imports\StudentsImport;
 use App\Models\Faculty;
 use Illuminate\Support\Facades\Log;
+use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Maatwebsite\Excel\Facades\Excel;
@@ -19,6 +20,11 @@ class ImportStudents extends Component
     public Faculty $faculty;
     public $file;
     public bool $showImportForm = false;
+    public bool $isImporting = false;
+    public int $importProgress = 0;
+    public int $importedCount = 0;
+    public int $errorCount = 0;
+    public string $importStatus = '';
     private bool $isLoading = false;
 
     public function render()
@@ -37,6 +43,7 @@ class ImportStudents extends Component
             return;
         }
         $this->showImportForm = !$this->showImportForm;
+        $this->resetImportState();
     }
 
     public function import(): void
@@ -61,30 +68,72 @@ class ImportStudents extends Component
 
         try {
             $this->isLoading = true;
-            Excel::import(new StudentsImport($this->faculty->id), $this->file);
+            $this->isImporting = true;
+            $this->importProgress = 0;
+            $this->importStatus = 'Đang tải file lên và bắt đầu xử lý...';
 
-            $importResult = session('import_result', ['imported' => 0, 'errors' => 0]);
-            $message = 'Đã nhập ' . $importResult['imported'] . ' sinh viên thành công';
-            if ($importResult['errors'] > 0) {
-                $message .= ', ' . $importResult['errors'] . ' lỗi';
-            }
+            Excel::queueImport(new StudentsImport($this->faculty->id, auth()->id()), $this->file);
 
-            $this->dispatch('alert', type: 'success', message: $message);
+            $this->dispatch('alert', type: 'success', message: 'File đã được tải lên và đang được xử lý. Theo dõi tiến trình bên dưới.');
+            $this->dispatch('importStarted');
             $this->reset('file');
-            $this->showImportForm = false;
-            $this->dispatch('studentsImported');
         } catch (Throwable $th) {
             Log::error($th->getMessage());
-            $this->dispatch('alert', type: 'error', message: 'Nhập sinh viên thất bại: ' . $th->getMessage());
+            $this->dispatch('alert', type: 'error', message: 'Tải file thất bại: ' . $th->getMessage());
+            $this->resetImportState();
         } finally {
             $this->isLoading = false;
         }
     }
 
+    public function updateProgress($data): void
+    {
+        if ('progress' === $data['type']) {
+            $this->importProgress = $data['percentage'];
+            $this->importedCount = $data['imported'];
+            $this->errorCount = $data['errors'];
+            $this->importStatus = "Đang xử lý: {$data['processed']}/{$data['total']} bản ghi ({$data['percentage']}%)";
+        } elseif ('completed' === $data['type']) {
+            $this->importProgress = 100;
+            $this->importedCount = $data['imported'];
+            $this->errorCount = $data['errors'];
+            $this->importStatus = $data['message'];
+            $this->isImporting = false;
+
+            // Dispatch events to refresh data
+            $this->dispatch('studentsImported');
+            $this->dispatch('refreshStudentsList');
+
+            // Show completion alert
+            $this->dispatch('alert', type: 'success', message: $data['message']);
+
+            // Auto close form after 3 seconds
+            $this->dispatch('autoCloseImportForm');
+            $this->dispatch('importCompleted');
+        }
+    }
+
+    public function checkImportProgress(): void
+    {
+        // This is a fallback method for when Echo is not available
+        // You can implement polling logic here if needed
+        // For now, we'll rely on the notification system
+    }
+
     public function closeImportForm(): void
     {
         $this->showImportForm = false;
+        $this->resetImportState();
         $this->reset('file');
         $this->dispatch('closeImportForm');
+    }
+
+    private function resetImportState(): void
+    {
+        $this->isImporting = false;
+        $this->importProgress = 0;
+        $this->importedCount = 0;
+        $this->errorCount = 0;
+        $this->importStatus = '';
     }
 }

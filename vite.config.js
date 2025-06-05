@@ -3,6 +3,7 @@ import laravel from "laravel-vite-plugin";
 import { defineConfig } from "vite";
 
 const isDocker = process.env.DOCKER === "true";
+const host = process.env.VITE_DEV_SERVER_HOST || "localhost";
 
 export default defineConfig({
     plugins: [
@@ -20,7 +21,7 @@ export default defineConfig({
         jsx: "automatic",
     },
     server: {
-        host: "0.0.0.0",
+        host: host,
         watch: {
             usePolling: true,
         },
