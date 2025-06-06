@@ -135,30 +135,30 @@
                 }, 3000);
             });
 
-            // Listen for import progress updates via Echo
-            if (typeof Echo !== 'undefined') {
-                Echo.private('import-progress.{{ auth()->id() }}')
-                    .listen('ImportProgress', (data) => {
-                        @this.updateProgress(data);
-                    });
-            } else {
-                // Fallback: Use polling when Echo is not available
-                let pollInterval;
+            // // Listen for import progress updates via Echo
+            // if (typeof Echo !== 'undefined') {
+            //     Echo.private('import-progress.{{ auth()->id() }}')
+            //         .listen('ImportProgress', (data) => {
+            //             @this.updateProgress(data);
+            //         });
+            // } else {
+            //     // Fallback: Use polling when Echo is not available
+            //     let pollInterval;
                 
-                // Start polling when import begins
-                Livewire.on('importStarted', () => {
-                    pollInterval = setInterval(() => {
-                        @this.checkImportProgress();
-                    }, 2000); // Poll every 2 seconds
-                });
+            //     // Start polling when import begins
+            //     Livewire.on('importStarted', () => {
+            //         pollInterval = setInterval(() => {
+            //             @this.checkImportProgress();
+            //         }, 2000); // Poll every 2 seconds
+            //     });
                 
-                // Stop polling when import completes
-                Livewire.on('importCompleted', () => {
-                    if (pollInterval) {
-                        clearInterval(pollInterval);
-                    }
-                });
-            }
+            //     // Stop polling when import completes
+            //     Livewire.on('importCompleted', () => {
+            //         if (pollInterval) {
+            //             clearInterval(pollInterval);
+            //         }
+            //     });
+            // }
         });
     </script>
 </div>

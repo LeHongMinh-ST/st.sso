@@ -9,18 +9,16 @@ use App\Enums\Status;
 use App\Events\ImportProgressUpdated;
 use App\Models\User;
 use App\Notifications\ImportCompleted;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 use Maatwebsite\Excel\Concerns\ToCollection;
-use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
 use Throwable;
 
-class StudentsImport implements ToCollection, WithHeadingRow, ShouldQueue, WithValidation, WithChunkReading
+class StudentsImport implements ToCollection, WithHeadingRow, WithValidation
 {
     private int $facultyId;
     private int $imported = 0;
@@ -40,67 +38,68 @@ class StudentsImport implements ToCollection, WithHeadingRow, ShouldQueue, WithV
      */
     public function collection(Collection $rows): void
     {
-        $this->totalRows += $rows->count();
+        try {
+            $this->totalRows += $rows->count();
+            Log::info("Total rows: " . $this->totalRows);
 
-        foreach ($rows as $index => $row) {
-            try {
-                // Check if user already exists by email or code
-                $existingUser = User::where('email', $row['email'])
-                    ->orWhere('code', $row['ma_sinh_vien'])
-                    ->first();
+            foreach ($rows as $row) {
+                try {
+                    $existingUser = User::where('email', $row['email'])
+                        ->orWhere('code', $row['ma_sinh_vien'])
+                        ->first();
 
-                if ($existingUser) {
-                    // Update existing user
-                    $existingUser->update([
-                        'user_name' => $row['email'],
-                        'first_name' => $row['ten'],
-                        'last_name' => $row['ho'],
-                        'email' => $row['email'],
-                        'phone' => $row['so_dien_thoai'] ?? null,
-                        'faculty_id' => $this->facultyId,
-                        'code' => $row['ma_sinh_vien'],
-                    ]);
-                    $this->imported++;
-                } else {
-                    // Create new user
-                    $user = User::create([
-                        'user_name' => $row['email'],
-                        'first_name' => $row['ten'],
-                        'last_name' => $row['ho'],
-                        'email' => $row['email'],
-                        'password' => Hash::make('password'),
-                        'phone' => $row['so_dien_thoai'] ?? null,
-                        'role' => Role::Student->value,
-                        'status' => Status::Active->value,
-                        'faculty_id' => $this->facultyId,
-                        'code' => $row['ma_sinh_vien'],
-                        'is_change_password' => false,
-                    ]);
+                    if ($existingUser) {
+                        $existingUser->update([
+                            'user_name' => $row['email'],
+                            'first_name' => $row['ten'],
+                            'last_name' => $row['ho'],
+                            'email' => $row['email'],
+                            'phone' => $row['so_dien_thoai'] ?? null,
+                            'faculty_id' => $this->facultyId,
+                            'code' => $row['ma_sinh_vien'],
+                        ]);
+                        $this->imported++;
+                    } else {
+                        $user = User::create([
+                            'user_name' => $row['email'],
+                            'first_name' => $row['ten'],
+                            'last_name' => $row['ho'],
+                            'email' => $row['email'],
+                            'password' => Hash::make('password'),
+                            'phone' => $row['so_dien_thoai'] ?? null,
+                            'role' => Role::Student->value,
+                            'status' => Status::Active->value,
+                            'faculty_id' => $this->facultyId,
+                            'code' => $row['ma_sinh_vien'],
+                            'is_change_password' => false,
+                        ]);
 
-                    // Assign student role
-                    $user->assignRole('student');
-                    $this->imported++;
+                        $user->assignRole('student');
+                        $this->imported++;
+                    }
+                } catch (Throwable $e) {
+                    Log::error('Lỗi khi xử lý dòng: ' . $e->getMessage(), ['row' => $row->toArray()]);
+                    $this->errors++;
                 }
-            } catch (Throwable $e) {
-                Log::error('Error importing student: ' . $e->getMessage());
-                $this->errors++;
+
+                $this->processedRows++;
+
+                if (0 === $this->processedRows % 10) {
+                    $this->broadcastProgress();
+                }
             }
 
-            $this->processedRows++;
-
-            // Broadcast progress every 10 records
-            if (0 === $this->processedRows % 10) {
-                $this->broadcastProgress();
+            $user = User::find($this->userId);
+            if ($user) {
+                Notification::send($user, new ImportCompleted($this->imported, $this->errors));
             }
+
+            $this->broadcastCompletion();
+        } catch (Throwable $e) {
+            throw $e;
         }
-
-        // Send final notification when import is complete
-        $user = User::find($this->userId);
-        Notification::send($user, new ImportCompleted($this->imported, $this->errors));
-
-        // Broadcast completion
-        $this->broadcastCompletion();
     }
+
 
     public function rules(): array
     {
@@ -122,11 +121,6 @@ class StudentsImport implements ToCollection, WithHeadingRow, ShouldQueue, WithV
             'email.email' => 'Email không đúng định dạng',
             'ma_sinh_vien.required' => 'Mã sinh viên là bắt buộc',
         ];
-    }
-
-    public function chunkSize(): int
-    {
-        return 100;
     }
 
     private function broadcastProgress(): void

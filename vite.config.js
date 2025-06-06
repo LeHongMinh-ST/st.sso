@@ -3,7 +3,7 @@ import laravel from "laravel-vite-plugin";
 import { defineConfig } from "vite";
 
 const isDocker = process.env.DOCKER === "true";
-const host = process.env.VITE_DEV_SERVER_HOST || "localhost";
+const host = process.env.VITE_DEV_SERVER_HOST || "0.0.0.0";
 
 export default defineConfig({
     plugins: [
