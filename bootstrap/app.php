@@ -27,7 +27,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'permission' => CheckPermission::class,
             'role' => CheckRole::class,
             'api.permission' => CheckApiPermission::class
-        ]);
+        ])
+            ->trustProxies(at: '*');
 
     })
     ->withExceptions(function (Exceptions $exceptions): void {
