@@ -21,7 +21,7 @@ export default defineConfig({
         jsx: "automatic",
     },
     server: {
-        host: host,
+        // host: host,
         watch: {
             usePolling: true,
         },
