@@ -20,7 +20,7 @@ class ImportStudents extends Component
     public $file;
     public bool $showImportForm = false;
     public bool $isImporting = false;
-    public int $importProgress = 0;
+    public int|float $importProgress = 0;
     public int $importedCount = 0;
     public int $errorCount = 0;
     public string $importStatus = '';
@@ -75,7 +75,7 @@ class ImportStudents extends Component
 
             // Store file and dispatch job
             $path = $this->file->store('imports');
-            ImportStudentsJob::dispatch($this->faculty->id, auth()->id(), $path);
+            ImportStudentsJob::dispatch($this->faculty->id, auth()->id(), $path)->onQueue('import');
 
             $this->dispatch('alert', type: 'success', message: 'File đã được tải lên và đang được xử lý. Theo dõi tiến trình bên dưới.');
             $this->dispatch('importStarted');

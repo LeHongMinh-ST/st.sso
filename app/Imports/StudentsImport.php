@@ -41,15 +41,16 @@ class StudentsImport implements ToCollection, WithHeadingRow, WithValidation
         try {
             $this->totalRows += $rows->count();
             Log::info("Total rows: " . $this->totalRows);
-
+            $emails = $rows->pluck('email')->filter()->unique()->toArray();
+            $codes = $rows->pluck('ma_sinh_vien')->filter()->unique()->toArray();
+            $existingUsers = User::whereIn('email', $emails)
+                ->orWhereIn('code', $codes)
+                ->get();
+            $existingUsersCodes = $existingUsers->map(fn ($user) => $user->code)->toArray();
             foreach ($rows as $row) {
                 try {
-                    $existingUser = User::where('email', $row['email'])
-                        ->orWhere('code', $row['ma_sinh_vien'])
-                        ->first();
-
-                    if ($existingUser) {
-                        $existingUser->update([
+                    if (in_array($row['ma_sinh_vien'], $existingUsersCodes)) {
+                        User::where('code', $row['ma_sinh_vien'])->update([
                             'user_name' => $row['email'],
                             'first_name' => $row['ten'],
                             'last_name' => $row['ho'],
@@ -74,7 +75,6 @@ class StudentsImport implements ToCollection, WithHeadingRow, WithValidation
                             'is_change_password' => false,
                         ]);
 
-                        $user->assignRole('student');
                         $this->imported++;
                     }
                 } catch (Throwable $e) {
@@ -84,7 +84,7 @@ class StudentsImport implements ToCollection, WithHeadingRow, WithValidation
 
                 $this->processedRows++;
 
-                if (0 === $this->processedRows % 10) {
+                if (0 === $this->processedRows % 10 || $this->totalRows < 10) {
                     $this->broadcastProgress();
                 }
             }
