@@ -37,6 +37,7 @@ class AppServiceProvider extends ServiceProvider
     {
         if (App::environment('production')) {
             URL::forceScheme('https');
+            URL::forceRootUrl(config('app.url'));
         }
 
         LogViewer::auth(fn ($request) => $request->user()
