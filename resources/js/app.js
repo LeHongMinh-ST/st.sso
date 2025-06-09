@@ -24,15 +24,3 @@ window.Echo = new Echo({
   cluster: 'ap1',
   forceTLS: true
 });
-
-window.Echo.connector.socket.on('connect', () => {
-    console.log('Đã kết nối với Pusher WebSocket');
-});
-
-window.Echo.connector.socket.on('disconnect', () => {
-    console.log('Mất kết nối Pusher WebSocket');
-});
-
-window.Echo.connector.socket.on('error', (error) => {
-    console.error('Lỗi kết nối WebSocket:', error);
-});
