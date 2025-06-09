@@ -19,10 +19,10 @@ window.addEventListener('alert', event => {
 });
 
 window.Echo = new Echo({
-    broadcaster: 'pusher',
-    key: import.meta.env.VITE_PUSHER_APP_KEY,
-    cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER,
-    forceTLS: true
+  broadcaster: 'pusher',
+  key: '504ac0f5fa1e4c90ce76',
+  cluster: 'ap1',
+  forceTLS: true
 });
 
 window.Echo.connector.socket.on('connect', () => {
