@@ -28,3 +28,14 @@ window.Echo = new Echo({
     enabledTransports: ["ws", "wss"],
 });
 
+window.Echo.connector.socket.on('connect', () => {
+    console.log('Đã kết nối với Reverb WebSocket');
+});
+
+window.Echo.connector.socket.on('disconnect', () => {
+    console.log('Mất kết nối Reverb WebSocket');
+});
+
+window.Echo.connector.socket.on('error', (error) => {
+    console.error('Lỗi kết nối WebSocket:', error);
+});
