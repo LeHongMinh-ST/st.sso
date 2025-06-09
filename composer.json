@@ -20,6 +20,7 @@
         "livewire/livewire": "^3.6",
         "maatwebsite/excel": "^3.1",
         "opcodesio/log-viewer": "^3.15",
+        "pusher/pusher-php-server": "^7.2",
         "socialiteproviders/microsoft-azure": "^5.2",
         "spatie/laravel-permission": "^6.17"
     },

@@ -19,21 +19,18 @@ window.addEventListener('alert', event => {
 });
 
 window.Echo = new Echo({
-    broadcaster: "reverb",
-    key: import.meta.env.VITE_REVERB_APP_KEY,
-    wsHost: import.meta.env.VITE_REVERB_HOST,
-    wsPort: import.meta.env.VITE_REVERB_PORT ?? 80,
-    wssPort: import.meta.env.VITE_REVERB_PORT ?? 443,
-    forceTLS: (import.meta.env.VITE_REVERB_SCHEME ?? "https") === "https",
-    enabledTransports: ["ws", "wss"],
+    broadcaster: 'pusher',
+    key: import.meta.env.VITE_PUSHER_APP_KEY,
+    cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER,
+    forceTLS: true
 });
 
 window.Echo.connector.socket.on('connect', () => {
-    console.log('Đã kết nối với Reverb WebSocket');
+    console.log('Đã kết nối với Pusher WebSocket');
 });
 
 window.Echo.connector.socket.on('disconnect', () => {
-    console.log('Mất kết nối Reverb WebSocket');
+    console.log('Mất kết nối Pusher WebSocket');
 });
 
 window.Echo.connector.socket.on('error', (error) => {
