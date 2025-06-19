@@ -40,7 +40,6 @@ class StudentsImportChunk implements ToModel, WithHeadingRow, WithValidation, Wi
     public function model(array $row): ?User
     {
         try {
-            Log::info('Processing row: ' . json_encode($row));
             // Check if user exists by code
             $user = User::where('code', $row['ma_sinh_vien'])->first();
             if ($user) {
