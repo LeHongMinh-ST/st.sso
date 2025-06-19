@@ -8,7 +8,6 @@ use App\Enums\Role;
 use App\Enums\Status;
 use App\Models\User;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithBatchInserts;
@@ -16,8 +15,8 @@ use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
-use Maatwebsite\Excel\Events\ImportFailed;
 use Maatwebsite\Excel\Events\AfterChunk;
+use Maatwebsite\Excel\Events\ImportFailed;
 use Throwable;
 
 class StudentsImportChunk implements ToModel, WithHeadingRow, WithValidation, WithChunkReading, ShouldQueue, WithBatchInserts, WithEvents

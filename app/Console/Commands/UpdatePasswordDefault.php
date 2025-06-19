@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Console\Commands;
 
 use App\Enums\Role;
-use Illuminate\Console\Command;
 use App\Models\User;
+use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Hash;
 
 class UpdatePasswordDefault extends Command
@@ -26,7 +28,7 @@ class UpdatePasswordDefault extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): void
     {
         $users = User::where('role', Role::Student)->update([
             'password' => Hash::make('password'),

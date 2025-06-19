@@ -8,7 +8,6 @@ use App\Enums\Role;
 use App\Enums\Status;
 use App\Models\Faculty;
 use App\Models\User;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
