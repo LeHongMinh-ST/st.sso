@@ -20,7 +20,6 @@ use Throwable;
 class StudentsImportChunk implements ToModel, WithHeadingRow, WithValidation, WithChunkReading, ShouldQueue, WithBatchInserts
 {
     private int $facultyId;
-    private int $imported = 0;
     private int $errors = 0;
     private int $userId;
 
@@ -43,20 +42,18 @@ class StudentsImportChunk implements ToModel, WithHeadingRow, WithValidation, Wi
             // Check if user exists by code
             $user = User::where('code', $row['ma_sinh_vien'])->first();
             if ($user) {
-                // Update existing user
-                $user->update([
-                    'user_name' => $row['email'],
-                    'first_name' => $row['ten'],
-                    'last_name' => $row['ho'],
-                    'email' => $row['email'],
-                    'phone' => $row['so_dien_thoai'] ?? null,
-                    'faculty_id' => $this->facultyId,
-                    'code' => $row['ma_sinh_vien'],
-                ]);
-                $this->imported++;
+                // // Update existing user
+                // $user->update([
+                //     'user_name' => $row['email'],
+                //     'first_name' => $row['ten'],
+                //     'last_name' => $row['ho'],
+                //     'email' => $row['email'],
+                //     'phone' => $row['so_dien_thoai'] ?? null,
+                //     'faculty_id' => $this->facultyId,
+                //     'code' => $row['ma_sinh_vien'],
+                // ]);
                 return null; // No need to return model for update
             }
-            $this->imported++;
             // Return new User model for insert
             return new User([
                 'user_name' => $row['email'],
