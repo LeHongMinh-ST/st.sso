@@ -13,11 +13,11 @@ use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithBatchInserts;
 use Maatwebsite\Excel\Concerns\WithChunkReading;
+use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
-use Throwable;
-use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Events\ImportFailed;
+use Throwable;
 
 class StudentsImportChunk implements ToModel, WithHeadingRow, WithValidation, WithChunkReading, ShouldQueue, WithBatchInserts, WithEvents
 {
@@ -29,6 +29,15 @@ class StudentsImportChunk implements ToModel, WithHeadingRow, WithValidation, Wi
     {
         $this->facultyId = $facultyId;
         $this->userId = $userId;
+    }
+
+    public function registerEvents(): array
+    {
+        return [
+            ImportFailed::class => function (ImportFailed $event): void {
+                \Log::error('Import failed: ' . $event->getException()->getMessage());
+            },
+        ];
     }
 
     /**
@@ -119,15 +128,6 @@ class StudentsImportChunk implements ToModel, WithHeadingRow, WithValidation, Wi
             'email.required' => 'Email là bắt buộc',
             'email.email' => 'Email không đúng định dạng',
             'ma_sinh_vien.required' => 'Mã sinh viên là bắt buộc',
-        ];
-    }
-
-    public static function registerEvents(): array
-    {
-        return [
-            ImportFailed::class => function (ImportFailed $event) {
-                \Log::error('Import failed: ' . $event->getException()->getMessage());
-            },
         ];
     }
 }
