@@ -88,7 +88,7 @@ class StudentsImportChunk implements ToModel, WithHeadingRow, WithValidation, Wi
      */
     public function chunkSize(): int
     {
-        return 100; // You can adjust this number based on your server capacity
+        return 50; // You can adjust this number based on your server capacity
     }
 
     /**
@@ -99,7 +99,7 @@ class StudentsImportChunk implements ToModel, WithHeadingRow, WithValidation, Wi
      */
     public function batchSize(): int
     {
-        return 100; // Should match chunkSize for optimal performance
+        return 50; // Should match chunkSize for optimal performance
     }
 
     public function rules(): array
