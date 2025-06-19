@@ -25,7 +25,7 @@
             </div>
 
             <!-- Import Progress Display -->
-            @if($isImporting)
+            {{-- @if($isImporting)
                 <div class="row mb-4">
                     <div class="col-12">
                         <div class="card bg-info-subtle border-info">
@@ -78,7 +78,7 @@
                         </div>
                     </div>
                 </div>
-            @endif
+            @endif --}}
 
             <form wire:submit="import">
                 <div class="row">

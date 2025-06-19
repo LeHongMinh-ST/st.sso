@@ -20,7 +20,7 @@ window.addEventListener('alert', event => {
 
 window.Echo = new Echo({
   broadcaster: 'pusher',
-  key: '504ac0f5fa1e4c90ce76',
+  key: 'dd36ece1901fae0d49bf',
   cluster: 'ap1',
   forceTLS: true
 });

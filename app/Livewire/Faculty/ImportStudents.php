@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace App\Livewire\Faculty;
 
+use App\Imports\StudentsImportChunk;
 use App\Jobs\ImportStudentsJob;
 use App\Models\Faculty;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use Maatwebsite\Excel\Facades\Excel;
 use Throwable;
 
 class ImportStudents extends Component
@@ -76,6 +78,10 @@ class ImportStudents extends Component
             // Store file and dispatch job
             $path = $this->file->store('imports');
             ImportStudentsJob::dispatch($this->faculty->id, auth()->id(), $path)->onQueue('import');
+            Excel::queueImport(
+                new StudentsImportChunk($this->faculty->id, auth()->id()),
+                $path
+            );
 
             $this->dispatch('alert', type: 'success', message: 'File đã được tải lên và đang được xử lý. Theo dõi tiến trình bên dưới.');
             $this->dispatch('importStarted');
