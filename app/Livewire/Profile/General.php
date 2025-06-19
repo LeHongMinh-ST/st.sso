@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Profile;
 
+use App\Enums\Role;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
@@ -50,7 +51,9 @@ class General extends Component
         $user->user_name = $this->user_name;
         $user->first_name = $this->first_name;
         $user->last_name = $this->last_name;
-        $user->email = $this->email;
+        if ($user->role !== Role::Student->value) {
+            $user->email = $this->email;
+        }
         $user->phone = $this->phone ?? '';
         $user->save();
 

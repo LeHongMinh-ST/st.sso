@@ -20,7 +20,7 @@
                 <div class="col-lg-6">
                     <div class="mb-3">
                         <label class="form-label">Email</label>
-                        <input type="text" wire:model="email" placeholder="Nhập email" class="form-control">
+                        <input type="text" wire:model="email" placeholder="Nhập email" class="form-control" @if(auth()->user()->role !== \App\Enums\Role::Student->value) disabled @endif>
                         @error('email')
                             <label id="error-email"
                                    class="validation-error-label text-danger"

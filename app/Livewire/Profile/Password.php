@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Profile;
 
+use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -47,7 +48,16 @@ class Password extends Component
     {
         $this->validate();
 
-        if (mb_trim($this->password_confirmation) !== mb_trim($this->new_password)) {
+        $password = mb_trim($this->password);
+        $new_password = mb_trim($this->new_password);
+        $password_confirmation = mb_trim($this->password_confirmation);
+
+        if ($password === $new_password) {
+            $this->addError('new_password', 'Mật khẩu mới không được trùng với mật khẩu hiện tại');
+            return null;
+        }
+
+        if ($password_confirmation !== $new_password) {
             $this->addError('password_confirmation', 'Mật khẩu không trùng khớp');
 
             return null;
@@ -58,9 +68,9 @@ class Password extends Component
 
             return null;
         }
+
         try {
-            Auth::user()->update(['password' => Hash::make($this->new_password), 'is_change_password' => true]);
-            $this->clearForm();
+            User::where('id', Auth::user()->id)->update(['password' => Hash::make($this->new_password), 'is_change_password' => true]);
             $this->dispatch('alert', type: 'success', message: 'Lưu thành công!');
             Auth::logout();
             return redirect()->route('login');
