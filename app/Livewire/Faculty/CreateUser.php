@@ -87,12 +87,12 @@ class CreateUser extends Component
 
         try {
             $this->isLoading = true;
-            $user = User::create([
+            User::create([
                 'user_name' => $this->user_name,
                 'first_name' => $this->first_name,
                 'last_name' => $this->last_name,
                 'email' => $this->email,
-                'password' => Hash::make('password'),
+                'password' => 'password',
                 'phone' => $this->phone,
                 'role' => $this->role->value,
                 'code' => $this->code,

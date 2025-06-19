@@ -17,6 +17,7 @@ use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
 use Maatwebsite\Excel\Events\ImportFailed;
+use Maatwebsite\Excel\Events\AfterChunk;
 use Throwable;
 
 class StudentsImportChunk implements ToModel, WithHeadingRow, WithValidation, WithChunkReading, ShouldQueue, WithBatchInserts, WithEvents
@@ -36,6 +37,9 @@ class StudentsImportChunk implements ToModel, WithHeadingRow, WithValidation, Wi
         return [
             ImportFailed::class => function (ImportFailed $event): void {
                 \Log::error('Import failed: ' . $event->getException()->getMessage());
+            },
+            AfterChunk::class => function (AfterChunk $event): void {
+                \Log::info('After chunk: ' . $event->chunk()->count());
             },
         ];
     }
@@ -71,7 +75,7 @@ class StudentsImportChunk implements ToModel, WithHeadingRow, WithValidation, Wi
                 'first_name' => $row['ten'],
                 'last_name' => $row['ho'],
                 'email' => $row['email'],
-                'password' => Hash::make('password'),
+                'password' => 'password',
                 'phone' => $row['so_dien_thoai'] ?? null,
                 'role' => Role::Student->value,
                 'status' => Status::Active->value,
