@@ -41,8 +41,8 @@ class Edit extends Component
     public function mount(Faculty $faculty): void
     {
         $this->faculty = $faculty;
-        $this->name = $faculty->name;
-        $this->description = $faculty->description;
+        $this->name = $faculty->name ?? '';
+        $this->description = $faculty->description ?? '';
         $this->status = $faculty->status;
     }
 
