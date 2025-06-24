@@ -106,7 +106,6 @@
                                     </div>
                                 </div>
                             </div>
-                            @if($role == \App\Enums\Role::Student || $role == \App\Enums\Role::Officer)
                             <div class="row">
                                 <div class="col-lg-6">
                                     <div class="mb-3">
@@ -118,7 +117,6 @@
                                     </div>
                                 </div>
                             </div>
-                            @endif
                             <div class="row">
                                 <div class="col">
                                     <label for="description" class="col-form-label">
