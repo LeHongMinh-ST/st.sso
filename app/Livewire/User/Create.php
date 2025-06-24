@@ -72,7 +72,7 @@ class Create extends Component
         if (Role::Student === $this->role) {
             $rules['code'] = 'required|max:255|unique:users,code';
         } elseif (Role::Officer === $this->role) {
-            $rules['code'] = 'required|max:255|unique:users,code';
+            $rules['code'] = 'nullable|max:255|unique:users,code';
         } else {
             $rules['code'] = 'nullable|max:255';
         }

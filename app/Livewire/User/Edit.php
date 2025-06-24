@@ -85,7 +85,7 @@ class Edit extends Component
         if (Role::Student === $this->role) {
             $rules['code'] = 'required|max:255|unique:users,code,' . $this->user->id;
         } elseif (Role::Officer === $this->role) {
-            $rules['code'] = 'required|max:255|unique:users,code,' . $this->user->id;
+            $rules['code'] = 'nullable|max:255|unique:users,code,' . $this->user->id;
         } else {
             $rules['code'] = 'nullable|max:255';
         }
