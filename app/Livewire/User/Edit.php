@@ -34,7 +34,7 @@ class Edit extends Component
 
     public Role $role = Role::Normal;
 
-    #[Validate(as: 'mã giảng viên')]
+    #[Validate(as: 'mã người dùng')]
     public string $code = '';
 
     public int|null|string $department_id = null;
@@ -70,7 +70,7 @@ class Edit extends Component
 
     public function rules(): array
     {
-        return [
+        $rules = [
             'user_name' => 'required|max:255|unique:users,user_name,' . $this->user->id,
             'first_name' => 'required|max:255',
             'last_name' => 'required|max:255',
@@ -81,6 +81,16 @@ class Edit extends Component
             'department_id' => 'nullable|exists:departments,id',
             'faculty_id' => 'nullable|exists:faculties,id',
         ];
+
+        if (Role::Student === $this->role) {
+            $rules['code'] = 'required|max:255|unique:users,code,' . $this->user->id;
+        } elseif (Role::Officer === $this->role) {
+            $rules['code'] = 'required|max:255|unique:users,code,' . $this->user->id;
+        } else {
+            $rules['code'] = 'nullable|max:255';
+        }
+
+        return $rules;
     }
 
     public function submit()

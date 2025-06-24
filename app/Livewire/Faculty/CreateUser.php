@@ -32,7 +32,7 @@ class CreateUser extends Component
     #[Validate(as: 'số điện thoại')]
     public string $phone = '';
 
-    public Role $role = Role::Normal;
+    public Role $role = Role::Officer;
 
     #[Validate(as: 'mã người dùng')]
     public string $code = '';

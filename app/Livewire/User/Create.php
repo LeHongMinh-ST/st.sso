@@ -30,9 +30,9 @@ class Create extends Component
     #[Validate(as: 'số điện thoại')]
     public string $phone = '';
 
-    public Role $role = Role::Normal;
+    public Role $role = Role::Officer;
 
-    #[Validate(as: 'mã giảng viên')]
+    #[Validate(as: 'mã người dùng')]
     public string $code = '';
 
     public int|null|string $department_id = null;
@@ -52,17 +52,26 @@ class Create extends Component
 
     public function rules(): array
     {
-        return [
+        $rules = [
             'user_name' => 'required|max:255|unique:users,user_name',
             'first_name' => 'required|max:255',
             'last_name' => 'required|max:255',
             'email' => 'required|email|max:255|unique:users,email',
             'phone' => 'nullable|max:255',
             'role' => 'required',
-            'code' => 'nullable|max:255|unique:users,code',
             'department_id' => 'nullable',
             'faculty_id' => 'nullable',
         ];
+
+        if (Role::Student === $this->role) {
+            $rules['code'] = 'required|max:255|unique:users,code';
+        } elseif (Role::Officer === $this->role) {
+            $rules['code'] = 'required|max:255|unique:users,code';
+        } else {
+            $rules['code'] = 'nullable|max:255';
+        }
+
+        return $rules;
     }
 
     public function submit()
