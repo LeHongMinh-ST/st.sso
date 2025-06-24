@@ -49,7 +49,6 @@
 </div>
 <!-- /page content -->
 
-
 @livewireScripts
 </body>
 

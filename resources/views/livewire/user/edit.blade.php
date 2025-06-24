@@ -98,14 +98,15 @@
                                 <div class="col-lg-6">
                                     <div class="mb-3">
                                         <label class="form-label">Loại người dùng</label>
-                                        <select wire:model.live="role" class="form-select">
-                                            @foreach (\App\Enums\Role::getDescription() as $role => $description)
-                                                <option value="{{ $role }}">{{ $description }}</option>
+                                        <select wire:model="role" class="form-select">
+                                            @foreach (\App\Enums\Role::getDescription() as $roleItem => $description)
+                                                <option value="{{ $roleItem }}">{{ $description }}</option>
                                             @endforeach
                                         </select>
                                     </div>
                                 </div>
                             </div>
+                            @if($role == \App\Enums\Role::Student || $role == \App\Enums\Role::Officer)
                             <div class="row">
                                 <div class="col-lg-6">
                                     <div class="mb-3">
@@ -117,6 +118,7 @@
                                     </div>
                                 </div>
                             </div>
+                            @endif
                             <div class="row">
                                 <div class="col">
                                     <label for="description" class="col-form-label">

@@ -130,9 +130,10 @@ class Edit extends Component
         }
     }
 
-    public function updateRole($value): void
+    public function updatedRole(): void
     {
-        $this->role = Role::from($value);
+        // Reset code when role changes
+        $this->code = '';
     }
 
     public function toggleStatus(): void

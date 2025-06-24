@@ -50,6 +50,12 @@ class Create extends Component
         ]);
     }
 
+    public function updatedRole(): void
+    {
+        // Reset code when role changes
+        $this->code = '';
+    }
+
     public function rules(): array
     {
         $rules = [
@@ -111,10 +117,5 @@ class Create extends Component
         } finally {
             $this->isLoading = false;
         }
-    }
-
-    public function updateRole($value): void
-    {
-        $this->role = Role::from($value);
     }
 }

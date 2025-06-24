@@ -32,7 +32,7 @@
     <!-- /page content -->
 
 
-
+@livewireScripts
 </body>
 
 </html>

@@ -60,15 +60,16 @@
                     <div class="mb-3">
                         <label class="form-label">Loại tài khoản</label>
                         <select wire:model.live="role" class="form-select">
-                            @foreach (\App\Enums\Role::getDescription() as $role => $description)
-                                @if($role != \App\Enums\Role::SuperAdmin->value)
-                                    <option value="{{ $role }}">{{ $description }}</option>
+                            @foreach (\App\Enums\Role::getDescription() as $roleItem => $description)
+                                @if($roleItem != \App\Enums\Role::SuperAdmin->value)
+                                    <option value="{{ $roleItem }}">{{ $description }}</option>
                                 @endif
                             @endforeach
                         </select>
                     </div>
                 </div>
             </div>
+            @if($role == \App\Enums\Role::Student || $role == \App\Enums\Role::Officer)
             <div class="row">
                 <div class="col-lg-6">
                     <div class="mb-3">
@@ -80,6 +81,7 @@
                     </div>
                 </div>
             </div>
+            @endif
             <div class="row">
                 <div class="col-12">
                     <div class="alert alert-info">
