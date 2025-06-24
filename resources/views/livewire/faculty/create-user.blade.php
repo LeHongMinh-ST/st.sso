@@ -55,17 +55,7 @@
                         @enderror
                     </div>
                 </div>
-                <div class="col-lg-6">
-                    <div class="mb-3">
-                        <label class="form-label">{{ $role == \App\Enums\Role::Student ? 'Mã sinh viên' : 'Mã giảng viên' }} @if($role == \App\Enums\Role::Student || $role == \App\Enums\Role::Officer) <span class="text-danger">*</span> @endif</label>
-                        <input type="text" wire:model="code" placeholder="{{ $role == \App\Enums\Role::Student ? 'Nhập mã sinh viên' : 'Nhập mã giảng viên' }}" class="form-control @error('code') is-invalid @enderror">
-                        @error('code')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                </div>
-            </div>
-            <div class="row">
+                
                 <div class="col-lg-6">
                     <div class="mb-3">
                         <label class="form-label">Loại tài khoản</label>
@@ -79,6 +69,19 @@
                     </div>
                 </div>
             </div>
+            @if($role == \App\Enums\Role::Student || $role == \App\Enums\Role::Officer)
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="mb-3">
+                        <label class="form-label">{{ $role == \App\Enums\Role::Student ? 'Mã sinh viên' : 'Mã giảng viên' }} @if($role == \App\Enums\Role::Student || $role == \App\Enums\Role::Officer) <span class="text-danger">*</span> @endif</label>
+                        <input type="text" wire:model="code" placeholder="{{ $role == \App\Enums\Role::Student ? 'Nhập mã sinh viên' : 'Nhập mã giảng viên' }}" class="form-control @error('code') is-invalid @enderror">
+                        @error('code')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+            </div>
+            @endif
             <div class="row">
                 <div class="col-12">
                     <div class="alert alert-info">
