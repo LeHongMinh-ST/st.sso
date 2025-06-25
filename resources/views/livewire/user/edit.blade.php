@@ -98,7 +98,7 @@
                                 <div class="col-lg-6">
                                     <div class="mb-3">
                                         <label class="form-label">Loại người dùng</label>
-                                        <select wire:model="role" class="form-select">
+                                        <select wire:model.live="role" class="form-select">
                                             @foreach (\App\Enums\Role::getDescription() as $roleItem => $description)
                                                 <option value="{{ $roleItem }}">{{ $description }}</option>
                                             @endforeach
@@ -106,18 +106,21 @@
                                     </div>
                                 </div>
                             </div>
-                            @if($role == \App\Enums\Role::Student || $role == \App\Enums\Role::Officer)
-                            <div class="row">
-                                <div class="col-lg-6">
-                                    <div class="mb-3">
-                                        <label class="form-label">{{ $role == \App\Enums\Role::Student ? 'Mã sinh viên' : 'Mã giảng viên' }} @if($role == \App\Enums\Role::Student) <span class="text-danger">*</span> @endif</label>
-                                        <input type="text" wire:model="code" placeholder="{{ $role == \App\Enums\Role::Student ? 'Nhập mã sinh viên' : 'Nhập mã giảng viên' }}" class="form-control @error('code') is-invalid @enderror">
-                                        @error('code')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
+                            @if ($role == \App\Enums\Role::Student || $role == \App\Enums\Role::Officer)
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <div class="mb-3">
+                                            <label class="form-label">{{ $role == \App\Enums\Role::Student ? 'Mã sinh viên' : 'Mã giảng viên' }} @if ($role == \App\Enums\Role::Student)
+                                                    <span class="text-danger">*</span>
+                                                @endif
+                                            </label>
+                                            <input type="text" wire:model="code" placeholder="{{ $role == \App\Enums\Role::Student ? 'Nhập mã sinh viên' : 'Nhập mã giảng viên' }}" class="form-control @error('code') is-invalid @enderror">
+                                            @error('code')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
                             @endif
                             <div class="row">
                                 <div class="col">
