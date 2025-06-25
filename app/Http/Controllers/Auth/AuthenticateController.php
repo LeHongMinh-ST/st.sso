@@ -50,7 +50,9 @@ class AuthenticateController extends Controller
 
     public function redirectToSocialite(Request $request): RedirectResponse
     {
-        $url = Socialite::driver('azure')->stateless()->redirect()->getTargetUrl();
+        $url = Socialite::driver('azure')
+            ->with(['prompt' => 'select_account'])
+            ->stateless()->redirect()->getTargetUrl();
 
         return redirect($url);
     }
