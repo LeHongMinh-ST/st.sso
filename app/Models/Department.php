@@ -48,4 +48,13 @@ class Department extends Model
     {
         return $this->hasMany(User::class);
     }
+
+    public function scopeSearch($query, $search)
+    {
+        if ($search) {
+            $query->where('name', 'like', '%' . $search . '%');
+        }
+
+        return $query;
+    }
 }

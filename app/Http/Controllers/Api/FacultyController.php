@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Api;
 use App\Enums\Role;
 use App\Helpers\Constants;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Department\DepartmentResource;
 use App\Http\Resources\Faculty\FacultyResource;
 use App\Http\Resources\User\UserResource;
 use App\Models\Faculty;
@@ -61,5 +62,14 @@ class FacultyController extends Controller
             ->orderBy('users.created_at', 'desc')
             ->paginate(Constants::PER_PAGE);
         return UserResource::collection($teachers);
+    }
+
+    public function getDepartments(Faculty $faculty, Request $request)
+    {
+        $departments = $faculty->departments()
+            ->search($request->get('q', ''))
+            ->orderBy('departments.created_at', 'desc')
+            ->paginate(Constants::PER_PAGE);
+        return DepartmentResource::collection($departments);
     }
 }
