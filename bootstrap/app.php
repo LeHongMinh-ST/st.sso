@@ -11,6 +11,7 @@ use App\Http\Middleware\CheckSuperAdminApi;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Laravel\Passport\Http\Middleware\CheckClientCredentials;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -26,10 +27,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'check.superadmin.api' => CheckSuperAdminApi::class,
             'permission' => CheckPermission::class,
             'role' => CheckRole::class,
-            'api.permission' => CheckApiPermission::class
-        ])
-            ->trustProxies(at: '*');
-
+            'api.permission' => CheckApiPermission::class,
+            'client.credentials' => CheckClientCredentials::class,
+        ])->trustProxies(at: '*');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
 

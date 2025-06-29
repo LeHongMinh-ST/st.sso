@@ -23,3 +23,7 @@ Route::get('faculties/{faculty}/users', [FacultyController::class, 'getUsers'])
     ->middleware(['auth:api']);
 Route::get('faculties/{faculty}/teachers', [FacultyController::class, 'getTeachers'])
     ->middleware(['auth:api']);
+
+// get department by faculty
+Route::get('faculties/{faculty}/departments', [FacultyController::class, 'getDepartments'])
+    ->middleware(['client.credentials']);
