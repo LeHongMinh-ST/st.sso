@@ -68,7 +68,7 @@ class Edit extends Component
         $this->code = $user->code;
         $this->department_id = $user->department_id;
         $this->faculty_id = $user->faculty_id;
-        $this->is_only_login_ms = $user->is_only_login_ms;
+        $this->is_only_login_ms = (bool) $user->is_only_login_ms;
     }
 
     public function rules(): array

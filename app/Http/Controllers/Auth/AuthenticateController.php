@@ -38,7 +38,7 @@ class AuthenticateController extends Controller
                 ->withErrors(['message' => ['Tài khoản chỉ được đăng nhập từ Microsoft!']])
                 ->withInput();
         }
-        
+
         if (! Auth::attempt($credentials, (bool) ($request->get('remember')))) {
             return redirect()->back()
                 ->withErrors(['message' => ['Vui lòng kiểm tra lại tài khoản hoặc mật khẩu!']])
