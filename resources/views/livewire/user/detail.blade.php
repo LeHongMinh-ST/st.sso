@@ -73,6 +73,9 @@
                     <p>
                         <b>Trạng thái:</b> <x-status-badge :status="$user->status" />
                     </p>
+                    <p>
+                        <b>Hạn chế đăng nhập:</b> {{ $user->is_only_login_ms ? 'Chỉ được đăng nhập từ Microsoft' : 'Được đăng nhập từ cả Microsoft và hệ thống' }}
+                    </p>
                 </div>
             </div>
         </div>
