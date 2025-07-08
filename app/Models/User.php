@@ -95,6 +95,7 @@ class User extends Authenticatable
         'department_id',
         'faculty_id',
         'is_change_password',
+        'is_only_login_ms',
     ];
 
     /**

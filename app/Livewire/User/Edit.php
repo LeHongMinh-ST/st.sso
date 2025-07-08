@@ -43,6 +43,8 @@ class Edit extends Component
 
     public Status $status = Status::Active;
 
+    public bool $is_only_login_ms = false;
+
     private bool $isLoading = false;
 
     public function render()
@@ -66,6 +68,7 @@ class Edit extends Component
         $this->code = $user->code;
         $this->department_id = $user->department_id;
         $this->faculty_id = $user->faculty_id;
+        $this->is_only_login_ms = $user->is_only_login_ms;
     }
 
     public function rules(): array
@@ -80,6 +83,7 @@ class Edit extends Component
             'code' => 'nullable|max:255|unique:users,code,' . $this->user->id,
             'department_id' => 'nullable|exists:departments,id',
             'faculty_id' => 'nullable|exists:faculties,id',
+            'is_only_login_ms' => 'nullable|boolean',
         ];
 
         if (Role::Student === $this->role) {
@@ -118,6 +122,7 @@ class Edit extends Component
                 'code' => $this->code,
                 'department_id' => $this->department_id,
                 'faculty_id' => $this->faculty_id,
+                'is_only_login_ms' => $this->is_only_login_ms,
             ]);
 
             session()->flash('success', 'Cập nhật thành công!');
@@ -141,5 +146,10 @@ class Edit extends Component
         $this->status = Status::Active === $this->status
             ? Status::Inactive
             : Status::Active;
+    }
+
+    public function toggleIsOnlyLoginMs(): void
+    {
+        $this->is_only_login_ms = ! $this->is_only_login_ms;
     }
 }
