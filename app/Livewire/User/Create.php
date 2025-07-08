@@ -35,6 +35,8 @@ class Create extends Component
     #[Validate(as: 'mã người dùng')]
     public string $code = '';
 
+    public bool $is_only_login_ms = false;
+
     public int|null|string $department_id = null;
 
     public int|null|string $faculty_id = null;
@@ -67,6 +69,7 @@ class Create extends Component
             'role' => 'required',
             'department_id' => 'nullable',
             'faculty_id' => 'nullable',
+            'is_only_login_ms' => 'nullable|boolean',
         ];
 
         if (Role::Student === $this->role) {
@@ -107,6 +110,7 @@ class Create extends Component
                 'is_change_password' => false,
                 'department_id' => $this->department_id,
                 'faculty_id' => $this->faculty_id,
+                'is_only_login_ms' => $this->is_only_login_ms,
             ]);
 
             session()->flash('success', 'Tạo mới thành công!');
@@ -117,5 +121,10 @@ class Create extends Component
         } finally {
             $this->isLoading = false;
         }
+    }
+
+    public function toggleIsOnlyLoginMs(): void
+    {
+        $this->is_only_login_ms = ! $this->is_only_login_ms;
     }
 }

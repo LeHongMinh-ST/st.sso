@@ -119,6 +119,18 @@
                                 </div>
                             </div>
                             @endif
+
+                            <div class="row">
+                                <div class="col">
+                                    <label for="description" class="col-form-label">
+                                        Hạn chế đăng nhập
+                                    </label>
+                                    <div class="mb-2 form-check form-switch">
+                                        <input type="checkbox" class="form-check-input" wire:click="toggleIsOnlyLoginMs" {{ $is_only_login_ms ? 'checked' : '' }}>
+                                        {{ $is_only_login_ms ? 'Chỉ được đăng nhập từ Microsoft' : 'Được đăng nhập từ cả Microsoft và hệ thống' }}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
