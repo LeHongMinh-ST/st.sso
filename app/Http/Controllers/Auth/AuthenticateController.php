@@ -33,11 +33,13 @@ class AuthenticateController extends Controller
         $request->merge([$this->username() => request()->input('username')]);
         $credentials = $request->only([$this->username(), 'password']);
         $user = User::where($this->username(), request()->input('username'))->first();
-        if ($user->is_only_login_ms) {
-            return redirect()->back()
-                ->withErrors(['message' => ['Tài khoản chỉ được đăng nhập từ Microsoft!']])
-                ->withInput();
-        }
+
+        //TODO:: check if user is only login with MS
+        /* if ($user->is_only_login_ms) { */
+        /*     return redirect()->back() */
+        /*         ->withErrors(['message' => ['Tài khoản chỉ được đăng nhập từ Microsoft!']]) */
+        /*         ->withInput(); */
+        /* } */
 
         if (! Auth::attempt($credentials, (bool) ($request->get('remember')))) {
             return redirect()->back()
