@@ -291,7 +291,8 @@ Mỗi task nên follow workflow sau:
        public function __construct(
            private readonly CreateUserUseCase $createUserUseCase,
            private readonly FindUserUseCase $findUserUseCase,
-           private readonly FindUsersByFacultyUseCase $findUsersByFacultyUseCase
+           private readonly FindUsersByFacultyUseCase $findUsersByFacultyUseCase,
+           private readonly IdMappingService $idMappingService
        ) {
        }
        
@@ -562,6 +563,38 @@ Mỗi task nên follow workflow sau:
 - [ ] Resource created
 - [ ] Transforms correctly
 - [ ] Security review passed
+
+---
+
+### Task 5.1.3: Update API Routes để Support cả Integer ID và UUID
+
+**Estimated Time**: 1 giờ
+
+**Mục tiêu**: Update routes để accept cả integer ID và UUID
+
+**Steps**:
+1. [ ] Update routes trong `routes/api.php`:
+   ```php
+   // Support both integer ID and UUID
+   Route::get('/users/{identifier}', [UserController::class, 'show'])
+       ->where('identifier', '[0-9]+|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}')
+       ->middleware('auth:api');
+   ```
+2. [ ] Update other user-related routes tương tự
+3. [ ] Test routes với cả 2 formats:
+   ```bash
+   # Test với integer ID
+   curl -H "Authorization: Bearer {token}" http://localhost/api/users/123
+   
+   # Test với UUID
+   curl -H "Authorization: Bearer {token}" http://localhost/api/users/550e8400-e29b-41d4-a716-446655440000
+   ```
+4. [ ] Write route tests
+
+**Verification**:
+- [ ] Routes updated để accept cả 2 formats
+- [ ] Tests pass cho cả 2 formats
+- [ ] Backward compatible với existing API calls
 
 ---
 
