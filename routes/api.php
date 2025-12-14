@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Http\Controllers\Api\FacultyController;
 use App\Http\Controllers\Api\UserController;
+use App\SharedKernel\Infrastructure\Http\Controllers\HealthCheckController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -27,3 +28,7 @@ Route::get('faculties/{faculty}/teachers', [FacultyController::class, 'getTeache
 // get department by faculty
 Route::get('faculties/{faculty}/departments', [FacultyController::class, 'getDepartments'])
     ->middleware(['client.credentials']);
+
+// Health check endpoints (no authentication required)
+Route::get('/health', [HealthCheckController::class, 'basic']);
+Route::get('/health/detailed', [HealthCheckController::class, 'detailed']);
