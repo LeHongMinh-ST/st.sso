@@ -7,4 +7,5 @@ return [
     App\Providers\AuthServiceProvider::class,
     App\Providers\HorizonServiceProvider::class,
     App\Providers\PermissionServiceProvider::class,
+    App\SharedKernel\Infrastructure\Providers\SharedKernelServiceProvider::class,
 ];
