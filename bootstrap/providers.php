@@ -8,4 +8,5 @@ return [
     App\Providers\HorizonServiceProvider::class,
     App\Providers\PermissionServiceProvider::class,
     App\SharedKernel\Infrastructure\Providers\SharedKernelServiceProvider::class,
+    App\OrganizationalStructure\Infrastructure\Providers\OrganizationalStructureServiceProvider::class,
 ];
