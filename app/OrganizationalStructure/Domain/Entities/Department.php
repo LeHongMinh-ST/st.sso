@@ -65,6 +65,26 @@ final class Department
     }
 
     /**
+     * Reconstruct Department entity from persistence (without triggering events).
+     * Used when loading from database.
+     *
+     * @param DepartmentId $id Department ID
+     * @param string $name Department name
+     * @param Status $status Status
+     * @param FacultyId $facultyId Faculty ID
+     * @return self
+     */
+    public static function fromPersistence(
+        DepartmentId $id,
+        string $name,
+        Status $status,
+        FacultyId $facultyId,
+    ): self {
+        // Create without triggering events - this is reconstruction from persistence
+        return new self($id, $name, $status, $facultyId);
+    }
+
+    /**
      * Update department information.
      *
      * @param string $name Department name

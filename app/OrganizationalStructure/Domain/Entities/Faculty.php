@@ -63,6 +63,26 @@ final class Faculty
     }
 
     /**
+     * Reconstruct Faculty entity from persistence (without triggering events).
+     * Used when loading from database.
+     *
+     * @param FacultyId $id Faculty ID
+     * @param string $name Faculty name
+     * @param Status $status Status
+     * @param string|null $description Description (nullable)
+     * @return self
+     */
+    public static function fromPersistence(
+        FacultyId $id,
+        string $name,
+        Status $status,
+        ?string $description = null,
+    ): self {
+        // Create without triggering events - this is reconstruction from persistence
+        return new self($id, $name, $status, $description);
+    }
+
+    /**
      * Update faculty information.
      *
      * @param string $name Faculty name

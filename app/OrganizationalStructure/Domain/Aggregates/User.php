@@ -109,6 +109,80 @@ final class User
     }
 
     /**
+     * Reconstruct User aggregate from persistence (without triggering events).
+     * Used when loading from database.
+     *
+     * @param UserId $id User ID
+     * @param UserName $userName Username
+     * @param FullName $fullName Full name
+     * @param Email $email Email address
+     * @param UserCode|null $userCode User code (nullable)
+     * @param PhoneNumber|null $phoneNumber Phone number (nullable)
+     * @param FacultyId|null $facultyId Faculty ID (nullable)
+     * @param DepartmentId|null $departmentId Department ID (nullable)
+     * @return self
+     */
+    public static function fromPersistence(
+        UserId $id,
+        UserName $userName,
+        FullName $fullName,
+        Email $email,
+        ?UserCode $userCode = null,
+        ?PhoneNumber $phoneNumber = null,
+        ?FacultyId $facultyId = null,
+        ?DepartmentId $departmentId = null,
+    ): self {
+        // Create without triggering events - this is reconstruction from persistence
+        return new self(
+            $id,
+            $userName,
+            $fullName,
+            $email,
+            $userCode,
+            $phoneNumber,
+            $facultyId,
+            $departmentId,
+        );
+    }
+
+    /**
+     * Reconstruct User aggregate from persistence (without triggering events).
+     * Used when loading from database.
+     *
+     * @param UserId $id User ID
+     * @param UserName $userName Username
+     * @param FullName $fullName Full name
+     * @param Email $email Email address
+     * @param UserCode|null $userCode User code (nullable)
+     * @param PhoneNumber|null $phoneNumber Phone number (nullable)
+     * @param FacultyId|null $facultyId Faculty ID (nullable)
+     * @param DepartmentId|null $departmentId Department ID (nullable)
+     * @return self
+     */
+    public static function fromPersistence(
+        UserId $id,
+        UserName $userName,
+        FullName $fullName,
+        Email $email,
+        ?UserCode $userCode = null,
+        ?PhoneNumber $phoneNumber = null,
+        ?FacultyId $facultyId = null,
+        ?DepartmentId $departmentId = null,
+    ): self {
+        // Create without triggering events - this is reconstruction from persistence
+        return new self(
+            $id,
+            $userName,
+            $fullName,
+            $email,
+            $userCode,
+            $phoneNumber,
+            $facultyId,
+            $departmentId,
+        );
+    }
+
+    /**
      * Update user profile.
      *
      * @param FullName $fullName Full name
