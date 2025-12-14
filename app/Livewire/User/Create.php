@@ -53,14 +53,6 @@ class Create extends Component
 
     private bool $isLoading = false;
 
-    public function __construct(
-        private readonly CreateUserUseCase $createUserUseCase,
-        private readonly AssignUserToFacultyUseCase $assignUserToFacultyUseCase,
-        private readonly AssignUserToDepartmentUseCase $assignUserToDepartmentUseCase,
-    ) {
-        parent::__construct();
-    }
-
     public function render()
     {
         $faculties = Faculty::all();
@@ -133,7 +125,7 @@ class Create extends Component
                 'department_id' => $departmentUuid,
             ]);
 
-            $user = $this->createUserUseCase->execute($createDTO);
+            $user = $this->getCreateUserUseCase()->execute($createDTO);
 
             // Handle password and role (temporary until Phase 3)
             $this->handlePasswordAndRole($user, $this->role, $this->is_only_login_ms);
@@ -151,6 +143,37 @@ class Create extends Component
     public function toggleIsOnlyLoginMs(): void
     {
         $this->is_only_login_ms = !$this->is_only_login_ms;
+    }
+
+    /**
+     * Get CreateUserUseCase instance.
+     * Livewire components cannot use constructor injection, so we use app() helper.
+     *
+     * @return CreateUserUseCase
+     */
+    private function getCreateUserUseCase(): CreateUserUseCase
+    {
+        return app(CreateUserUseCase::class);
+    }
+
+    /**
+     * Get AssignUserToFacultyUseCase instance.
+     *
+     * @return AssignUserToFacultyUseCase
+     */
+    private function getAssignUserToFacultyUseCase(): AssignUserToFacultyUseCase
+    {
+        return app(AssignUserToFacultyUseCase::class);
+    }
+
+    /**
+     * Get AssignUserToDepartmentUseCase instance.
+     *
+     * @return AssignUserToDepartmentUseCase
+     */
+    private function getAssignUserToDepartmentUseCase(): AssignUserToDepartmentUseCase
+    {
+        return app(AssignUserToDepartmentUseCase::class);
     }
 
     /**

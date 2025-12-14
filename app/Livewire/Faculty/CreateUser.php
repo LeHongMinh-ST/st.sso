@@ -46,12 +46,6 @@ class CreateUser extends Component
 
     private bool $isLoading = false;
 
-    public function __construct(
-        private readonly CreateUserUseCase $createUserUseCase,
-    ) {
-        parent::__construct();
-    }
-
     public function updatedRole(): void
     {
         // Reset code when role changes
@@ -114,7 +108,7 @@ class CreateUser extends Component
                 'faculty_id' => $facultyUuid,
             ]);
 
-            $user = $this->createUserUseCase->execute($createDTO);
+            $user = $this->getCreateUserUseCase()->execute($createDTO);
 
             // Handle password and role (temporary until Phase 3)
             $this->handlePasswordAndRole($user, $this->role);
@@ -129,6 +123,17 @@ class CreateUser extends Component
         } finally {
             $this->isLoading = false;
         }
+    }
+
+    /**
+     * Get CreateUserUseCase instance.
+     * Livewire components cannot use constructor injection, so we use app() helper.
+     *
+     * @return CreateUserUseCase
+     */
+    private function getCreateUserUseCase(): CreateUserUseCase
+    {
+        return app(CreateUserUseCase::class);
     }
 
     /**

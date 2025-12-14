@@ -27,12 +27,6 @@ class Create extends Component
 
     private bool $isLoading = false;
 
-    public function __construct(
-        private readonly CreateFacultyUseCase $createFacultyUseCase,
-    ) {
-        parent::__construct();
-    }
-
     public function render()
     {
         return view('livewire.faculty.create');
@@ -67,7 +61,7 @@ class Create extends Component
                 'description' => $this->description,
             ]);
 
-            $faculty = $this->createFacultyUseCase->execute($createDTO);
+            $faculty = $this->getCreateFacultyUseCase()->execute($createDTO);
 
             // Get integer ID for redirect (temporary until routes use UUID)
             $facultyModel = Faculty::where('uuid', $faculty->id()->toString())->first();
@@ -81,6 +75,17 @@ class Create extends Component
         } finally {
             $this->isLoading = false;
         }
+    }
+
+    /**
+     * Get CreateFacultyUseCase instance.
+     * Livewire components cannot use constructor injection, so we use app() helper.
+     *
+     * @return CreateFacultyUseCase
+     */
+    private function getCreateFacultyUseCase(): CreateFacultyUseCase
+    {
+        return app(CreateFacultyUseCase::class);
     }
 
     /**

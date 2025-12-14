@@ -38,11 +38,13 @@ class StudentsImport implements ToCollection, WithHeadingRow, WithValidation
     private int $processedRows = 0;
     private ?string $facultyUuid = null;
 
+    /**
+     * Note: ImportUsersFromExcelUseCase and FacultyRepositoryInterface are resolved via app() helper
+     * because Maatwebsite\Excel import classes don't support constructor injection properly.
+     */
     public function __construct(
         int $facultyId,
         int $userId,
-        private readonly ImportUsersFromExcelUseCase $importUsersUseCase,
-        private readonly FacultyRepositoryInterface $facultyRepository,
     ) {
         $this->facultyId = $facultyId;
         $this->userId = $userId;
@@ -71,7 +73,7 @@ class StudentsImport implements ToCollection, WithHeadingRow, WithValidation
             foreach ($batches as $batch) {
                 try {
                     // Use Use Case to import users (OrganizationalStructure part)
-                    $result = $this->importUsersUseCase->execute($batch, $this->facultyUuid);
+                    $result = $this->getImportUsersUseCase()->execute($batch, $this->facultyUuid);
 
                     // Handle password and role for new users (temporary until Phase 3)
                     $this->handlePasswordAndRole($batch, $result['imported']);
@@ -127,6 +129,27 @@ class StudentsImport implements ToCollection, WithHeadingRow, WithValidation
     }
 
     /**
+     * Get ImportUsersFromExcelUseCase instance.
+     * Using app() helper because import classes don't support constructor injection.
+     *
+     * @return ImportUsersFromExcelUseCase
+     */
+    private function getImportUsersUseCase(): ImportUsersFromExcelUseCase
+    {
+        return app(ImportUsersFromExcelUseCase::class);
+    }
+
+    /**
+     * Get FacultyRepositoryInterface instance.
+     *
+     * @return FacultyRepositoryInterface
+     */
+    private function getFacultyRepository(): FacultyRepositoryInterface
+    {
+        return app(FacultyRepositoryInterface::class);
+    }
+
+    /**
      * Get faculty UUID from integer ID.
      *
      * @return string|null
@@ -151,7 +174,7 @@ class StudentsImport implements ToCollection, WithHeadingRow, WithValidation
                 $this->generateDeterministicUuid('faculties', $this->facultyId)
             );
 
-            $facultyEntity = $this->facultyRepository->findById($facultyIdVO);
+            $facultyEntity = $this->getFacultyRepository()->findById($facultyIdVO);
             if (null !== $facultyEntity) {
                 return $facultyEntity->id()->toString();
             }

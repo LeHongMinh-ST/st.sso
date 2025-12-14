@@ -59,14 +59,6 @@ class Edit extends Component
 
     private ?string $userUuid = null;
 
-    public function __construct(
-        private readonly UpdateUserProfileUseCase $updateUserProfileUseCase,
-        private readonly AssignUserToFacultyUseCase $assignUserToFacultyUseCase,
-        private readonly AssignUserToDepartmentUseCase $assignUserToDepartmentUseCase,
-    ) {
-        parent::__construct();
-    }
-
     public function render()
     {
         $faculties = Faculty::all();
@@ -148,13 +140,13 @@ class Edit extends Component
                 'phone' => $this->phone,
             ]);
 
-            $this->updateUserProfileUseCase->execute($this->userUuid, $updateDTO);
+            $this->getUpdateUserProfileUseCase()->execute($this->userUuid, $updateDTO);
 
             // Assign to faculty if changed
             if (null !== $this->faculty_id) {
                 $facultyUuid = $this->getFacultyUuid($this->faculty_id);
                 if (null !== $facultyUuid) {
-                    $this->assignUserToFacultyUseCase->execute($this->userUuid, $facultyUuid);
+                    $this->getAssignUserToFacultyUseCase()->execute($this->userUuid, $facultyUuid);
                 }
             }
 
@@ -162,7 +154,7 @@ class Edit extends Component
             if (null !== $this->department_id) {
                 $departmentUuid = $this->getDepartmentUuid($this->department_id);
                 if (null !== $departmentUuid) {
-                    $this->assignUserToDepartmentUseCase->execute($this->userUuid, $departmentUuid);
+                    $this->getAssignUserToDepartmentUseCase()->execute($this->userUuid, $departmentUuid);
                 }
             }
 
@@ -195,6 +187,37 @@ class Edit extends Component
     public function toggleIsOnlyLoginMs(): void
     {
         $this->is_only_login_ms = !$this->is_only_login_ms;
+    }
+
+    /**
+     * Get UpdateUserProfileUseCase instance.
+     * Livewire components cannot use constructor injection, so we use app() helper.
+     *
+     * @return UpdateUserProfileUseCase
+     */
+    private function getUpdateUserProfileUseCase(): UpdateUserProfileUseCase
+    {
+        return app(UpdateUserProfileUseCase::class);
+    }
+
+    /**
+     * Get AssignUserToFacultyUseCase instance.
+     *
+     * @return AssignUserToFacultyUseCase
+     */
+    private function getAssignUserToFacultyUseCase(): AssignUserToFacultyUseCase
+    {
+        return app(AssignUserToFacultyUseCase::class);
+    }
+
+    /**
+     * Get AssignUserToDepartmentUseCase instance.
+     *
+     * @return AssignUserToDepartmentUseCase
+     */
+    private function getAssignUserToDepartmentUseCase(): AssignUserToDepartmentUseCase
+    {
+        return app(AssignUserToDepartmentUseCase::class);
     }
 
     /**

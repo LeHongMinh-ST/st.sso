@@ -272,3 +272,172 @@ public function methodName(Request $request): JsonResponse
 - ✅ Group related endpoints lại với nhau
 
 **Vui lòng tham khảo file `.ai-knowledge/commons/05-api-documentation-scramble.md`** để biết chi tiết về conventions viết API documentation theo Scramble.
+
+## 9. Quy ước về Dependency Injection trong Livewire Components và Import Classes
+
+### 9.1. Vấn đề
+
+**Livewire Components** và một số **Import Classes** (như `Maatwebsite\Excel` import classes) **KHÔNG HỖ TRỢ** constructor injection như các class thông thường trong Laravel. Khi sử dụng constructor injection trong các class này, Laravel sẽ không thể tự động resolve dependencies.
+
+### 9.2. Giải pháp: Sử dụng `app()` Helper
+
+Thay vì sử dụng constructor injection, chúng ta sử dụng `app()` helper để resolve dependencies khi cần thiết.
+
+### 9.3. Pattern cho Livewire Components
+
+**KHÔNG ĐƯỢC** sử dụng constructor injection trong Livewire components:
+
+```php
+// ❌ SAI - Không hoạt động trong Livewire
+class Create extends Component
+{
+    public function __construct(
+        private readonly CreateUserUseCase $createUserUseCase,
+    ) {
+        parent::__construct();
+    }
+}
+```
+
+**PHẢI** sử dụng private helper methods với `app()`:
+
+```php
+// ✅ ĐÚNG - Sử dụng app() helper
+class Create extends Component
+{
+    /**
+     * Get CreateUserUseCase instance.
+     * Livewire components cannot use constructor injection, so we use app() helper.
+     *
+     * @return CreateUserUseCase
+     */
+    private function getCreateUserUseCase(): CreateUserUseCase
+    {
+        return app(CreateUserUseCase::class);
+    }
+
+    public function submit()
+    {
+        // Use the helper method to get Use Case instance
+        $user = $this->getCreateUserUseCase()->execute($dto);
+    }
+}
+```
+
+### 9.4. Pattern cho Import Classes
+
+**KHÔNG ĐƯỢC** sử dụng constructor injection cho dependencies trong Import classes:
+
+```php
+// ❌ SAI - Không hoạt động với Maatwebsite\Excel
+class StudentsImport implements ToCollection
+{
+    public function __construct(
+        int $facultyId,
+        int $userId,
+        private readonly ImportUsersFromExcelUseCase $importUsersUseCase,
+    ) {
+    }
+}
+```
+
+**PHẢI** chỉ nhận các parameters cần thiết trong constructor, và sử dụng `app()` helper cho dependencies:
+
+```php
+// ✅ ĐÚNG - Chỉ nhận parameters cần thiết, dùng app() cho dependencies
+class StudentsImport implements ToCollection
+{
+    /**
+     * Note: ImportUsersFromExcelUseCase is resolved via app() helper
+     * because Maatwebsite\Excel import classes don't support constructor injection properly.
+     */
+    public function __construct(
+        int $facultyId,
+        int $userId,
+    ) {
+        $this->facultyId = $facultyId;
+        $this->userId = $userId;
+    }
+
+    /**
+     * Get ImportUsersFromExcelUseCase instance.
+     * Using app() helper because import classes don't support constructor injection.
+     *
+     * @return ImportUsersFromExcelUseCase
+     */
+    private function getImportUsersUseCase(): ImportUsersFromExcelUseCase
+    {
+        return app(ImportUsersFromExcelUseCase::class);
+    }
+
+    public function collection(Collection $rows): void
+    {
+        // Use the helper method to get Use Case instance
+        $result = $this->getImportUsersUseCase()->execute($rows, $facultyUuid);
+    }
+}
+```
+
+### 9.5. Best Practices
+
+1. **Naming Convention**: Helper methods nên có prefix `get` và suffix là tên class (ví dụ: `getCreateUserUseCase()`, `getUserRepository()`)
+
+2. **Documentation**: Mọi helper method **BẮT BUỘC** phải có PHPDoc giải thích tại sao không dùng constructor injection
+
+3. **Caching**: Không cần cache instances vì Laravel's service container đã handle singleton/transient instances
+
+4. **Type Safety**: Luôn khai báo return type cho helper methods để đảm bảo type safety
+
+5. **Single Responsibility**: Mỗi helper method chỉ resolve một dependency
+
+### 9.6. Ví dụ đầy đủ
+
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace App\Livewire\User;
+
+use App\OrganizationalStructure\Application\UseCases\CreateUserUseCase;
+use App\OrganizationalStructure\Application\UseCases\AssignUserToFacultyUseCase;
+use Livewire\Component;
+
+class Create extends Component
+{
+    /**
+     * Get CreateUserUseCase instance.
+     * Livewire components cannot use constructor injection, so we use app() helper.
+     *
+     * @return CreateUserUseCase
+     */
+    private function getCreateUserUseCase(): CreateUserUseCase
+    {
+        return app(CreateUserUseCase::class);
+    }
+
+    /**
+     * Get AssignUserToFacultyUseCase instance.
+     *
+     * @return AssignUserToFacultyUseCase
+     */
+    private function getAssignUserToFacultyUseCase(): AssignUserToFacultyUseCase
+    {
+        return app(AssignUserToFacultyUseCase::class);
+    }
+
+    public function submit()
+    {
+        // Use helper methods to get Use Case instances
+        $user = $this->getCreateUserUseCase()->execute($dto);
+        $this->getAssignUserToFacultyUseCase()->execute($userId, $facultyId);
+    }
+}
+```
+
+### 9.7. Lưu ý
+
+- **Controllers**: Vẫn sử dụng constructor injection bình thường vì Laravel hỗ trợ đầy đủ
+- **Jobs**: Có thể sử dụng constructor injection cho dependencies, nhưng không thể inject vào `handle()` method parameters nếu class cần constructor parameters
+- **Service Providers**: Sử dụng constructor injection bình thường
+- **Use Cases**: Sử dụng constructor injection bình thường

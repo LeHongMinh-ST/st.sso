@@ -38,11 +38,15 @@ class ImportStudentsJob implements ShouldQueue
     /**
      * Execute the job.
      * StudentsImport class will handle the actual import using DDD Use Cases.
+     * Note: StudentsImport is instantiated manually because it needs constructor parameters.
      */
-    public function handle(StudentsImport $studentsImport): void
+    public function handle(): void
     {
         try {
             Log::info("ImportStudentsJob started: " . $this->filePath);
+            // Create StudentsImport instance with required parameters
+            // StudentsImport will use app() helper internally to resolve Use Cases
+            $studentsImport = new StudentsImport($this->facultyId, $this->userId);
             Excel::import($studentsImport, $this->filePath);
         } catch (Exception $e) {
             Log::error("ImportStudentsJob failed: " . $e->getMessage());

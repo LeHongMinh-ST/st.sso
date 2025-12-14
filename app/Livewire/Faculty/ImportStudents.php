@@ -14,6 +14,10 @@ use Livewire\WithFileUploads;
 use Maatwebsite\Excel\Facades\Excel;
 use Throwable;
 
+/**
+ * Livewire component for importing students.
+ * Note: StudentsImport class is injected via Laravel's service container in ImportStudentsJob.
+ */
 class ImportStudents extends Component
 {
     use WithFileUploads;
