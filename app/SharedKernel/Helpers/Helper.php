@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Helpers;
+namespace App\SharedKernel\Helpers;
 
 use Carbon\Exceptions\InvalidFormatException;
 use Illuminate\Support\Carbon;

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Livewire\Faculty;
 
-use App\Helpers\Constants;
 use App\Models\Faculty;
 use App\Models\User;
+use App\SharedKernel\Helpers\Constants;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithPagination;

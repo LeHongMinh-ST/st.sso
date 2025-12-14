@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api;
 
-use App\Helpers\Constants;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\User\StoreUserRequest;
 use App\Http\Resources\User\UserResource;
 use App\Models\User;
+use App\SharedKernel\Helpers\Constants;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;

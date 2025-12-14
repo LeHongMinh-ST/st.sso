@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Auth;
 
 use App\Enums\Role;
-use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Authenticate\LoginRequest;
 use App\Models\User;
+use App\SharedKernel\Helpers\Helper;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Application;

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Livewire\Client;
 
-use App\Helpers\Constants;
 use App\Models\Client;
 use App\Models\User;
+use App\SharedKernel\Helpers\Constants;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Attributes\Url;
 use Livewire\Component;
