@@ -186,6 +186,8 @@ Mỗi task nên follow workflow sau:
 
 **Mục tiêu**: Xóa code cũ không còn sử dụng sau khi migration hoàn tất
 
+**⚠️ UUID Migration Note**: **KHÔNG REMOVE INTEGER ID COLUMNS** - Theo UUID Migration Strategy (`.ai-knowledge/migration-strategy/uuid-migration-strategy.md`), chúng ta giữ cả integer ID và UUID vĩnh viễn để backward compatible với external systems.
+
 ### Task 6.1.1: Identify Old Code
 
 **Estimated Time**: 2 giờ

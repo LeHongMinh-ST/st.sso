@@ -246,17 +246,24 @@ Mỗi task nên follow workflow sau:
 
 ---
 
-### Task 5.1.2: Create New User API Controller trong Infrastructure
+### Task 5.1.2: Create New User API Controller với UUID Support
 
-**Estimated Time**: 3 giờ
+**Estimated Time**: 4 giờ
+
+**⚠️ UUID Migration Impact**: Controller cần support cả integer ID và UUID để backward compatible với external systems.
 
 **Steps**:
-1. [ ] Tạo folder structure:
+1. [ ] Review UUID Migration Strategy:
+   - [ ] Đọc `.ai-knowledge/migration-strategy/uuid-migration-strategy.md`
+   - [ ] Đọc `.ai-knowledge/migration-strategy/uuid-migration-external-systems.md`
+   - [ ] Review IdMappingService implementation
+   - [ ] Hiểu rõ API compatibility requirements
+2. [ ] Tạo folder structure:
    ```bash
    mkdir -p app/OrganizationalStructure/Infrastructure/Http/Controllers/Api
    touch app/OrganizationalStructure/Infrastructure/Http/Controllers/Api/UserController.php
    ```
-2. [ ] Implement controller sử dụng Use Cases:
+3. [ ] Implement controller với UUID support:
    ```php
    <?php
    
@@ -270,6 +277,7 @@ Mỗi task nên follow workflow sau:
    use App\OrganizationalStructure\Application\UseCases\FindUsersByFacultyUseCase;
    use App\OrganizationalStructure\Domain\ValueObjects\UserId;
    use App\OrganizationalStructure\Infrastructure\Http\Resources\UserResource;
+   use App\SharedKernel\Infrastructure\Services\IdMappingService;
    use Illuminate\Http\JsonResponse;
    use Illuminate\Http\Request;
    use Illuminate\Support\Facades\Auth;
@@ -320,12 +328,25 @@ Mỗi task nên follow workflow sau:
        }
        
        /**
-        * Get single user.
+        * Get single user - supports both integer ID and UUID.
+        * 
+        * GET /api/users/{identifier}
+        * - identifier can be: 123 (integer) or {uuid}
         */
-       public function show(string $id): JsonResponse
+       public function show(Request $request, string $identifier): JsonResponse
        {
-           // Check permission
-           if (!Auth::guard('api')->user()->can('view', \App\Models\User::find($id))) {
+           // Resolve identifier (supports both formats)
+           $mapping = $this->idMappingService->resolveIdentifier('users', $identifier);
+
+           if (!$mapping['uuid']) {
+               return response()->json([
+                   'error' => 'Not Found',
+                   'message' => 'User not found'
+               ], 404);
+           }
+
+           // Check permission (use integer ID for policy check)
+           if ($mapping['id'] && !Auth::guard('api')->user()->can('view', \App\Models\User::find($mapping['id']))) {
                return response()->json([
                    'error' => 'Forbidden',
                    'message' => 'Insufficient permissions'
@@ -333,7 +354,8 @@ Mỗi task nên follow workflow sau:
            }
            
            try {
-               $userId = UserId::fromString($id);
+               // Use UUID to find user in Domain layer
+               $userId = UserId::fromString($mapping['uuid']);
                $user = $this->findUserUseCase->execute($userId);
                
                if ($user === null) {
@@ -343,11 +365,16 @@ Mỗi task nên follow workflow sau:
                    ], 404);
                }
                
-               return (new UserResource($user))->response();
+               // Return response with both IDs for backward compatibility
+               return response()->json([
+                   'id' => $mapping['id'],        // Integer ID (legacy)
+                   'uuid' => $mapping['uuid'],    // UUID (new)
+                   'data' => (new UserResource($user))->toArray($request),
+               ]);
            } catch (\InvalidArgumentException $e) {
                return response()->json([
                    'error' => 'Bad Request',
-                   'message' => 'Invalid user ID format'
+                   'message' => 'Invalid user identifier format'
                ], 400);
            }
        }

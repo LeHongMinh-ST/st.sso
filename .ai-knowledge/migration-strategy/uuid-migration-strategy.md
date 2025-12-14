@@ -309,33 +309,27 @@ public function findById(Uuid $uuid): ?User
 }
 ```
 
-### Phase 5: Remove Integer IDs (After Full Migration)
+### Phase 5: Long-term Maintenance (Giữ cả 2 IDs)
 
-**Migration**: `remove_integer_ids.php`
+**Decision**: **KHÔNG REMOVE INTEGER ID** - Giữ cả 2 vĩnh viễn
 
-```php
-public function up(): void
-{
-    // Drop foreign key constraints first
-    Schema::table('users', function (Blueprint $table): void {
-        $table->dropForeign(['department_id']);
-        $table->dropForeign(['faculty_id']);
-    });
+**Rationale**:
+- External systems có thể không migrate
+- Integer ID vẫn có performance benefits
+- Giữ cả 2 cho flexibility
+- No breaking changes
 
-    // Drop integer columns
-    Schema::table('users', function (Blueprint $table): void {
-        $table->dropColumn(['id', 'department_id', 'faculty_id']);
-        $table->renameColumn('uuid', 'id');
-        $table->primary('id');
-    });
+**Maintenance**:
+- ✅ Integer ID vẫn là Primary Key
+- ✅ UUID là unique identifier
+- ✅ Domain layer sử dụng UUID
+- ✅ API layer support cả 2
+- ✅ External systems tự chọn format
 
-    // Recreate foreign keys với UUID
-    Schema::table('users', function (Blueprint $table): void {
-        $table->foreign('department_uuid')->references('uuid')->on('departments');
-        $table->foreign('faculty_uuid')->references('uuid')->on('faculties');
-    });
-}
-```
+**Note**: Nếu trong tương lai muốn remove integer ID, có thể làm sau khi:
+- Tất cả external systems đã migrate
+- Đã có deprecation period đủ dài
+- Đã có approval từ stakeholders
 
 ---
 
@@ -391,62 +385,66 @@ $table->uuid('uuid')->binary()->nullable();
 
 ## Recommendations
 
-### ✅ Recommended Approach: Dual Key (Strategy 2)
+### ✅ Recommended Approach: Dual Key - Giữ cả 2 IDs
+
+**Decision**: **GIỮ CẢ INTEGER ID VÀ UUID VĨNH VIỄN**
 
 **Reasons**:
-1. **Safe**: Không breaking existing functionality
-2. **Gradual**: Có thể migrate từng phần
-3. **Testable**: Có thể test từng bước
-4. **Rollback**: Có thể rollback nếu cần
+1. **Zero breaking changes**: Existing systems không bị ảnh hưởng
+2. **Flexible**: Support cả 2 formats
+3. **Safe**: Có thể rollback bất cứ lúc nào
+4. **Gradual**: External systems migrate khi sẵn sàng
+5. **Performance**: Integer ID vẫn có performance benefits
 
 ### ⚠️ Important Notes
 
-1. **Don't rush**: Migration này cần thời gian, đừng vội
-2. **Test thoroughly**: Test trên staging trước khi production
-3. **Monitor performance**: UUID indexes lớn hơn, cần monitor
-4. **Document everything**: Document mọi thay đổi
-5. **Coordinate with team**: Đảm bảo team biết về migration
+1. **Integer ID vẫn là Primary Key**: Không thay đổi database structure
+2. **UUID là additional identifier**: Không replace ID
+3. **Domain layer dùng UUID**: Value Objects sử dụng UUID
+4. **API layer support cả 2**: Backward compatible
+5. **External systems tự chọn**: Có thể dùng ID hoặc UUID
+6. **Test thoroughly**: Test trên staging trước khi production
+7. **Monitor performance**: UUID indexes lớn hơn, cần monitor
+8. **Document everything**: Document mọi thay đổi
+9. **Coordinate with external teams**: Đảm bảo external systems biết về UUID option
 
 ### 📋 Timeline Estimate
 
 - **Phase 1** (Add UUID columns): 1-2 giờ
 - **Phase 2** (Populate UUIDs): 1-2 giờ (depends on data size)
-- **Phase 3** (Make UUID required): 30 phút
-- **Phase 4** (Update code): 2-4 tuần (gradual)
-- **Phase 5** (Remove integer IDs): 1-2 giờ (sau khi code đã migrate)
+- **Phase 3** (Make UUID required và unique): 30 phút
+- **Phase 4** (Update Domain layer code): 1-2 tuần
+- **Phase 5** (API compatibility layer): 1 tuần
+- **Phase 6** (External systems migration - optional): Ongoing
 
-**Total**: ~3-4 tuần (với gradual code migration)
-
----
-
-## Alternative: Keep Integer IDs
-
-Nếu UUID migration quá phức tạp, có thể:
-
-1. **Keep integer IDs** trong database
-2. **Use UUID only in Domain layer** (Value Objects)
-3. **Map UUID ↔ ID** trong Repository layer
-
-**Pros**:
-- ✅ Không cần database migration
-- ✅ Performance tốt hơn (integer indexes)
-- ✅ Simpler migration
-
-**Cons**:
-- ⚠️ UUID không phải là "source of truth"
-- ⚠️ Cần maintain mapping logic
-- ⚠️ Không đúng với DDD principles (ID trong Domain layer)
+**Total**: ~2-3 tuần cho internal migration, external systems migrate khi sẵn sàng
 
 ---
 
-## Decision
+## Final Decision
 
-**Recommended**: **Dual Key Approach (Strategy 2)**
+**Approach**: **Dual Key - Giữ cả Integer ID và UUID**
+
+**Key Points**:
+- ✅ **Integer ID**: Vẫn là Primary Key, không thay đổi
+- ✅ **UUID**: Thêm mới, unique identifier, indexed
+- ✅ **Domain Layer**: Sử dụng UUID (Value Objects)
+- ✅ **API Layer**: Support cả 2 formats
+- ✅ **External Systems**: Tự chọn dùng ID hoặc UUID
+- ✅ **Long-term**: Giữ cả 2 vĩnh viễn (không remove integer ID)
+
+**Benefits**:
+- Zero breaking changes
+- Backward compatible
+- Flexible cho external systems
+- Safe và rollback-able
+- Performance benefits từ integer ID
 
 **Timeline**: Implement trong Phase 2 (OrganizationalStructure Context) khi migrate User model.
 
 **Next Steps**:
-1. Review strategy này với team
-2. Create detailed migration scripts
-3. Test trên staging environment
-4. Schedule migration window
+1. ✅ Review strategy này với team
+2. ✅ Create detailed migration scripts
+3. ✅ Test trên staging environment
+4. ✅ Communicate với external systems về UUID option
+5. ✅ Implement trong Phase 2

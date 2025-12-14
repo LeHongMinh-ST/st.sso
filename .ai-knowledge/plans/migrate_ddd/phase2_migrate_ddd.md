@@ -1360,69 +1360,106 @@ class UserTest extends TestCase
 
 ---
 
-### Task 2.1.7: Database Migrations (if needed)
+### Task 2.1.7: Database Migrations - UUID Support
 
-**Estimated Time**: 2 giờ
+**Estimated Time**: 2-3 giờ
 
-**Mục tiêu**: Tạo database migrations nếu cần thay đổi database structure
+**Mục tiêu**: Add UUID columns cho OrganizationalStructure tables theo UUID Migration Strategy
 
-#### Subtask 2.1.7.1: Review Database Schema
+**⚠️ IMPORTANT**: Theo UUID Migration Strategy (`.ai-knowledge/migration-strategy/uuid-migration-strategy.md`), chúng ta sẽ:
+- ✅ **Giữ nguyên** integer ID (vẫn là Primary Key)
+- ✅ **Thêm mới** UUID column (additional identifier)
+- ✅ **Không remove** integer ID - giữ cả 2 vĩnh viễn
+
+#### Subtask 2.1.7.1: Review Database Schema và UUID Migration Strategy
 
 **Estimated Time**: 30 phút
 
 **Steps**:
-1. [ ] Review existing database schema:
+1. [ ] Review UUID Migration Strategy document:
+   - [ ] Đọc `.ai-knowledge/migration-strategy/uuid-migration-strategy.md`
+   - [ ] Hiểu rõ approach: giữ cả integer ID và UUID
+   - [ ] Review migration phases
+2. [ ] Review existing database schema:
    ```bash
    php artisan db:show
    ```
-2. [ ] Check if current schema supports DDD structure:
-   - [ ] Users table structure
-   - [ ] Faculties table structure
-   - [ ] Departments table structure
+3. [ ] Check if current schema supports DDD structure:
+   - [ ] Users table structure (id, department_id, faculty_id)
+   - [ ] Faculties table structure (id)
+   - [ ] Departments table structure (id)
    - [ ] Foreign keys và relationships
-3. [ ] Identify changes needed:
-   - [ ] New columns needed?
-   - [ ] Column type changes?
-   - [ ] New indexes needed?
-   - [ ] New tables needed?
-
-**Note**: Nếu current schema đã đủ, có thể không cần migrations mới. Chỉ cần ensure schema supports DDD structure.
+4. [ ] Identify tables cần UUID columns:
+   - [ ] Core tables: users, faculties, departments
+   - [ ] Foreign key columns: users.department_id, users.faculty_id
+5. [ ] Document migration plan
 
 **Verification**:
+- [ ] UUID Migration Strategy reviewed
 - [ ] Schema reviewed
-- [ ] Changes identified
-- [ ] Decision made (migrate or not)
+- [ ] Migration plan documented
+
+**Reference**: Xem `.ai-knowledge/migration-strategy/uuid-migration-strategy.md` để hiểu chi tiết.
 
 ---
 
-#### Subtask 2.1.7.2: Create Migrations (if needed)
+#### Subtask 2.1.7.2: Create UUID Migration
 
-**Estimated Time**: 1 giờ
+**Estimated Time**: 1.5-2 giờ
 
 **Steps**:
-1. [ ] Create migrations nếu cần:
+1. [ ] Create migration để add UUID columns:
    ```bash
-   php artisan make:migration update_users_table_for_ddd
-   php artisan make:migration update_faculties_table_for_ddd
-   php artisan make:migration update_departments_table_for_ddd
+   php artisan make:migration add_uuid_columns_to_organizational_structure_tables
    ```
-2. [ ] Implement migrations:
-   - [ ] Add columns nếu cần
-   - [ ] Modify column types nếu cần
-   - [ ] Add indexes
-   - [ ] Add foreign keys
+2. [ ] Implement migration theo UUID Migration Strategy:
+   ```php
+   public function up(): void
+   {
+       // Add UUID column to core tables (nullable initially)
+       Schema::table('users', function (Blueprint $table): void {
+           $table->uuid('uuid')->nullable()->after('id');
+           $table->index('uuid');
+       });
+
+       Schema::table('faculties', function (Blueprint $table): void {
+           $table->uuid('uuid')->nullable()->after('id');
+           $table->index('uuid');
+       });
+
+       Schema::table('departments', function (Blueprint $table): void {
+           $table->uuid('uuid')->nullable()->after('id');
+           $table->index('uuid');
+       });
+
+       // Add UUID columns for foreign keys
+       Schema::table('users', function (Blueprint $table): void {
+           $table->uuid('department_uuid')->nullable()->after('department_id');
+           $table->uuid('faculty_uuid')->nullable()->after('faculty_id');
+           $table->index('department_uuid');
+           $table->index('faculty_uuid');
+       });
+   }
+   ```
 3. [ ] Test migrations:
    ```bash
    php artisan migrate:fresh
    php artisan migrate:rollback
    php artisan migrate
    ```
-4. [ ] Commit migrations
+4. [ ] Verify UUID columns được tạo và integer ID vẫn giữ nguyên
+5. [ ] Commit migration
 
 **Verification**:
-- [ ] Migrations created (if needed)
+- [ ] UUID migration created
 - [ ] Migrations tested
-- [ ] Committed
+- [ ] UUID columns và indexes verified
+- [ ] Integer ID columns vẫn giữ nguyên (không bị thay đổi)
+
+**Note**: 
+- UUID columns ban đầu là `nullable` để có thể populate dần
+- Integer ID vẫn là Primary Key, không thay đổi
+- Sau khi populate UUIDs, sẽ make UUID `not null` và `unique` trong Task 2.4.3
 
 ---
 
@@ -2260,34 +2297,87 @@ public static function fromPersistence(
 
 **Mục tiêu**: Plan và implement data migration từ old structure sang new DDD structure
 
-### Task 2.4.1: Plan Data Migration
+### Task 2.4.1: Plan Data Migration và UUID Population
 
 **Estimated Time**: 2 giờ
 
+**⚠️ UUID Migration**: Task này bao gồm populate UUIDs cho existing records theo UUID Migration Strategy.
+
 **Steps**:
-1. [ ] Review existing data:
-   - [ ] Users data structure
+1. [ ] Review UUID Migration Strategy:
+   - [ ] Đọc `.ai-knowledge/migration-strategy/uuid-migration-strategy.md`
+   - [ ] Hiểu rõ approach: populate UUIDs cho existing records
+   - [ ] Review populate UUIDs command structure
+2. [ ] Review existing data:
+   - [ ] Users data structure (count, relationships)
    - [ ] Faculties data structure
    - [ ] Departments data structure
    - [ ] Relationships và foreign keys
-2. [ ] Identify data mapping:
+3. [ ] Identify data mapping:
    - [ ] Old User model → New User Aggregate
    - [ ] Old Faculty model → New Faculty Entity
    - [ ] Old Department model → New Department Entity
-3. [ ] Plan migration strategy:
-   - [ ] One-time migration script
+   - [ ] **UUIDs cho existing records** (new requirement)
+4. [ ] Plan migration strategy:
+   - [ ] Populate UUIDs cho existing records
+   - [ ] Populate foreign key UUIDs
+   - [ ] Migrate data sang DDD structure
    - [ ] Validation strategy
    - [ ] Rollback strategy
-4. [ ] Document migration plan
+5. [ ] Document migration plan
 
 **Verification**:
+- [ ] UUID Migration Strategy reviewed
 - [ ] Data reviewed
 - [ ] Mapping identified
 - [ ] Plan documented
 
 ---
 
-### Task 2.4.2: Create Data Migration Scripts
+### Task 2.4.2: Populate UUIDs cho Existing Records
+
+**Estimated Time**: 2 giờ
+
+**Mục tiêu**: Populate UUID columns cho existing records trong OrganizationalStructure tables
+
+**Steps**:
+1. [ ] Create populate UUIDs command:
+   ```bash
+   php artisan make:command PopulateOrganizationalStructureUuids
+   ```
+2. [ ] Implement populate logic (xem code example trong UUID Migration Strategy document)
+3. [ ] Test populate command với test data
+4. [ ] Run populate command trên staging
+5. [ ] Verify UUIDs được populate đúng
+
+**Verification**:
+- [ ] Populate UUIDs command created
+- [ ] UUIDs populated cho existing records
+- [ ] Foreign key UUIDs populated
+- [ ] Command tested và verified
+
+---
+
+### Task 2.4.3: Make UUID Required và Unique
+
+**Estimated Time**: 30 phút
+
+**Mục tiêu**: Make UUID columns required và unique sau khi đã populate
+
+**Steps**:
+1. [ ] Create migration
+2. [ ] Make UUID columns `not null` và `unique`
+3. [ ] Test migration
+4. [ ] Commit
+
+**Verification**:
+- [ ] UUID columns made required và unique
+- [ ] Migration tested
+- [ ] Integer ID columns vẫn giữ nguyên
+
+---
+
+### Task 2.4.4: Create Data Migration Scripts
 
 **Estimated Time**: 4 giờ
 
@@ -2302,7 +2392,7 @@ public static function fromPersistence(
    {
        $this->info('Starting data migration...');
        
-       // Migrate users
+       // Migrate users (sử dụng UUID từ database, không generate mới)
        $this->migrateUsers();
        
        // Migrate faculties
@@ -2316,16 +2406,21 @@ public static function fromPersistence(
        return self::SUCCESS;
    }
    ```
-3. [ ] Add validation:
+3. [ ] **Important**: Sử dụng UUID từ database (không generate mới):
+   - [ ] Read UUID từ existing records
+   - [ ] Use UUID khi tạo Domain aggregates
+   - [ ] Ensure UUID consistency
+4. [ ] Add validation:
    - [ ] Validate data before migration
    - [ ] Validate data after migration
    - [ ] Report errors
-4. [ ] Add rollback capability
-5. [ ] Test migration script với test data
-6. [ ] Commit
+5. [ ] Add rollback capability
+6. [ ] Test migration script với test data
+7. [ ] Commit
 
 **Verification**:
 - [ ] Migration script created
+- [ ] UUIDs được sử dụng từ database (không generate mới)
 - [ ] Tested với test data
 - [ ] Committed
 

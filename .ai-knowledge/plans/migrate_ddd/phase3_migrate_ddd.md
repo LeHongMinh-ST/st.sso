@@ -1790,66 +1790,127 @@ class UserIdentityTest extends TestCase
 
 ---
 
-### Task 3.1.10: Database Migrations (if needed)
+### Task 3.1.10: Database Migrations - UUID Support
 
-**Estimated Time**: 2 giờ
+**Estimated Time**: 2-3 giờ
 
-**Mục tiêu**: Tạo database migrations nếu cần thay đổi database structure cho IdentityAccess
+**Mục tiêu**: Add UUID columns cho IdentityAccess tables theo UUID Migration Strategy
 
-#### Subtask 3.1.10.1: Review Database Schema
+**⚠️ IMPORTANT**: Theo UUID Migration Strategy (`.ai-knowledge/migration-strategy/uuid-migration-strategy.md`), chúng ta sẽ:
+- ✅ **Giữ nguyên** integer ID (vẫn là Primary Key)
+- ✅ **Thêm mới** UUID column (additional identifier)
+- ✅ **Không remove** integer ID - giữ cả 2 vĩnh viễn
+
+#### Subtask 3.1.10.1: Review Database Schema và UUID Migration Strategy
 
 **Estimated Time**: 30 phút
 
 **Steps**:
-1. [ ] Review existing database schema:
+1. [ ] Review UUID Migration Strategy document:
+   - [ ] Đọc `.ai-knowledge/migration-strategy/uuid-migration-strategy.md`
+   - [ ] Review UUID migration từ Phase 2
+   - [ ] Hiểu rõ approach: giữ cả integer ID và UUID
+2. [ ] Review existing database schema:
    ```bash
    php artisan db:show
    ```
-2. [ ] Check if current schema supports IdentityAccess structure:
-   - [ ] Users table (for UserIdentity - có thể reuse hoặc separate table?)
-   - [ ] Roles table structure
-   - [ ] Permissions table structure
+3. [ ] Check if current schema supports IdentityAccess structure:
+   - [ ] Users table (UUID đã được add trong Phase 2)
+   - [ ] Roles table structure (id)
+   - [ ] Permissions table structure (id, permission_group_id)
+   - [ ] Permission_groups table structure (id)
    - [ ] Role_permissions pivot table
+   - [ ] User_roles pivot table
    - [ ] Clients table (Laravel Passport)
    - [ ] OAuth tokens tables (Laravel Passport)
-3. [ ] Decide on UserIdentity storage:
-   - [ ] Option 1: Reuse users table (add columns for identity fields)
-   - [ ] Option 2: Create separate user_identities table
-   - [ ] **Recommendation**: Reuse users table với additional columns để minimize changes
-4. [ ] Identify changes needed
+4. [ ] Identify tables cần UUID columns:
+   - [ ] Core tables: roles, permissions, permission_groups, clients
+   - [ ] Foreign key columns: permissions.permission_group_id
+   - [ ] Pivot tables: user_roles, role_permissions
+5. [ ] Check nếu UUID columns đã được add trong Phase 2:
+   - [ ] Users table UUID (đã add trong Phase 2)
+6. [ ] Document migration plan
 
 **Verification**:
+- [ ] UUID Migration Strategy reviewed
 - [ ] Schema reviewed
-- [ ] Storage strategy decided
-- [ ] Changes identified
+- [ ] Migration plan documented
+
+**Reference**: Xem `.ai-knowledge/migration-strategy/uuid-migration-strategy.md` để hiểu chi tiết.
 
 ---
 
-#### Subtask 3.1.10.2: Create Migrations (if needed)
+#### Subtask 3.1.10.2: Create UUID Migration cho IdentityAccess Tables
 
-**Estimated Time**: 1 giờ
+**Estimated Time**: 1.5-2 giờ
 
 **Steps**:
-1. [ ] Create migrations nếu cần:
+1. [ ] Create migration để add UUID columns:
    ```bash
-   # If separate user_identities table
-   php artisan make:migration create_user_identities_table
-   
-   # If reuse users table
-   php artisan make:migration add_identity_fields_to_users_table
-   
-   # For roles và permissions (if structure changes)
-   php artisan make:migration update_roles_table_for_ddd
-   php artisan make:migration update_permissions_table_for_ddd
+   php artisan make:migration add_uuid_columns_to_identity_access_tables
    ```
-2. [ ] Implement migrations
+2. [ ] Implement migration theo UUID Migration Strategy:
+   ```php
+   public function up(): void
+   {
+       // Add UUID column to core tables (nullable initially)
+       Schema::table('roles', function (Blueprint $table): void {
+           $table->uuid('uuid')->nullable()->after('id');
+           $table->index('uuid');
+       });
+
+       Schema::table('permissions', function (Blueprint $table): void {
+           $table->uuid('uuid')->nullable()->after('id');
+           $table->index('uuid');
+       });
+
+       Schema::table('permission_groups', function (Blueprint $table): void {
+           $table->uuid('uuid')->nullable()->after('id');
+           $table->index('uuid');
+       });
+
+       Schema::table('clients', function (Blueprint $table): void {
+           $table->uuid('uuid')->nullable()->after('id');
+           $table->index('uuid');
+       });
+
+       // Add UUID column for foreign key
+       Schema::table('permissions', function (Blueprint $table): void {
+           $table->uuid('permission_group_uuid')->nullable()->after('permission_group_id');
+           $table->index('permission_group_uuid');
+       });
+
+       // Add UUID columns to pivot tables
+       Schema::table('user_roles', function (Blueprint $table): void {
+           $table->uuid('user_uuid')->nullable()->after('user_id');
+           $table->uuid('role_uuid')->nullable()->after('role_id');
+           $table->index('user_uuid');
+           $table->index('role_uuid');
+       });
+
+       Schema::table('role_permissions', function (Blueprint $table): void {
+           $table->uuid('role_uuid')->nullable()->after('role_id');
+           $table->uuid('permission_uuid')->nullable()->after('permission_id');
+           $table->index('role_uuid');
+           $table->index('permission_uuid');
+       });
+   }
+   ```
 3. [ ] Test migrations
-4. [ ] Commit
+4. [ ] Verify UUID columns được tạo và integer ID vẫn giữ nguyên
+5. [ ] Commit migration
 
 **Verification**:
-- [ ] Migrations created (if needed)
+- [ ] UUID migration created cho IdentityAccess tables
 - [ ] Migrations tested
-- [ ] Committed
+- [ ] UUID columns và indexes verified
+- [ ] Integer ID columns vẫn giữ nguyên (không bị thay đổi)
+
+**Note**: 
+- UUID columns ban đầu là `nullable` để có thể populate dần
+- Integer ID vẫn là Primary Key, không thay đổi
+- Users table UUID đã được add trong Phase 2, không cần add lại
+- Sau khi populate UUIDs, sẽ make UUID `not null` và `unique` trong Task 3.3.7.3
 
 ---
 
@@ -2362,36 +2423,90 @@ class UserIdentityTest extends TestCase
 
 **Mục tiêu**: Plan và implement data migration cho IdentityAccess Context
 
-#### Subtask 3.3.7.1: Plan Data Migration
+#### Subtask 3.3.7.1: Plan Data Migration và UUID Population
 
 **Estimated Time**: 2 giờ
 
+**⚠️ UUID Migration**: Task này bao gồm populate UUIDs cho existing records trong IdentityAccess tables.
+
 **Steps**:
-1. [ ] Review existing data:
-   - [ ] Users data (for UserIdentity)
-   - [ ] Roles data
+1. [ ] Review UUID Migration Strategy:
+   - [ ] Đọc `.ai-knowledge/migration-strategy/uuid-migration-strategy.md`
+   - [ ] Review UUID population từ Phase 2
+   - [ ] Hiểu rõ approach: populate UUIDs cho existing records
+2. [ ] Review existing data:
+   - [ ] Users data (UUID đã được populate trong Phase 2)
+   - [ ] Roles data (count, structure)
    - [ ] Permissions data
+   - [ ] Permission groups data
    - [ ] Role_permissions relationships
+   - [ ] User_roles relationships
    - [ ] Clients data (Laravel Passport)
-2. [ ] Identify data mapping:
+3. [ ] Identify data mapping:
    - [ ] Old User model → New UserIdentity Aggregate
    - [ ] Old Role model → New Role Aggregate
    - [ ] Old Permission model → New Permission Aggregate
-3. [ ] Plan migration strategy:
-   - [ ] Migrate UserIdentity data
-   - [ ] Migrate Roles và Permissions
-   - [ ] Migrate relationships
+   - [ ] **UUIDs cho existing records** (new requirement)
+4. [ ] Plan migration strategy:
+   - [ ] Populate UUIDs cho IdentityAccess tables
+   - [ ] Populate foreign key UUIDs
+   - [ ] Populate pivot table UUIDs
+   - [ ] Migrate data sang DDD structure
    - [ ] Validation strategy
-4. [ ] Document migration plan
+5. [ ] Document migration plan
 
 **Verification**:
+- [ ] UUID Migration Strategy reviewed
 - [ ] Data reviewed
 - [ ] Mapping identified
 - [ ] Plan documented
 
 ---
 
-#### Subtask 3.3.7.2: Create Data Migration Scripts
+#### Subtask 3.3.7.2: Populate UUIDs cho IdentityAccess Records
+
+**Estimated Time**: 2 giờ
+
+**Mục tiêu**: Populate UUID columns cho existing records trong IdentityAccess tables
+
+**Steps**:
+1. [ ] Create populate UUIDs command:
+   ```bash
+   php artisan make:command PopulateIdentityAccessUuids
+   ```
+2. [ ] Implement populate logic (xem code example trong UUID Migration Strategy document)
+3. [ ] Test populate command với test data
+4. [ ] Run populate command trên staging
+5. [ ] Verify UUIDs được populate đúng
+
+**Verification**:
+- [ ] Populate UUIDs command created
+- [ ] UUIDs populated cho existing records
+- [ ] Foreign key và pivot UUIDs populated
+- [ ] Command tested và verified
+
+---
+
+#### Subtask 3.3.7.3: Make UUID Required và Unique
+
+**Estimated Time**: 30 phút
+
+**Mục tiêu**: Make UUID columns required và unique sau khi đã populate
+
+**Steps**:
+1. [ ] Create migration
+2. [ ] Make UUID columns `not null` và `unique`
+3. [ ] Test migration
+4. [ ] Commit
+
+**Verification**:
+- [ ] UUID columns made required và unique
+- [ ] Migration tested
+- [ ] Integer ID columns vẫn giữ nguyên
+
+---
+
+#### Subtask 3.3.7.4: Create Data Migration Scripts
 
 **Estimated Time**: 4 giờ
 
@@ -2401,17 +2516,22 @@ class UserIdentityTest extends TestCase
    php artisan make:command MigrateIdentityAccessToDDD
    ```
 2. [ ] Implement migration logic:
-   - [ ] Migrate UserIdentity data
-   - [ ] Migrate Roles
-   - [ ] Migrate Permissions
+   - [ ] Migrate UserIdentity data (sử dụng UUID từ database)
+   - [ ] Migrate Roles (sử dụng UUID từ database)
+   - [ ] Migrate Permissions (sử dụng UUID từ database)
    - [ ] Migrate relationships
-3. [ ] Add validation
-4. [ ] Add rollback capability
-5. [ ] Test với test data
-6. [ ] Commit
+3. [ ] **Important**: Sử dụng UUID từ database (không generate mới):
+   - [ ] Read UUID từ existing records
+   - [ ] Use UUID khi tạo Domain aggregates
+   - [ ] Ensure UUID consistency
+4. [ ] Add validation
+5. [ ] Add rollback capability
+6. [ ] Test với test data
+7. [ ] Commit
 
 **Verification**:
 - [ ] Migration script created
+- [ ] UUIDs được sử dụng từ database (không generate mới)
 - [ ] Tested
 - [ ] Committed
 
