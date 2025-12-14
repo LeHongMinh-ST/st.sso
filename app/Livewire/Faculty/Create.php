@@ -5,11 +5,18 @@ declare(strict_types=1);
 namespace App\Livewire\Faculty;
 
 use App\Models\Faculty;
+use App\OrganizationalStructure\Application\DTOs\CreateFacultyDTO;
+use App\OrganizationalStructure\Application\UseCases\CreateFacultyUseCase;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
+use RuntimeException;
 use Throwable;
 
+/**
+ * Livewire component for creating a new faculty.
+ * Refactored to use DDD Use Cases.
+ */
 class Create extends Component
 {
     #[Validate(as: 'tên khoa')]
@@ -19,6 +26,12 @@ class Create extends Component
     public $description;
 
     private bool $isLoading = false;
+
+    public function __construct(
+        private readonly CreateFacultyUseCase $createFacultyUseCase,
+    ) {
+        parent::__construct();
+    }
 
     public function render()
     {
@@ -48,18 +61,67 @@ class Create extends Component
             $this->isLoading = true;
             $this->validate();
 
-            $faculty = Faculty::create([
+            // Create faculty using Use Case
+            $createDTO = CreateFacultyDTO::fromArray([
                 'name' => $this->name,
                 'description' => $this->description,
             ]);
 
+            $faculty = $this->createFacultyUseCase->execute($createDTO);
+
+            // Get integer ID for redirect (temporary until routes use UUID)
+            $facultyModel = Faculty::where('uuid', $faculty->id()->toString())->first();
+            $facultyId = $facultyModel?->id ?? $this->getFacultyIntegerId($faculty->id()->toString());
+
             session()->flash('success', 'Tạo mới thành công!');
-            return redirect()->route('faculty.show', $faculty->id);
+            return redirect()->route('faculty.show', $facultyId);
         } catch (Throwable $th) {
             Log::error($th->getMessage());
-            $this->dispatch('alert', type: 'error', message: 'Tạo mới thất bại!');
+            $this->dispatch('alert', type: 'error', message: 'Tạo mới thất bại: ' . $th->getMessage());
         } finally {
             $this->isLoading = false;
         }
+    }
+
+    /**
+     * Get faculty integer ID from UUID.
+     * Temporary helper until routes use UUID.
+     *
+     * @param string $facultyUuid Faculty UUID
+     * @return int Faculty integer ID
+     */
+    private function getFacultyIntegerId(string $facultyUuid): int
+    {
+        $faculty = Faculty::where('uuid', $facultyUuid)->first();
+        if (null !== $faculty) {
+            return $faculty->id;
+        }
+
+        // Fallback: try to find by deterministic UUID
+        $faculties = Faculty::all();
+        foreach ($faculties as $f) {
+            $generatedUuid = $this->generateDeterministicUuid('faculties', $f->id);
+            if ($generatedUuid === $facultyUuid) {
+                return $f->id;
+            }
+        }
+
+        throw new RuntimeException("Faculty with UUID {$facultyUuid} not found");
+    }
+
+    /**
+     * Generate deterministic UUID from integer ID.
+     * Temporary helper until UUID migration is complete.
+     *
+     * @param string $table Table name
+     * @param int $integerId Integer ID
+     * @return string UUID string
+     */
+    private function generateDeterministicUuid(string $table, int $integerId): string
+    {
+        $namespace = \Ramsey\Uuid\Uuid::fromString('6ba7b810-9dad-11d1-80b4-00c04fd430c8');
+        $name = "{$table}:{$integerId}";
+
+        return \Ramsey\Uuid\Uuid::uuid5($namespace, $name)->toString();
     }
 }

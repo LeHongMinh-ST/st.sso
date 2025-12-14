@@ -5,14 +5,21 @@ declare(strict_types=1);
 namespace App\Livewire\Faculty;
 
 use App\Enums\Role;
-use App\Enums\Status;
 use App\Models\Faculty;
 use App\Models\User;
+use App\OrganizationalStructure\Application\DTOs\CreateUserDTO;
+use App\OrganizationalStructure\Application\UseCases\CreateUserUseCase;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Throwable;
 
+/**
+ * Livewire component for creating a user within a faculty.
+ * Refactored to use DDD Use Cases for OrganizationalStructure context.
+ * Password and Role handling is temporary until IdentityAccess context (Phase 3).
+ */
 class CreateUser extends Component
 {
     public Faculty $faculty;
@@ -38,6 +45,12 @@ class CreateUser extends Component
     public string $code = '';
 
     private bool $isLoading = false;
+
+    public function __construct(
+        private readonly CreateUserUseCase $createUserUseCase,
+    ) {
+        parent::__construct();
+    }
 
     public function updatedRole(): void
     {
@@ -86,19 +99,25 @@ class CreateUser extends Component
 
         try {
             $this->isLoading = true;
-            User::create([
+
+            // Get faculty UUID
+            $facultyUuid = $this->faculty->uuid ?? $this->generateDeterministicUuid('faculties', $this->faculty->id);
+
+            // Create user using Use Case
+            $createDTO = CreateUserDTO::fromArray([
                 'user_name' => $this->user_name,
                 'first_name' => $this->first_name,
                 'last_name' => $this->last_name,
                 'email' => $this->email,
-                'password' => 'password',
-                'phone' => $this->phone,
-                'role' => $this->role->value,
-                'code' => $this->code,
-                'is_change_password' => false,
-                'faculty_id' => $this->faculty->id,
-                'status' => Status::Active->value,
+                'user_code' => $this->code ?: null,
+                'phone' => $this->phone ?: null,
+                'faculty_id' => $facultyUuid,
             ]);
+
+            $user = $this->createUserUseCase->execute($createDTO);
+
+            // Handle password and role (temporary until Phase 3)
+            $this->handlePasswordAndRole($user, $this->role);
 
             session()->flash('success', 'Tạo mới người dùng thành công!');
             $this->reset(['user_name', 'first_name', 'last_name', 'email', 'phone', 'code']);
@@ -106,9 +125,53 @@ class CreateUser extends Component
             $this->dispatch('userCreated');
         } catch (Throwable $th) {
             Log::error($th->getMessage());
-            $this->dispatch('alert', type: 'error', message: 'Tạo mới thất bại!');
+            $this->dispatch('alert', type: 'error', message: 'Tạo mới thất bại: ' . $th->getMessage());
         } finally {
             $this->isLoading = false;
         }
+    }
+
+    /**
+     * Handle password and role for created user.
+     * This is temporary until IdentityAccess context is implemented (Phase 3).
+     *
+     * @param \App\OrganizationalStructure\Domain\Aggregates\User $user User aggregate
+     * @param Role $role User role
+     * @return void
+     */
+    private function handlePasswordAndRole(
+        \App\OrganizationalStructure\Domain\Aggregates\User $user,
+        Role $role,
+    ): void {
+        // Find user by UUID and update password/role
+        $eloquentUser = User::where('uuid', $user->id()->toString())->first();
+        if (null === $eloquentUser) {
+            // Fallback: find by email
+            $eloquentUser = User::where('email', (string) $user->email())->first();
+        }
+
+        if (null !== $eloquentUser) {
+            $eloquentUser->update([
+                'password' => Hash::make('password'),
+                'role' => $role->value,
+                'is_change_password' => false,
+            ]);
+        }
+    }
+
+    /**
+     * Generate deterministic UUID from integer ID.
+     * Temporary helper until UUID migration is complete.
+     *
+     * @param string $table Table name
+     * @param int $integerId Integer ID
+     * @return string UUID string
+     */
+    private function generateDeterministicUuid(string $table, int $integerId): string
+    {
+        $namespace = \Ramsey\Uuid\Uuid::fromString('6ba7b810-9dad-11d1-80b4-00c04fd430c8');
+        $name = "{$table}:{$integerId}";
+
+        return \Ramsey\Uuid\Uuid::uuid5($namespace, $name)->toString();
     }
 }

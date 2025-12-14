@@ -8,11 +8,21 @@ use App\Enums\Role;
 use App\Enums\Status;
 use App\Models\Faculty;
 use App\Models\User;
+use App\OrganizationalStructure\Application\DTOs\UpdateUserProfileDTO;
+use App\OrganizationalStructure\Application\UseCases\AssignUserToDepartmentUseCase;
+use App\OrganizationalStructure\Application\UseCases\AssignUserToFacultyUseCase;
+use App\OrganizationalStructure\Application\UseCases\UpdateUserProfileUseCase;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
+use RuntimeException;
 use Throwable;
 
+/**
+ * Livewire component for editing a user.
+ * Refactored to use DDD Use Cases for OrganizationalStructure context.
+ * Password and Role handling is temporary until IdentityAccess context (Phase 3).
+ */
 class Edit extends Component
 {
     public User $user;
@@ -47,12 +57,22 @@ class Edit extends Component
 
     private bool $isLoading = false;
 
+    private ?string $userUuid = null;
+
+    public function __construct(
+        private readonly UpdateUserProfileUseCase $updateUserProfileUseCase,
+        private readonly AssignUserToFacultyUseCase $assignUserToFacultyUseCase,
+        private readonly AssignUserToDepartmentUseCase $assignUserToDepartmentUseCase,
+    ) {
+        parent::__construct();
+    }
+
     public function render()
     {
         $faculties = Faculty::all();
 
         return view('livewire.user.edit', [
-            'faculties' => $faculties
+            'faculties' => $faculties,
         ]);
     }
 
@@ -69,6 +89,9 @@ class Edit extends Component
         $this->department_id = $user->department_id;
         $this->faculty_id = $user->faculty_id;
         $this->is_only_login_ms = (bool) $user->is_only_login_ms;
+
+        // Get user UUID
+        $this->userUuid = $user->uuid ?? $this->generateDeterministicUuid('users', $user->id);
     }
 
     public function rules(): array
@@ -109,27 +132,48 @@ class Edit extends Component
         }
 
         $this->validate();
+
         try {
             $this->isLoading = true;
 
-            $this->user->update([
-                'user_name' => $this->user_name,
+            if (null === $this->userUuid) {
+                throw new RuntimeException('User UUID not found');
+            }
+
+            // Update user profile using Use Case
+            $updateDTO = UpdateUserProfileDTO::fromArray([
                 'first_name' => $this->first_name,
                 'last_name' => $this->last_name,
                 'email' => $this->email,
                 'phone' => $this->phone,
-                'role' => $this->role->value,
-                'code' => $this->code,
-                'department_id' => $this->department_id,
-                'faculty_id' => $this->faculty_id,
-                'is_only_login_ms' => $this->is_only_login_ms,
             ]);
+
+            $this->updateUserProfileUseCase->execute($this->userUuid, $updateDTO);
+
+            // Assign to faculty if changed
+            if (null !== $this->faculty_id) {
+                $facultyUuid = $this->getFacultyUuid($this->faculty_id);
+                if (null !== $facultyUuid) {
+                    $this->assignUserToFacultyUseCase->execute($this->userUuid, $facultyUuid);
+                }
+            }
+
+            // Assign to department if changed
+            if (null !== $this->department_id) {
+                $departmentUuid = $this->getDepartmentUuid($this->department_id);
+                if (null !== $departmentUuid) {
+                    $this->assignUserToDepartmentUseCase->execute($this->userUuid, $departmentUuid);
+                }
+            }
+
+            // Handle role and other fields (temporary until Phase 3)
+            $this->handleRoleAndOtherFields();
 
             session()->flash('success', 'Cập nhật thành công!');
             return redirect()->route('user.show', $this->user->id);
         } catch (Throwable $th) {
             Log::error($th->getMessage());
-            $this->dispatch('alert', type: 'error', message: 'Cập nhật thất bại!');
+            $this->dispatch('alert', type: 'error', message: 'Cập nhật thất bại: ' . $th->getMessage());
         } finally {
             $this->isLoading = false;
         }
@@ -150,6 +194,79 @@ class Edit extends Component
 
     public function toggleIsOnlyLoginMs(): void
     {
-        $this->is_only_login_ms = ! $this->is_only_login_ms;
+        $this->is_only_login_ms = !$this->is_only_login_ms;
+    }
+
+    /**
+     * Handle role and other fields that are not part of OrganizationalStructure context.
+     * This is temporary until IdentityAccess context is implemented (Phase 3).
+     *
+     * @return void
+     */
+    private function handleRoleAndOtherFields(): void
+    {
+        $this->user->update([
+            'user_name' => $this->user_name,
+            'role' => $this->role->value,
+            'code' => $this->code,
+            'status' => $this->status->value,
+            'is_only_login_ms' => $this->is_only_login_ms,
+        ]);
+    }
+
+    /**
+     * Get faculty UUID from integer ID.
+     *
+     * @param int|string|null $facultyId Faculty integer ID
+     * @return string|null Faculty UUID
+     */
+    private function getFacultyUuid(int|string|null $facultyId): ?string
+    {
+        if (null === $facultyId) {
+            return null;
+        }
+
+        $faculty = Faculty::find($facultyId);
+        if (null === $faculty) {
+            return null;
+        }
+
+        return $faculty->uuid ?? $this->generateDeterministicUuid('faculties', (int) $facultyId);
+    }
+
+    /**
+     * Get department UUID from integer ID.
+     *
+     * @param int|string|null $departmentId Department integer ID
+     * @return string|null Department UUID
+     */
+    private function getDepartmentUuid(int|string|null $departmentId): ?string
+    {
+        if (null === $departmentId) {
+            return null;
+        }
+
+        $department = \App\Models\Department::find($departmentId);
+        if (null === $department) {
+            return null;
+        }
+
+        return $department->uuid ?? $this->generateDeterministicUuid('departments', (int) $departmentId);
+    }
+
+    /**
+     * Generate deterministic UUID from integer ID.
+     * Temporary helper until UUID migration is complete.
+     *
+     * @param string $table Table name
+     * @param int $integerId Integer ID
+     * @return string UUID string
+     */
+    private function generateDeterministicUuid(string $table, int $integerId): string
+    {
+        $namespace = \Ramsey\Uuid\Uuid::fromString('6ba7b810-9dad-11d1-80b4-00c04fd430c8');
+        $name = "{$table}:{$integerId}";
+
+        return \Ramsey\Uuid\Uuid::uuid5($namespace, $name)->toString();
     }
 }
