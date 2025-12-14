@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\SharedKernel\Domain\Exceptions;
 
 use RuntimeException;
+use Throwable;
 
 /**
  * Base exception for domain layer.
@@ -15,9 +16,9 @@ class DomainException extends RuntimeException
     /**
      * @param string $message
      * @param int $code
-     * @param \Throwable|null $previous
+     * @param Throwable|null $previous
      */
-    public function __construct(string $message = '', int $code = 0, ?\Throwable $previous = null)
+    public function __construct(string $message = '', int $code = 0, ?Throwable $previous = null)
     {
         parent::__construct($message, $code, $previous);
     }

@@ -28,6 +28,16 @@ final class Uuid implements Stringable
     }
 
     /**
+     * Get UUID value as string.
+     *
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return $this->value->toString();
+    }
+
+    /**
      * Create UUID from string.
      *
      * @param string $value
@@ -51,16 +61,6 @@ final class Uuid implements Stringable
     public static function generate(): self
     {
         return new self(RamseyUuid::uuid4());
-    }
-
-    /**
-     * Get UUID value as string.
-     *
-     * @return string
-     */
-    public function __toString(): string
-    {
-        return $this->value->toString();
     }
 
     /**

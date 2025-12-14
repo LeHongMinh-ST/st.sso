@@ -24,9 +24,7 @@ class SharedKernelServiceProvider extends ServiceProvider
     public function register(): void
     {
         // Bind EventDispatcherInterface
-        $this->app->singleton(EventDispatcherInterface::class, function ($app) {
-            return new LaravelEventDispatcher($app->make(Dispatcher::class));
-        });
+        $this->app->singleton(EventDispatcherInterface::class, fn ($app) => new LaravelEventDispatcher($app->make(Dispatcher::class)));
 
         // Bind ClockInterface
         $this->app->singleton(ClockInterface::class, SystemClock::class);
@@ -39,6 +37,6 @@ class SharedKernelServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+
     }
 }

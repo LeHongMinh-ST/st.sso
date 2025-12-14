@@ -7,6 +7,7 @@ namespace App\SharedKernel\Domain\ValueObjects;
 use DateTimeImmutable;
 use DateTimeInterface;
 use DateTimeZone;
+use Exception;
 use InvalidArgumentException;
 use Stringable;
 
@@ -26,6 +27,16 @@ final class Timestamp implements Stringable
     private function __construct(DateTimeImmutable $value)
     {
         $this->value = $value;
+    }
+
+    /**
+     * Get timestamp as string in ISO 8601 format.
+     *
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return $this->value->format(DateTimeInterface::ATOM);
     }
 
     /**
@@ -55,7 +66,7 @@ final class Timestamp implements Stringable
                 $timezone ? new DateTimeZone($timezone) : null
             );
             return new self($dateTime);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw new InvalidArgumentException("Invalid timestamp format: {$value}", 0, $e);
         }
     }
@@ -80,16 +91,6 @@ final class Timestamp implements Stringable
     public function toDateTime(): DateTimeImmutable
     {
         return $this->value;
-    }
-
-    /**
-     * Get timestamp as string in ISO 8601 format.
-     *
-     * @return string
-     */
-    public function __toString(): string
-    {
-        return $this->value->format(DateTimeInterface::ATOM);
     }
 
     /**

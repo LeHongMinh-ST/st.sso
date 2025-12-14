@@ -24,7 +24,17 @@ final class Email implements Stringable
     private function __construct(string $value)
     {
         $this->validate($value);
-        $this->value = strtolower(trim($value));
+        $this->value = mb_strtolower(trim($value));
+    }
+
+    /**
+     * Get email value as string.
+     *
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return $this->value;
     }
 
     /**
@@ -37,36 +47,6 @@ final class Email implements Stringable
     public static function fromString(string $value): self
     {
         return new self($value);
-    }
-
-    /**
-     * Validate email format.
-     *
-     * @param string $value
-     * @return void
-     * @throws InvalidArgumentException
-     */
-    private function validate(string $value): void
-    {
-        $trimmed = trim($value);
-        
-        if (empty($trimmed)) {
-            throw new InvalidArgumentException('Email cannot be empty');
-        }
-
-        if (!filter_var($trimmed, FILTER_VALIDATE_EMAIL)) {
-            throw new InvalidArgumentException("Invalid email format: {$value}");
-        }
-    }
-
-    /**
-     * Get email value as string.
-     *
-     * @return string
-     */
-    public function __toString(): string
-    {
-        return $this->value;
     }
 
     /**
@@ -100,5 +80,25 @@ final class Email implements Stringable
     public function equals(self $other): bool
     {
         return $this->value === $other->value;
+    }
+
+    /**
+     * Validate email format.
+     *
+     * @param string $value
+     * @return void
+     * @throws InvalidArgumentException
+     */
+    private function validate(string $value): void
+    {
+        $trimmed = trim($value);
+
+        if (empty($trimmed)) {
+            throw new InvalidArgumentException('Email cannot be empty');
+        }
+
+        if (!filter_var($trimmed, FILTER_VALIDATE_EMAIL)) {
+            throw new InvalidArgumentException("Invalid email format: {$value}");
+        }
     }
 }
