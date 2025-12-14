@@ -62,19 +62,33 @@ final class EloquentUserRepository implements UserRepositoryInterface
             $eloquentUser->phone = $user->phoneNumber()->isNull() ? null : $user->phoneNumber()->toString();
 
             // Map FacultyId and DepartmentId
-            // TODO: After UUID migration, map UUID to integer ID
+            // Use UUID columns if available, otherwise fallback to integer ID mapping
             if (null !== $user->facultyId()) {
-                // Temporary: For now, we'll need to get integer ID from UUID
-                // After UUID migration, this will be handled by mapping service
+                $hasFacultyUuidColumn = Schema::hasColumn('users', 'faculty_uuid');
+                if ($hasFacultyUuidColumn) {
+                    $eloquentUser->faculty_uuid = $user->facultyId()->toString();
+                }
+                // Also set integer ID for backward compatibility
                 $eloquentUser->faculty_id = $this->getIntegerIdFromUuid('faculties', $user->facultyId()->toString());
             } else {
                 $eloquentUser->faculty_id = null;
+                if (Schema::hasColumn('users', 'faculty_uuid')) {
+                    $eloquentUser->faculty_uuid = null;
+                }
             }
 
             if (null !== $user->departmentId()) {
+                $hasDepartmentUuidColumn = Schema::hasColumn('users', 'department_uuid');
+                if ($hasDepartmentUuidColumn) {
+                    $eloquentUser->department_uuid = $user->departmentId()->toString();
+                }
+                // Also set integer ID for backward compatibility
                 $eloquentUser->department_id = $this->getIntegerIdFromUuid('departments', $user->departmentId()->toString());
             } else {
                 $eloquentUser->department_id = null;
+                if (Schema::hasColumn('users', 'department_uuid')) {
+                    $eloquentUser->department_uuid = null;
+                }
             }
 
             $eloquentUser->save();
@@ -170,12 +184,18 @@ final class EloquentUserRepository implements UserRepositoryInterface
      */
     public function findByFacultyId(FacultyId $facultyId): array
     {
-        $integerId = $this->getIntegerIdFromUuid('faculties', $facultyId->toString());
-        if (null === $integerId) {
-            return [];
-        }
+        $hasFacultyUuidColumn = Schema::hasColumn('users', 'faculty_uuid');
 
-        $eloquentUsers = EloquentUser::where('faculty_id', $integerId)->get();
+        $eloquentUsers = null;
+        if ($hasFacultyUuidColumn) {
+            $eloquentUsers = EloquentUser::where('faculty_uuid', $facultyId->toString())->get();
+        } else {
+            $integerId = $this->getIntegerIdFromUuid('faculties', $facultyId->toString());
+            if (null === $integerId) {
+                return [];
+            }
+            $eloquentUsers = EloquentUser::where('faculty_id', $integerId)->get();
+        }
 
         return $eloquentUsers->map(fn ($user) => $this->toDomain($user))->toArray();
     }
@@ -188,12 +208,18 @@ final class EloquentUserRepository implements UserRepositoryInterface
      */
     public function findByDepartmentId(DepartmentId $departmentId): array
     {
-        $integerId = $this->getIntegerIdFromUuid('departments', $departmentId->toString());
-        if (null === $integerId) {
-            return [];
-        }
+        $hasDepartmentUuidColumn = Schema::hasColumn('users', 'department_uuid');
 
-        $eloquentUsers = EloquentUser::where('department_id', $integerId)->get();
+        $eloquentUsers = null;
+        if ($hasDepartmentUuidColumn) {
+            $eloquentUsers = EloquentUser::where('department_uuid', $departmentId->toString())->get();
+        } else {
+            $integerId = $this->getIntegerIdFromUuid('departments', $departmentId->toString());
+            if (null === $integerId) {
+                return [];
+            }
+            $eloquentUsers = EloquentUser::where('department_id', $integerId)->get();
+        }
 
         return $eloquentUsers->map(fn ($user) => $this->toDomain($user))->toArray();
     }
@@ -273,14 +299,19 @@ final class EloquentUserRepository implements UserRepositoryInterface
         $phoneNumber = $eloquentUser->phone ? PhoneNumber::fromString($eloquentUser->phone) : null;
 
         // Map FacultyId and DepartmentId
+        // Use UUID columns if available, otherwise fallback to integer ID mapping
         $facultyId = null;
-        if (null !== $eloquentUser->faculty_id) {
+        if (Schema::hasColumn('users', 'faculty_uuid') && null !== $eloquentUser->faculty_uuid) {
+            $facultyId = FacultyId::fromString($eloquentUser->faculty_uuid);
+        } elseif (null !== $eloquentUser->faculty_id) {
             $facultyUuid = $this->getUuidFromIntegerId('faculties', $eloquentUser->faculty_id);
             $facultyId = FacultyId::fromString($facultyUuid);
         }
 
         $departmentId = null;
-        if (null !== $eloquentUser->department_id) {
+        if (Schema::hasColumn('users', 'department_uuid') && null !== $eloquentUser->department_uuid) {
+            $departmentId = DepartmentId::fromString($eloquentUser->department_uuid);
+        } elseif (null !== $eloquentUser->department_id) {
             $departmentUuid = $this->getUuidFromIntegerId('departments', $eloquentUser->department_id);
             $departmentId = DepartmentId::fromString($departmentUuid);
         }

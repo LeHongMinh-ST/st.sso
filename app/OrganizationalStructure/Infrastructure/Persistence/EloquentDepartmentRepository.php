@@ -46,7 +46,13 @@ final class EloquentDepartmentRepository implements DepartmentRepositoryInterfac
             $eloquentDepartment->name = $department->name();
             $eloquentDepartment->status = $department->status();
 
-            // Map FacultyId to integer ID
+            // Map FacultyId
+            // Use UUID column if available, otherwise fallback to integer ID mapping
+            $hasFacultyUuidColumn = Schema::hasColumn('departments', 'faculty_uuid');
+            if ($hasFacultyUuidColumn) {
+                $eloquentDepartment->faculty_uuid = $department->facultyId()->toString();
+            }
+            // Also set integer ID for backward compatibility
             $facultyIntegerId = $this->getIntegerIdFromUuid('faculties', $department->facultyId()->toString());
             $eloquentDepartment->faculty_id = $facultyIntegerId;
 
@@ -106,12 +112,18 @@ final class EloquentDepartmentRepository implements DepartmentRepositoryInterfac
      */
     public function findByFacultyId(FacultyId $facultyId): array
     {
-        $integerId = $this->getIntegerIdFromUuid('faculties', $facultyId->toString());
-        if (null === $integerId) {
-            return [];
-        }
+        $hasFacultyUuidColumn = Schema::hasColumn('departments', 'faculty_uuid');
 
-        $eloquentDepartments = EloquentDepartment::where('faculty_id', $integerId)->get();
+        $eloquentDepartments = null;
+        if ($hasFacultyUuidColumn) {
+            $eloquentDepartments = EloquentDepartment::where('faculty_uuid', $facultyId->toString())->get();
+        } else {
+            $integerId = $this->getIntegerIdFromUuid('faculties', $facultyId->toString());
+            if (null === $integerId) {
+                return [];
+            }
+            $eloquentDepartments = EloquentDepartment::where('faculty_id', $integerId)->get();
+        }
 
         return $eloquentDepartments->map(fn ($department) => $this->toDomain($department))->toArray();
     }
@@ -174,8 +186,14 @@ final class EloquentDepartmentRepository implements DepartmentRepositoryInterfac
             : DepartmentId::fromString($this->getUuidFromIntegerId('departments', $eloquentDepartment->id));
 
         // Map FacultyId
-        $facultyUuid = $this->getUuidFromIntegerId('faculties', $eloquentDepartment->faculty_id);
-        $facultyId = FacultyId::fromString($facultyUuid);
+        // Use UUID column if available, otherwise fallback to integer ID mapping
+        $facultyId = null;
+        if (Schema::hasColumn('departments', 'faculty_uuid') && null !== $eloquentDepartment->faculty_uuid) {
+            $facultyId = FacultyId::fromString($eloquentDepartment->faculty_uuid);
+        } elseif (null !== $eloquentDepartment->faculty_id) {
+            $facultyUuid = $this->getUuidFromIntegerId('faculties', $eloquentDepartment->faculty_id);
+            $facultyId = FacultyId::fromString($facultyUuid);
+        }
 
         // Use fromPersistence to reconstruct without triggering events
         return Department::fromPersistence(
