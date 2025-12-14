@@ -304,32 +304,187 @@ Hệ thống được chia thành các Bounded Context (BC) để giảm sự ph
 
 ### 3.3. Shared Kernel
 
-**Mục đích:** Là một không gian chung chứa các mã nguồn được tái sử dụng bởi tất cả các Bounded Context.
+**Mục đích:** Là một không gian chung chứa các mã nguồn được tái sử dụng bởi tất cả các Bounded Context. Shared Kernel giúp tránh việc duplicate code và đảm bảo tính nhất quán trong toàn bộ hệ thống.
+
+**Cấu trúc thư mục:**
+```
+app/
+└── 📂 SharedKernel/
+    ├── 📂 Domain/
+    │   ├── 📂 ValueObjects/      (Email, Uuid, Timestamp, Money...)
+    │   ├── 📂 Exceptions/         (DomainException, EntityNotFoundException...)
+    │   └── 📂 Interfaces/        (EventDispatcherInterface, ClockInterface...)
+    └── 📂 Infrastructure/
+        ├── 📂 EventDispatcher/    (LaravelEventDispatcher)
+        ├── 📂 Clock/              (SystemClock, FixedClock)
+        └── 📂 Providers/          (SharedKernelServiceProvider)
+```
 
 **Các thành phần chính:**
-- **Value Objects dùng chung:**
-  - `Email`: Định dạng và validate email
-  - `Uuid`: Định danh duy nhất
-  - `Timestamp`: Thời gian với timezone
-  - `Money`: Giá trị tiền tệ (nếu cần)
 
-- **Exceptions dùng chung:**
-  - `DomainException`: Exception cơ bản cho domain layer
-  - `EntityNotFoundException`: Khi không tìm thấy entity
-  - `InvalidArgumentException`: Khi tham số không hợp lệ
+#### 3.3.1. Value Objects dùng chung
 
-- **Interfaces dùng chung:**
-  - `EventDispatcherInterface`: Interface để dispatch events
-  - `ClockInterface`: Interface để lấy thời gian hiện tại (hữu ích cho testing)
+Các Value Objects trong Shared Kernel là các đối tượng bất biến, có thể được sử dụng trong mọi Bounded Context:
 
-- **Utilities:**
-  - Các helper functions dùng chung
-  - Các constants dùng chung
+- **`Email`**: 
+  - Định dạng và validate email
+  - Tự động normalize (lowercase, trim)
+  - Cung cấp các phương thức: `domain()`, `localPart()`, `equals()`
+  - Vị trí: `app/SharedKernel/Domain/ValueObjects/Email.php`
+
+- **`Uuid`**: 
+  - Định danh duy nhất (sử dụng Ramsey UUID)
+  - Cung cấp phương thức `generate()` để tạo UUID mới
+  - Validate format UUID
+  - Vị trí: `app/SharedKernel/Domain/ValueObjects/Uuid.php`
+
+- **`Timestamp`**: 
+  - Thời gian với timezone (sử dụng DateTimeImmutable)
+  - Cung cấp các phương thức: `now()`, `isBefore()`, `isAfter()`, `equals()`
+  - Format theo ISO 8601
+  - Vị trí: `app/SharedKernel/Domain/ValueObjects/Timestamp.php`
+
+- **`Money`** (nếu cần): 
+  - Giá trị tiền tệ với currency code
+  - Hỗ trợ các phép toán cơ bản
+  - Vị trí: `app/SharedKernel/Domain/ValueObjects/Money.php`
+
+**Nguyên tắc sử dụng Value Objects:**
+- Luôn sử dụng Value Objects từ Shared Kernel thay vì tạo mới trong từng BC
+- Không extend hoặc modify các Value Objects trong Shared Kernel
+- Nếu cần logic đặc thù cho một BC, tạo Value Object mới trong BC đó
+
+#### 3.3.2. Exceptions dùng chung
+
+Các Exception trong Shared Kernel cung cấp cơ sở cho việc xử lý lỗi trong toàn bộ hệ thống:
+
+- **`DomainException`**: 
+  - Exception cơ bản cho domain layer
+  - Tất cả các domain exceptions nên extend từ class này
+  - Vị trí: `app/SharedKernel/Domain/Exceptions/DomainException.php`
+
+- **`EntityNotFoundException`**: 
+  - Được throw khi không tìm thấy một entity
+  - Cung cấp các factory methods như `user()`, `role()` để tạo exception cụ thể
+  - Vị trí: `app/SharedKernel/Domain/Exceptions/EntityNotFoundException.php`
+
+- **`InvalidArgumentException`**: 
+  - Được throw khi tham số không hợp lệ
+  - Sử dụng trong Value Objects và Domain Services
+  - Vị trí: `app/SharedKernel/Domain/Exceptions/InvalidArgumentException.php`
+
+**Nguyên tắc sử dụng Exceptions:**
+- Các BC có thể tạo exceptions riêng extend từ `DomainException`
+- Sử dụng `EntityNotFoundException` khi không tìm thấy aggregate/entity
+- Sử dụng `InvalidArgumentException` trong Value Objects để validate input
+
+#### 3.3.3. Interfaces dùng chung
+
+Các Interfaces trong Shared Kernel cho phép dependency inversion và dễ dàng testing:
+
+- **`EventDispatcherInterface`**: 
+  - Interface để dispatch domain events
+  - Cho phép mock trong testing
+  - Implementation: `LaravelEventDispatcher` (sử dụng Laravel Event system)
+  - Vị trí: `app/SharedKernel/Domain/Interfaces/EventDispatcherInterface.php`
+
+- **`ClockInterface`**: 
+  - Interface để lấy thời gian hiện tại
+  - Hữu ích cho testing (có thể sử dụng `FixedClock`)
+  - Implementation: `SystemClock` (sử dụng system time)
+  - Vị trí: `app/SharedKernel/Domain/Interfaces/ClockInterface.php`
+
+**Nguyên tắc sử dụng Interfaces:**
+- Inject interfaces vào Use Cases và Domain Services thay vì sử dụng trực tiếp Laravel facades
+- Sử dụng `ClockInterface` thay vì `now()` hoặc `Carbon::now()` để dễ test
+- Sử dụng `EventDispatcherInterface` thay vì `event()` helper để dễ mock
+
+#### 3.3.4. Utilities và Constants
+
+- **Helper Functions**: 
+  - Các hàm helper dùng chung (nếu thực sự cần thiết)
+  - Vị trí: `app/SharedKernel/Domain/Helpers/`
+
+- **Constants**: 
+  - Các hằng số dùng chung (ví dụ: status codes, default values)
+  - Vị trí: `app/SharedKernel/Domain/Constants/`
 
 **Nguyên tắc:**
-- Shared Kernel phải nhỏ và chỉ chứa những thứ thực sự cần thiết
-- Tránh đưa logic nghiệp vụ vào Shared Kernel
-- Các BC không được phụ thuộc quá nhiều vào Shared Kernel
+- Chỉ thêm helper functions và constants khi thực sự cần thiết
+- Tránh tạo quá nhiều utilities trong Shared Kernel
+
+#### 3.3.5. Service Provider
+
+**`SharedKernelServiceProvider`**:
+- Đăng ký các bindings cho interfaces trong Shared Kernel
+- Bind `EventDispatcherInterface` với `LaravelEventDispatcher`
+- Bind `ClockInterface` với `SystemClock`
+- Vị trí: `app/SharedKernel/Infrastructure/Providers/SharedKernelServiceProvider.php`
+- Đăng ký trong `config/app.php`
+
+**Nguyên tắc tổng quát về Shared Kernel:**
+
+1. **Kích thước nhỏ gọn:**
+   - Shared Kernel phải nhỏ và chỉ chứa những thứ thực sự cần thiết
+   - Tránh đưa logic nghiệp vụ vào Shared Kernel
+   - Nếu một thành phần chỉ được sử dụng trong một BC, nó không thuộc Shared Kernel
+
+2. **Tính bất biến:**
+   - Các Value Objects trong Shared Kernel phải là immutable
+   - Không được modify các thành phần trong Shared Kernel sau khi đã được sử dụng trong production
+
+3. **Độc lập với Framework:**
+   - Shared Kernel nên độc lập với Laravel framework (trừ một số trường hợp đặc biệt)
+   - Các implementation cụ thể của Laravel nằm trong Infrastructure layer
+
+4. **Tránh phụ thuộc quá mức:**
+   - Các BC không được phụ thuộc quá nhiều vào Shared Kernel
+   - Nếu một BC phụ thuộc quá nhiều vào Shared Kernel, có thể cần refactor
+
+5. **Versioning:**
+   - Khi thay đổi Shared Kernel, cần đảm bảo backward compatibility
+   - Nếu breaking changes là cần thiết, cần có migration plan rõ ràng
+
+**Ví dụ sử dụng Shared Kernel:**
+
+```php
+// Trong Domain Aggregate
+use App\SharedKernel\Domain\ValueObjects\Email;
+use App\SharedKernel\Domain\ValueObjects\Uuid;
+
+final class User
+{
+    private Uuid $id;
+    private Email $email;
+    
+    // ...
+}
+
+// Trong Use Case
+use App\SharedKernel\Domain\Interfaces\ClockInterface;
+
+final class CreateUserUseCase
+{
+    public function __construct(
+        private ClockInterface $clock
+    ) {}
+    
+    public function handle(CreateUserDTO $dto): User
+    {
+        $createdAt = $this->clock->now();
+        // ...
+    }
+}
+
+// Trong Repository Interface
+use App\SharedKernel\Domain\ValueObjects\Uuid;
+
+interface UserRepositoryInterface
+{
+    public function nextIdentity(): Uuid;
+    public function findById(Uuid $id): ?User;
+}
+```
 
 ## 4. Luồng xử lý một yêu cầu (Request Flow)
 

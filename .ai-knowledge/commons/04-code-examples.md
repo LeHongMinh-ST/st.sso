@@ -1052,3 +1052,788 @@ final class CreateUserUseCaseTest extends TestCase
     }
 }
 ```
+
+---
+
+## 4. Shared Kernel (Lõi dùng chung)
+
+Shared Kernel chứa các thành phần được tái sử dụng bởi tất cả các Bounded Context. Đây là nơi chứa các Value Objects, Exceptions, và Interfaces dùng chung.
+
+### 4.1. Shared Value Objects
+
+#### 4.1.1. Email Value Object
+
+*   **Mô tả:** Value Object dùng chung để đại diện cho địa chỉ email, có validation và có thể được sử dụng trong mọi Bounded Context.
+*   **Vị trí:** `app/SharedKernel/Domain/ValueObjects/Email.php`
+
+**Mẫu (`app/SharedKernel/Domain/ValueObjects/Email.php`):**
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace App\SharedKernel\Domain\ValueObjects;
+
+use InvalidArgumentException;
+use Stringable;
+
+/**
+ * Email value object that can be used across all bounded contexts.
+ * Immutable and always valid.
+ */
+final class Email implements Stringable
+{
+    private string $value;
+
+    /**
+     * Private constructor to enforce immutability.
+     *
+     * @param string $value
+     * @throws InvalidArgumentException
+     */
+    private function __construct(string $value)
+    {
+        $this->validate($value);
+        $this->value = strtolower(trim($value));
+    }
+
+    /**
+     * Create Email from string.
+     *
+     * @param string $value
+     * @return self
+     * @throws InvalidArgumentException
+     */
+    public static function fromString(string $value): self
+    {
+        return new self($value);
+    }
+
+    /**
+     * Validate email format.
+     *
+     * @param string $value
+     * @return void
+     * @throws InvalidArgumentException
+     */
+    private function validate(string $value): void
+    {
+        if (empty(trim($value))) {
+            throw new InvalidArgumentException('Email cannot be empty');
+        }
+
+        if (!filter_var($value, FILTER_VALIDATE_EMAIL)) {
+            throw new InvalidArgumentException("Invalid email format: {$value}");
+        }
+    }
+
+    /**
+     * Get email value as string.
+     *
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return $this->value;
+    }
+
+    /**
+     * Get email domain.
+     *
+     * @return string
+     */
+    public function domain(): string
+    {
+        $parts = explode('@', $this->value);
+        return $parts[1] ?? '';
+    }
+
+    /**
+     * Get email local part (before @).
+     *
+     * @return string
+     */
+    public function localPart(): string
+    {
+        $parts = explode('@', $this->value);
+        return $parts[0] ?? '';
+    }
+
+    /**
+     * Compare equality with another Email value object.
+     *
+     * @param Email $other
+     * @return bool
+     */
+    public function equals(self $other): bool
+    {
+        return $this->value === $other->value;
+    }
+}
+```
+
+#### 4.1.2. Uuid Value Object
+
+*   **Mô tả:** Value Object để đại diện cho UUID (Universally Unique Identifier), đảm bảo tính nhất quán trong việc sử dụng ID.
+*   **Vị trí:** `app/SharedKernel/Domain/ValueObjects/Uuid.php`
+
+**Mẫu (`app/SharedKernel/Domain/ValueObjects/Uuid.php`):**
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace App\SharedKernel\Domain\ValueObjects;
+
+use InvalidArgumentException;
+use Ramsey\Uuid\Uuid as RamseyUuid;
+use Ramsey\Uuid\UuidInterface;
+use Stringable;
+
+/**
+ * UUID value object that can be used across all bounded contexts.
+ * Immutable and always valid.
+ */
+final class Uuid implements Stringable
+{
+    private UuidInterface $value;
+
+    /**
+     * Private constructor to enforce immutability.
+     *
+     * @param UuidInterface $value
+     */
+    private function __construct(UuidInterface $value)
+    {
+        $this->value = $value;
+    }
+
+    /**
+     * Create UUID from string.
+     *
+     * @param string $value
+     * @return self
+     * @throws InvalidArgumentException
+     */
+    public static function fromString(string $value): self
+    {
+        if (!RamseyUuid::isValid($value)) {
+            throw new InvalidArgumentException("Invalid UUID format: {$value}");
+        }
+
+        return new self(RamseyUuid::fromString($value));
+    }
+
+    /**
+     * Generate a new UUID.
+     *
+     * @return self
+     */
+    public static function generate(): self
+    {
+        return new self(RamseyUuid::uuid4());
+    }
+
+    /**
+     * Get UUID value as string.
+     *
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return $this->value->toString();
+    }
+
+    /**
+     * Get UUID value as string (explicit method).
+     *
+     * @return string
+     */
+    public function toString(): string
+    {
+        return $this->value->toString();
+    }
+
+    /**
+     * Compare equality with another Uuid value object.
+     *
+     * @param Uuid $other
+     * @return bool
+     */
+    public function equals(self $other): bool
+    {
+        return $this->value->equals($other->value);
+    }
+}
+```
+
+#### 4.1.3. Timestamp Value Object
+
+*   **Mô tả:** Value Object để đại diện cho thời gian với timezone, đảm bảo tính nhất quán trong việc xử lý thời gian.
+*   **Vị trí:** `app/SharedKernel/Domain/ValueObjects/Timestamp.php`
+
+**Mẫu (`app/SharedKernel/Domain/ValueObjects/Timestamp.php`):**
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace App\SharedKernel\Domain\ValueObjects;
+
+use DateTimeImmutable;
+use DateTimeInterface;
+use InvalidArgumentException;
+use Stringable;
+
+/**
+ * Timestamp value object that can be used across all bounded contexts.
+ * Immutable and always includes timezone information.
+ */
+final class Timestamp implements Stringable
+{
+    private DateTimeImmutable $value;
+
+    /**
+     * Private constructor to enforce immutability.
+     *
+     * @param DateTimeImmutable $value
+     */
+    private function __construct(DateTimeImmutable $value)
+    {
+        $this->value = $value;
+    }
+
+    /**
+     * Create Timestamp from DateTimeImmutable.
+     *
+     * @param DateTimeImmutable $dateTime
+     * @return self
+     */
+    public static function fromDateTime(DateTimeImmutable $dateTime): self
+    {
+        return new self($dateTime);
+    }
+
+    /**
+     * Create Timestamp from string.
+     *
+     * @param string $value
+     * @param string|null $timezone
+     * @return self
+     * @throws InvalidArgumentException
+     */
+    public static function fromString(string $value, ?string $timezone = null): self
+    {
+        try {
+            $dateTime = new DateTimeImmutable($value, $timezone ? new \DateTimeZone($timezone) : null);
+            return new self($dateTime);
+        } catch (\Exception $e) {
+            throw new InvalidArgumentException("Invalid timestamp format: {$value}", 0, $e);
+        }
+    }
+
+    /**
+     * Create Timestamp for current time.
+     *
+     * @param string|null $timezone
+     * @return self
+     */
+    public static function now(?string $timezone = null): self
+    {
+        $dateTime = new DateTimeImmutable('now', $timezone ? new \DateTimeZone($timezone) : null);
+        return new self($dateTime);
+    }
+
+    /**
+     * Get timestamp as DateTimeImmutable.
+     *
+     * @return DateTimeImmutable
+     */
+    public function toDateTime(): DateTimeImmutable
+    {
+        return $this->value;
+    }
+
+    /**
+     * Get timestamp as string in ISO 8601 format.
+     *
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return $this->value->format(DateTimeInterface::ATOM);
+    }
+
+    /**
+     * Get timestamp as string in specific format.
+     *
+     * @param string $format
+     * @return string
+     */
+    public function format(string $format): string
+    {
+        return $this->value->format($format);
+    }
+
+    /**
+     * Compare equality with another Timestamp value object.
+     *
+     * @param Timestamp $other
+     * @return bool
+     */
+    public function equals(self $other): bool
+    {
+        return $this->value->getTimestamp() === $other->value->getTimestamp();
+    }
+
+    /**
+     * Check if this timestamp is before another.
+     *
+     * @param Timestamp $other
+     * @return bool
+     */
+    public function isBefore(self $other): bool
+    {
+        return $this->value < $other->value;
+    }
+
+    /**
+     * Check if this timestamp is after another.
+     *
+     * @param Timestamp $other
+     * @return bool
+     */
+    public function isAfter(self $other): bool
+    {
+        return $this->value > $other->value;
+    }
+}
+```
+
+### 4.2. Shared Exceptions
+
+#### 4.2.1. DomainException
+
+*   **Mô tả:** Exception cơ bản cho domain layer, tất cả các domain exceptions nên extend từ class này.
+*   **Vị trí:** `app/SharedKernel/Domain/Exceptions/DomainException.php`
+
+**Mẫu (`app/SharedKernel/Domain/Exceptions/DomainException.php`):**
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace App\SharedKernel\Domain\Exceptions;
+
+use RuntimeException;
+
+/**
+ * Base exception for domain layer.
+ * All domain-specific exceptions should extend this class.
+ */
+class DomainException extends RuntimeException
+{
+    /**
+     * @param string $message
+     * @param int $code
+     * @param \Throwable|null $previous
+     */
+    public function __construct(string $message = '', int $code = 0, ?\Throwable $previous = null)
+    {
+        parent::__construct($message, $code, $previous);
+    }
+}
+```
+
+#### 4.2.2. EntityNotFoundException
+
+*   **Mô tả:** Exception được throw khi không tìm thấy một entity trong domain.
+*   **Vị trí:** `app/SharedKernel/Domain/Exceptions/EntityNotFoundException.php`
+
+**Mẫu (`app/SharedKernel/Domain/Exceptions/EntityNotFoundException.php`):**
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace App\SharedKernel\Domain\Exceptions;
+
+/**
+ * Exception thrown when an entity is not found.
+ */
+final class EntityNotFoundException extends DomainException
+{
+    /**
+     * @param string $entityType
+     * @param string $identifier
+     */
+    public function __construct(string $entityType, string $identifier)
+    {
+        parent::__construct("{$entityType} not found with identifier: {$identifier}");
+    }
+
+    /**
+     * Create exception for user not found.
+     *
+     * @param string $userId
+     * @return self
+     */
+    public static function user(string $userId): self
+    {
+        return new self('User', $userId);
+    }
+
+    /**
+     * Create exception for role not found.
+     *
+     * @param string $roleId
+     * @return self
+     */
+    public static function role(string $roleId): self
+    {
+        return new self('Role', $roleId);
+    }
+}
+```
+
+#### 4.2.3. InvalidArgumentException
+
+*   **Mô tả:** Exception được throw khi tham số không hợp lệ.
+*   **Vị trí:** `app/SharedKernel/Domain/Exceptions/InvalidArgumentException.php`
+
+**Mẫu (`app/SharedKernel/Domain/Exceptions/InvalidArgumentException.php`):**
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace App\SharedKernel\Domain\Exceptions;
+
+/**
+ * Exception thrown when an invalid argument is provided.
+ */
+final class InvalidArgumentException extends DomainException
+{
+    /**
+     * @param string $message
+     * @param int $code
+     * @param \Throwable|null $previous
+     */
+    public function __construct(string $message = '', int $code = 0, ?\Throwable $previous = null)
+    {
+        parent::__construct($message, $code, $previous);
+    }
+}
+```
+
+### 4.3. Shared Interfaces
+
+#### 4.3.1. EventDispatcherInterface
+
+*   **Mô tả:** Interface để dispatch domain events, cho phép dễ dàng mock trong testing.
+*   **Vị trí:** `app/SharedKernel/Domain/Interfaces/EventDispatcherInterface.php`
+
+**Mẫu (`app/SharedKernel/Domain/Interfaces/EventDispatcherInterface.php`):**
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace App\SharedKernel\Domain\Interfaces;
+
+/**
+ * Interface for dispatching domain events.
+ * This allows easy mocking in tests and decoupling from Laravel's event system.
+ */
+interface EventDispatcherInterface
+{
+    /**
+     * Dispatch a domain event.
+     *
+     * @param object $event
+     * @return void
+     */
+    public function dispatch(object $event): void;
+
+    /**
+     * Dispatch multiple domain events.
+     *
+     * @param array<object> $events
+     * @return void
+     */
+    public function dispatchMany(array $events): void;
+}
+```
+
+**Implementation (`app/SharedKernel/Infrastructure/EventDispatcher/LaravelEventDispatcher.php`):**
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace App\SharedKernel\Infrastructure\EventDispatcher;
+
+use App\SharedKernel\Domain\Interfaces\EventDispatcherInterface;
+use Illuminate\Contracts\Events\Dispatcher;
+
+/**
+ * Laravel implementation of EventDispatcherInterface.
+ */
+final class LaravelEventDispatcher implements EventDispatcherInterface
+{
+    /**
+     * @param Dispatcher $dispatcher
+     */
+    public function __construct(
+        private Dispatcher $dispatcher
+    ) {
+    }
+
+    /**
+     * Dispatch a domain event.
+     *
+     * @param object $event
+     * @return void
+     */
+    public function dispatch(object $event): void
+    {
+        $this->dispatcher->dispatch($event);
+    }
+
+    /**
+     * Dispatch multiple domain events.
+     *
+     * @param array<object> $events
+     * @return void
+     */
+    public function dispatchMany(array $events): void
+    {
+        foreach ($events as $event) {
+            $this->dispatch($event);
+        }
+    }
+}
+```
+
+#### 4.3.2. ClockInterface
+
+*   **Mô tả:** Interface để lấy thời gian hiện tại, hữu ích cho testing và đảm bảo tính nhất quán về thời gian.
+*   **Vị trí:** `app/SharedKernel/Domain/Interfaces/ClockInterface.php`
+
+**Mẫu (`app/SharedKernel/Domain/Interfaces/ClockInterface.php`):**
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace App\SharedKernel\Domain\Interfaces;
+
+use App\SharedKernel\Domain\ValueObjects\Timestamp;
+
+/**
+ * Interface for getting current time.
+ * Useful for testing and ensuring time consistency.
+ */
+interface ClockInterface
+{
+    /**
+     * Get current timestamp.
+     *
+     * @param string|null $timezone
+     * @return Timestamp
+     */
+    public function now(?string $timezone = null): Timestamp;
+}
+```
+
+**Implementation (`app/SharedKernel/Infrastructure/Clock/SystemClock.php`):**
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace App\SharedKernel\Infrastructure\Clock;
+
+use App\SharedKernel\Domain\Interfaces\ClockInterface;
+use App\SharedKernel\Domain\ValueObjects\Timestamp;
+
+/**
+ * System clock implementation.
+ */
+final class SystemClock implements ClockInterface
+{
+    /**
+     * Get current timestamp.
+     *
+     * @param string|null $timezone
+     * @return Timestamp
+     */
+    public function now(?string $timezone = null): Timestamp
+    {
+        return Timestamp::now($timezone);
+    }
+}
+```
+
+**Test Implementation (`app/SharedKernel/Infrastructure/Clock/FixedClock.php`):**
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace App\SharedKernel\Infrastructure\Clock;
+
+use App\SharedKernel\Domain\Interfaces\ClockInterface;
+use App\SharedKernel\Domain\ValueObjects\Timestamp;
+
+/**
+ * Fixed clock implementation for testing.
+ * Always returns the same timestamp.
+ */
+final class FixedClock implements ClockInterface
+{
+    private Timestamp $fixedTime;
+
+    /**
+     * @param Timestamp $fixedTime
+     */
+    public function __construct(Timestamp $fixedTime)
+    {
+        $this->fixedTime = $fixedTime;
+    }
+
+    /**
+     * Get fixed timestamp.
+     *
+     * @param string|null $timezone
+     * @return Timestamp
+     */
+    public function now(?string $timezone = null): Timestamp
+    {
+        return $this->fixedTime;
+    }
+}
+```
+
+### 4.4. Service Provider cho Shared Kernel
+
+*   **Mô tả:** Service Provider để đăng ký các bindings cho Shared Kernel.
+*   **Vị trí:** `app/SharedKernel/Infrastructure/Providers/SharedKernelServiceProvider.php`
+
+**Mẫu (`app/SharedKernel/Infrastructure/Providers/SharedKernelServiceProvider.php`):**
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace App\SharedKernel\Infrastructure\Providers;
+
+use App\SharedKernel\Domain\Interfaces\ClockInterface;
+use App\SharedKernel\Domain\Interfaces\EventDispatcherInterface;
+use App\SharedKernel\Infrastructure\Clock\SystemClock;
+use App\SharedKernel\Infrastructure\EventDispatcher\LaravelEventDispatcher;
+use Illuminate\Contracts\Events\Dispatcher;
+use Illuminate\Support\ServiceProvider;
+
+/**
+ * Service provider for Shared Kernel.
+ */
+class SharedKernelServiceProvider extends ServiceProvider
+{
+    /**
+     * Register services.
+     *
+     * @return void
+     */
+    public function register(): void
+    {
+        // Bind EventDispatcherInterface
+        $this->app->singleton(EventDispatcherInterface::class, function ($app) {
+            return new LaravelEventDispatcher($app->make(Dispatcher::class));
+        });
+
+        // Bind ClockInterface
+        $this->app->singleton(ClockInterface::class, SystemClock::class);
+    }
+
+    /**
+     * Bootstrap services.
+     *
+     * @return void
+     */
+    public function boot(): void
+    {
+        //
+    }
+}
+```
+
+### 4.5. Ví dụ sử dụng Shared Kernel trong Bounded Context
+
+**Ví dụ sử dụng Email trong Domain Aggregate:**
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace App\OrganizationalStructure\Domain\Aggregates;
+
+use App\SharedKernel\Domain\ValueObjects\Email;
+
+final class User
+{
+    private Email $email;
+
+    public function __construct(Email $email)
+    {
+        $this->email = $email;
+    }
+
+    public function email(): Email
+    {
+        return $this->email;
+    }
+}
+```
+
+**Ví dụ sử dụng Uuid trong Repository:**
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace App\OrganizationalStructure\Domain\Repositories;
+
+use App\SharedKernel\Domain\ValueObjects\Uuid;
+
+interface UserRepositoryInterface
+{
+    public function nextIdentity(): Uuid;
+    public function findById(Uuid $id): ?User;
+}
+```
+
+**Ví dụ sử dụng ClockInterface trong Use Case:**
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace App\OrganizationalStructure\Application\UseCases;
+
+use App\SharedKernel\Domain\Interfaces\ClockInterface;
+
+final class CreateUserUseCase
+{
+    public function __construct(
+        private ClockInterface $clock
+    ) {
+    }
+
+    public function handle(CreateUserDTO $dto): User
+    {
+        $createdAt = $this->clock->now();
+        // Use $createdAt in business logic
+    }
+}
+```
