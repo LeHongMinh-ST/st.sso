@@ -103,36 +103,301 @@ Hệ thống sử dụng các loại exception khác nhau để xử lý các t�
 
 - **Trong Infrastructure Layer (Controllers):**
   - Catch Application/Domain Exceptions và convert thành HTTP responses phù hợp
-  - Return appropriate HTTP status codes (400, 404, 500, etc.)
+  - Return appropriate HTTP status codes theo bảng mapping (xem 4.3)
   - Log exceptions với đầy đủ context
+  - **BẮT BUỘC**: Mọi exception phải được map đúng HTTP status code
 
-**Ví dụ:**
-```php
-// Domain Layer
-if (!$user) {
-    throw new UserNotFoundException("User with ID {$userId} not found");
-}
+### 4.3. Bảng Mapping Exception -> HTTP Status Code
 
-// Application Layer
-try {
-    $user = $this->userRepository->findById($userId);
-    if (!$user) {
-        throw new UserNotFoundException();
+**BẮT BUỘC**: Mọi exception phải được map đúng HTTP status code theo bảng sau:
+
+| Exception Type | HTTP Status Code | Mô tả | Ví dụ |
+|----------------|------------------|-------|-------|
+| **EntityNotFoundException** | `404 Not Found` | Entity không tồn tại | `UserNotFoundException`, `FacultyNotFoundException` |
+| **UserAlreadyExistsException** | `409 Conflict` | Resource đã tồn tại | User với email/username đã tồn tại |
+| **InvalidArgumentException** | `400 Bad Request` | Dữ liệu đầu vào không hợp lệ | Email format sai, UUID không hợp lệ |
+| **DomainException** (generic) | `400 Bad Request` | Lỗi nghiệp vụ chung | Business rule violation |
+| **ValidationException** (Laravel) | `422 Unprocessable Entity` | Validation errors | Form Request validation failed |
+| **AuthenticationException** | `401 Unauthorized` | Chưa authenticate | Token không hợp lệ hoặc thiếu |
+| **AuthorizationException** | `403 Forbidden` | Không có quyền | User không có permission |
+| **ModelNotFoundException** (Laravel) | `404 Not Found` | Model không tồn tại | Eloquent model not found |
+| **QueryException** (Database) | `500 Internal Server Error` | Lỗi database | SQL syntax error, connection error |
+| **Exception** (generic) | `500 Internal Server Error` | Lỗi server không xác định | Unexpected errors |
+
+### 4.4. Chi tiết Mapping cho từng Exception
+
+#### 4.4.1. EntityNotFoundException (404 Not Found)
+
+**Exceptions:**
+- `UserNotFoundException`
+- `FacultyNotFoundException`
+- `DepartmentNotFoundException`
+- Bất kỳ exception nào extends `EntityNotFoundException`
+
+**Response Format:**
+```json
+{
+    "message": "User not found",
+    "errors": {
+        "id": ["User with ID {uuid} not found"]
     }
-} catch (UserNotFoundException $e) {
-    \Log::error("User not found", ['user_id' => $userId]);
-    throw $e; // Re-throw để Controller xử lý
 }
+```
 
-// Infrastructure Layer (Controller)
+**Ví dụ Controller:**
+```php
 try {
-    $this->useCase->handle($dto);
-    return response()->json(['message' => 'Success']);
+    $user = $this->findUserUseCase->execute($id);
+    return new UserResource($user);
 } catch (UserNotFoundException $e) {
-    return response()->json(['error' => 'User not found'], 404);
+    return response()->json([
+        'message' => 'User not found',
+    ], 404);
+}
+```
+
+#### 4.4.2. UserAlreadyExistsException (409 Conflict)
+
+**Response Format:**
+```json
+{
+    "message": "User already exists",
+    "errors": {
+        "email": ["User with email {email} already exists"]
+    }
+}
+```
+
+**Ví dụ Controller:**
+```php
+try {
+    $user = $this->createUserUseCase->execute($dto);
+    return (new UserResource($user))->response()->setStatusCode(201);
+} catch (UserAlreadyExistsException $e) {
+    return response()->json([
+        'message' => 'User already exists',
+        'errors' => [
+            'email' => [$e->getMessage()],
+        ],
+    ], 409);
+}
+```
+
+#### 4.4.3. InvalidArgumentException (400 Bad Request)
+
+**Response Format:**
+```json
+{
+    "message": "Invalid input data",
+    "errors": {
+        "field": ["Error message"]
+    }
+}
+```
+
+**Ví dụ Controller:**
+```php
+try {
+    $email = Email::fromString($request->input('email'));
+} catch (InvalidArgumentException $e) {
+    return response()->json([
+        'message' => 'Invalid input data',
+        'errors' => [
+            'email' => [$e->getMessage()],
+        ],
+    ], 400);
+}
+```
+
+#### 4.4.4. ValidationException (422 Unprocessable Entity)
+
+**Response Format:**
+```json
+{
+    "message": "The given data was invalid.",
+    "errors": {
+        "field1": ["The field1 field is required."],
+        "field2": ["The field2 must be a valid email address."]
+    }
+}
+```
+
+**Note**: Laravel tự động handle ValidationException từ Form Requests, không cần catch trong Controller.
+
+#### 4.4.5. AuthenticationException (401 Unauthorized)
+
+**Response Format:**
+```json
+{
+    "message": "Unauthenticated."
+}
+```
+
+**Note**: Laravel tự động handle AuthenticationException qua middleware.
+
+#### 4.4.6. AuthorizationException (403 Forbidden)
+
+**Response Format:**
+```json
+{
+    "message": "This action is unauthorized."
+}
+```
+
+**Ví dụ Controller:**
+```php
+if (!$this->authorize('create', User::class)) {
+    return response()->json([
+        'message' => 'This action is unauthorized.',
+    ], 403);
+}
+```
+
+#### 4.4.7. Generic Exception (500 Internal Server Error)
+
+**Response Format:**
+```json
+{
+    "message": "An error occurred while processing your request."
+}
+```
+
+**Ví dụ Controller:**
+```php
+try {
+    // ... code ...
 } catch (\Exception $e) {
-    \Log::error("Unexpected error", ['exception' => $e]);
-    return response()->json(['error' => 'An error occurred'], 500);
+    \Log::error('Unexpected error', [
+        'exception' => $e,
+        'trace' => $e->getTraceAsString(),
+    ]);
+    
+    return response()->json([
+        'message' => 'An error occurred while processing your request.',
+    ], 500);
+}
+```
+
+### 4.5. Best Practices cho Exception Handling trong Controllers
+
+1. **Catch Specific Exceptions First**: Luôn catch specific exceptions trước generic Exception
+2. **Log Exceptions**: Log tất cả exceptions với đầy đủ context (request data, user info, stack trace)
+3. **Don't Expose Internal Details**: Không expose chi tiết kỹ thuật (file paths, stack traces) trong production
+4. **Consistent Error Format**: Sử dụng format nhất quán cho tất cả error responses
+5. **Use HTTP Status Codes Correctly**: Tuân thủ đúng bảng mapping ở trên
+
+**Ví dụ đầy đủ:**
+```php
+public function store(CreateUserRequest $request): JsonResponse
+{
+    try {
+        $dto = CreateUserDTO::fromArray($request->validated());
+        $user = $this->createUserUseCase->execute($dto);
+
+        return (new UserResource($user))
+            ->response()
+            ->setStatusCode(201);
+    } catch (UserAlreadyExistsException $e) {
+        // 409 Conflict
+        return response()->json([
+            'message' => 'User already exists',
+            'errors' => [
+                'email' => [$e->getMessage()],
+            ],
+        ], 409);
+    } catch (InvalidArgumentException $e) {
+        // 400 Bad Request
+        return response()->json([
+            'message' => 'Invalid input data',
+            'errors' => [
+                'input' => [$e->getMessage()],
+            ],
+        ], 400);
+    } catch (\Exception $e) {
+        // 500 Internal Server Error
+        \Log::error('Error creating user', [
+            'exception' => $e,
+            'request_data' => $request->all(),
+        ]);
+
+        return response()->json([
+            'message' => 'An error occurred while processing your request.',
+        ], 500);
+    }
+}
+```
+
+### 4.6. Exception Handler (Optional - Recommended)
+
+Để tránh lặp lại code trong mỗi controller, có thể tạo Exception Handler hoặc Trait:
+
+```php
+// app/OrganizationalStructure/Infrastructure/Http/Concerns/HandlesExceptions.php
+trait HandlesExceptions
+{
+    protected function handleException(\Throwable $e): JsonResponse
+    {
+        return match (true) {
+            $e instanceof UserNotFoundException => $this->notFoundResponse('User not found'),
+            $e instanceof FacultyNotFoundException => $this->notFoundResponse('Faculty not found'),
+            $e instanceof DepartmentNotFoundException => $this->notFoundResponse('Department not found'),
+            $e instanceof UserAlreadyExistsException => $this->conflictResponse($e->getMessage()),
+            $e instanceof InvalidArgumentException => $this->badRequestResponse($e->getMessage()),
+            default => $this->serverErrorResponse($e),
+        };
+    }
+
+    private function notFoundResponse(string $message): JsonResponse
+    {
+        return response()->json(['message' => $message], 404);
+    }
+
+    private function conflictResponse(string $message): JsonResponse
+    {
+        return response()->json([
+            'message' => 'Resource already exists',
+            'errors' => ['resource' => [$message]],
+        ], 409);
+    }
+
+    private function badRequestResponse(string $message): JsonResponse
+    {
+        return response()->json([
+            'message' => 'Invalid input data',
+            'errors' => ['input' => [$message]],
+        ], 400);
+    }
+
+    private function serverErrorResponse(\Throwable $e): JsonResponse
+    {
+        \Log::error('Unexpected error', [
+            'exception' => $e,
+            'trace' => $e->getTraceAsString(),
+        ]);
+
+        return response()->json([
+            'message' => 'An error occurred while processing your request.',
+        ], 500);
+    }
+}
+```
+
+**Sử dụng trong Controller:**
+```php
+use HandlesExceptions;
+
+public function store(CreateUserRequest $request): JsonResponse
+{
+    try {
+        $dto = CreateUserDTO::fromArray($request->validated());
+        $user = $this->createUserUseCase->execute($dto);
+
+        return (new UserResource($user))
+            ->response()
+            ->setStatusCode(201);
+    } catch (\Throwable $e) {
+        return $this->handleException($e);
+    }
 }
 ```
 
