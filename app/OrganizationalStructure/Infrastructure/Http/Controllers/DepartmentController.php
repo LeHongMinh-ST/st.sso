@@ -9,13 +9,15 @@ use App\OrganizationalStructure\Application\UseCases\CreateDepartmentUseCase;
 use App\OrganizationalStructure\Domain\Exceptions\DepartmentNotFoundException;
 use App\OrganizationalStructure\Domain\Repositories\DepartmentRepositoryInterface;
 use App\OrganizationalStructure\Domain\ValueObjects\DepartmentId;
+use App\OrganizationalStructure\Infrastructure\Http\Requests\CreateDepartmentRequest;
+use App\OrganizationalStructure\Infrastructure\Http\Resources\Department\DepartmentCollection;
+use App\OrganizationalStructure\Infrastructure\Http\Resources\Department\DepartmentResource;
 use Exception;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 /**
- * Department controller for OrganizationalStructure context.
- * Handles HTTP requests and delegates to Use Cases.
+ * Department API controller.
+ * Handles HTTP requests for Department aggregate.
  */
 final class DepartmentController
 {
@@ -26,42 +28,52 @@ final class DepartmentController
     }
 
     /**
-     * Create a new department.
+     * Display a listing of departments.
      *
-     * @param Request $request HTTP request
-     * @return JsonResponse
+     * @return DepartmentCollection|JsonResponse
      */
-    public function store(Request $request): JsonResponse
+    public function index(): DepartmentCollection|JsonResponse
     {
-        $dto = CreateDepartmentDTO::fromArray($request->all());
-
         try {
-            $department = $this->createDepartmentUseCase->execute($dto);
+            $departments = $this->departmentRepository->findAll();
 
-            return response()->json([
-                'success' => true,
-                'data' => [
-                    'id' => $department->id()->toString(),
-                    'name' => $department->name(),
-                    'status' => $department->status()->value,
-                    'faculty_id' => $department->facultyId()->toString(),
-                ],
-            ], 201);
+            return new DepartmentCollection($departments);
         } catch (Exception $e) {
             return response()->json([
-                'success' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Store a newly created department.
+     *
+     * @param CreateDepartmentRequest $request
+     * @return JsonResponse
+     */
+    public function store(CreateDepartmentRequest $request): JsonResponse
+    {
+        try {
+            $dto = CreateDepartmentDTO::fromArray($request->validated());
+            $department = $this->createDepartmentUseCase->execute($dto);
+
+            return (new DepartmentResource($department))
+                ->response()
+                ->setStatusCode(201);
+        } catch (Exception $e) {
+            return response()->json([
                 'message' => $e->getMessage(),
             ], 400);
         }
     }
 
     /**
-     * Get department by ID.
+     * Display the specified department.
      *
      * @param string $id Department ID (UUID)
-     * @return JsonResponse
+     * @return DepartmentResource|JsonResponse
      */
-    public function show(string $id): JsonResponse
+    public function show(string $id): DepartmentResource|JsonResponse
     {
         try {
             $departmentId = DepartmentId::fromString($id);
@@ -71,52 +83,15 @@ final class DepartmentController
                 throw DepartmentNotFoundException::withId($id);
             }
 
-            return response()->json([
-                'success' => true,
-                'data' => [
-                    'id' => $department->id()->toString(),
-                    'name' => $department->name(),
-                    'status' => $department->status()->value,
-                    'faculty_id' => $department->facultyId()->toString(),
-                ],
-            ]);
+            return new DepartmentResource($department);
         } catch (DepartmentNotFoundException $e) {
             return response()->json([
-                'success' => false,
                 'message' => 'Department not found',
             ], 404);
         } catch (Exception $e) {
             return response()->json([
-                'success' => false,
                 'message' => $e->getMessage(),
             ], 400);
-        }
-    }
-
-    /**
-     * Get all departments.
-     *
-     * @return JsonResponse
-     */
-    public function index(): JsonResponse
-    {
-        try {
-            $departments = $this->departmentRepository->findAll();
-
-            return response()->json([
-                'success' => true,
-                'data' => array_map(fn ($department) => [
-                    'id' => $department->id()->toString(),
-                    'name' => $department->name(),
-                    'status' => $department->status()->value,
-                    'faculty_id' => $department->facultyId()->toString(),
-                ], $departments),
-            ]);
-        } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ], 500);
         }
     }
 }

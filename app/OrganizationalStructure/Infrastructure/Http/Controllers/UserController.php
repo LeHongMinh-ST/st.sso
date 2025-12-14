@@ -12,14 +12,15 @@ use App\OrganizationalStructure\Application\UseCases\CreateUserUseCase;
 use App\OrganizationalStructure\Application\UseCases\FindUserUseCase;
 use App\OrganizationalStructure\Application\UseCases\UpdateUserProfileUseCase;
 use App\OrganizationalStructure\Domain\Exceptions\UserNotFoundException;
-use App\OrganizationalStructure\Domain\ValueObjects\UserId;
+use App\OrganizationalStructure\Infrastructure\Http\Requests\CreateUserRequest;
+use App\OrganizationalStructure\Infrastructure\Http\Requests\UpdateUserRequest;
+use App\OrganizationalStructure\Infrastructure\Http\Resources\User\UserResource;
 use Exception;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 /**
- * User controller for OrganizationalStructure context.
- * Handles HTTP requests and delegates to Use Cases.
+ * User API controller.
+ * Handles HTTP requests for User aggregate.
  */
 final class UserController
 {
@@ -33,185 +34,97 @@ final class UserController
     }
 
     /**
-     * Create a new user.
+     * Store a newly created user.
      *
-     * @param Request $request HTTP request
+     * @param CreateUserRequest $request
      * @return JsonResponse
      */
-    public function store(Request $request): JsonResponse
+    public function store(CreateUserRequest $request): JsonResponse
     {
-        $dto = CreateUserDTO::fromArray($request->all());
-
         try {
+            $dto = CreateUserDTO::fromArray($request->validated());
             $user = $this->createUserUseCase->execute($dto);
 
-            return response()->json([
-                'success' => true,
-                'data' => [
-                    'id' => $user->id()->toString(),
-                    'user_name' => $user->userName()->toString(),
-                    'email' => (string) $user->email(),
-                    'full_name' => $user->fullName()->fullName(),
-                    'user_code' => $user->userCode()?->toString(),
-                    'phone' => $user->phoneNumber()->isNull() ? null : $user->phoneNumber()->toString(),
-                    'faculty_id' => $user->facultyId()?->toString(),
-                    'department_id' => $user->departmentId()?->toString(),
-                ],
-            ], 201);
+            return (new UserResource($user))
+                ->response()
+                ->setStatusCode(201);
         } catch (Exception $e) {
             return response()->json([
-                'success' => false,
                 'message' => $e->getMessage(),
             ], 400);
         }
     }
 
     /**
-     * Get user by ID.
+     * Display the specified user.
      *
      * @param string $id User ID (UUID)
-     * @return JsonResponse
+     * @return UserResource|JsonResponse
      */
-    public function show(string $id): JsonResponse
+    public function show(string $id): UserResource|JsonResponse
     {
         try {
-            /* $userId = UserId::fromString($id); */
             $user = $this->findUserUseCase->execute($id);
 
-            return response()->json([
-                'success' => true,
-                'data' => [
-                    'id' => $user->id()->toString(),
-                    'user_name' => $user->userName()->toString(),
-                    'email' => (string) $user->email(),
-                    'full_name' => $user->fullName()->fullName(),
-                    'user_code' => $user->userCode()?->toString(),
-                    'phone' => $user->phoneNumber()->isNull() ? null : $user->phoneNumber()->toString(),
-                    'faculty_id' => $user->facultyId()?->toString(),
-                    'department_id' => $user->departmentId()?->toString(),
-                ],
-            ]);
+            return new UserResource($user);
         } catch (UserNotFoundException $e) {
             return response()->json([
-                'success' => false,
                 'message' => 'User not found',
             ], 404);
         } catch (Exception $e) {
             return response()->json([
-                'success' => false,
                 'message' => $e->getMessage(),
             ], 400);
         }
     }
 
     /**
-     * Update user profile.
+     * Update the specified user.
+     * Handles both profile updates and assignment to faculty/department.
      *
+     * @param UpdateUserRequest $request
      * @param string $id User ID (UUID)
-     * @param Request $request HTTP request
-     * @return JsonResponse
+     * @return UserResource|JsonResponse
      */
-    public function update(string $id, Request $request): JsonResponse
+    public function update(UpdateUserRequest $request, string $id): UserResource|JsonResponse
     {
         try {
-            $dto = UpdateUserProfileDTO::fromArray([
-                'first_name' => $request->input('first_name'),
-                'last_name' => $request->input('last_name'),
-                'email' => $request->input('email'),
-                'phone' => $request->input('phone'),
-            ]);
+            $validated = $request->validated();
+            $user = null;
 
-            $user = $this->updateUserProfileUseCase->execute($id, $dto);
+            // Handle profile update if provided
+            if (isset($validated['first_name']) || isset($validated['last_name']) || isset($validated['email']) || isset($validated['phone'])) {
+                $dto = UpdateUserProfileDTO::fromArray([
+                    'first_name' => $validated['first_name'] ?? '',
+                    'last_name' => $validated['last_name'] ?? '',
+                    'email' => $validated['email'] ?? '',
+                    'phone' => $validated['phone'] ?? null,
+                ]);
+                $user = $this->updateUserProfileUseCase->execute($id, $dto);
+            }
 
-            return response()->json([
-                'success' => true,
-                'data' => [
-                    'id' => $user->id()->toString(),
-                    'user_name' => $user->userName()->toString(),
-                    'email' => (string) $user->email(),
-                    'full_name' => $user->fullName()->fullName(),
-                    'user_code' => $user->userCode()?->toString(),
-                    'phone' => $user->phoneNumber()->isNull() ? null : $user->phoneNumber()->toString(),
-                    'faculty_id' => $user->facultyId()?->toString(),
-                    'department_id' => $user->departmentId()?->toString(),
-                ],
-            ]);
+            // Handle faculty assignment if provided
+            if (isset($validated['faculty_id'])) {
+                $user = $this->assignUserToFacultyUseCase->execute($id, $validated['faculty_id']);
+            }
+
+            // Handle department assignment if provided
+            if (isset($validated['department_id'])) {
+                $user = $this->assignUserToDepartmentUseCase->execute($id, $validated['department_id']);
+            }
+
+            // If no updates were made, fetch the user
+            if (null === $user) {
+                $user = $this->findUserUseCase->execute($id);
+            }
+
+            return new UserResource($user);
         } catch (UserNotFoundException $e) {
             return response()->json([
-                'success' => false,
                 'message' => 'User not found',
             ], 404);
         } catch (Exception $e) {
             return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ], 400);
-        }
-    }
-
-    /**
-     * Assign user to faculty.
-     *
-     * @param string $id User ID (UUID)
-     * @param Request $request HTTP request
-     * @return JsonResponse
-     */
-    public function assignToFaculty(string $id, Request $request): JsonResponse
-    {
-        try {
-            $facultyId = $request->input('faculty_id');
-
-            $user = $this->assignUserToFacultyUseCase->execute($id, $facultyId);
-
-            return response()->json([
-                'success' => true,
-                'data' => [
-                    'id' => $user->id()->toString(),
-                    'faculty_id' => $user->facultyId()?->toString(),
-                ],
-            ]);
-        } catch (UserNotFoundException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'User not found',
-            ], 404);
-        } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ], 400);
-        }
-    }
-
-    /**
-     * Assign user to department.
-     *
-     * @param string $id User ID (UUID)
-     * @param Request $request HTTP request
-     * @return JsonResponse
-     */
-    public function assignToDepartment(string $id, Request $request): JsonResponse
-    {
-        try {
-            $departmentId = $request->input('department_id');
-
-            $user = $this->assignUserToDepartmentUseCase->execute($id, $departmentId);
-
-            return response()->json([
-                'success' => true,
-                'data' => [
-                    'id' => $user->id()->toString(),
-                    'department_id' => $user->departmentId()?->toString(),
-                ],
-            ]);
-        } catch (UserNotFoundException $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'User not found',
-            ], 404);
-        } catch (Exception $e) {
-            return response()->json([
-                'success' => false,
                 'message' => $e->getMessage(),
             ], 400);
         }

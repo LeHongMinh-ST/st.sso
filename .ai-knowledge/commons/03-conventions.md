@@ -441,3 +441,473 @@ class Create extends Component
 - **Jobs**: Có thể sử dụng constructor injection cho dependencies, nhưng không thể inject vào `handle()` method parameters nếu class cần constructor parameters
 - **Service Providers**: Sử dụng constructor injection bình thường
 - **Use Cases**: Sử dụng constructor injection bình thường
+
+## 10. Quy ước về API Design với Laravel Resources
+
+**BẮT BUỘC**: Mọi API endpoint phải tuân thủ RESTful conventions và sử dụng Laravel API Resources để format responses. API phải được thiết kế để phản ánh Aggregate structure, không phải theo chức năng.
+
+### 10.1. Nguyên tắc thiết kế API
+
+1. **API phản ánh Aggregate**: API endpoints phải map trực tiếp với Domain Aggregates, không phải theo chức năng
+   - ✅ Đúng: `GET /api/users/{id}`, `POST /api/users`, `PUT /api/users/{id}`
+   - ❌ Sai: `POST /api/create-user`, `POST /api/update-user-profile`, `POST /api/assign-user-to-faculty`
+
+2. **RESTful Conventions**: Tuân thủ đầy đủ RESTful conventions:
+   - `GET /api/{resource}` - List resources
+   - `GET /api/{resource}/{id}` - Show resource
+   - `POST /api/{resource}` - Create resource
+   - `PUT /api/{resource}/{id}` - Update resource (full update)
+   - `PATCH /api/{resource}/{id}` - Partial update resource
+   - `DELETE /api/{resource}/{id}` - Delete resource
+
+3. **Nested Resources**: Chỉ sử dụng nested resources khi có quan hệ rõ ràng giữa aggregates:
+   - ✅ Đúng: `GET /api/faculties/{faculty}/users` (users thuộc về faculty)
+   - ❌ Sai: `GET /api/users/{user}/assign-to-faculty` (không phải nested resource)
+
+4. **Actions trên Aggregates**: Các actions phải được thực hiện thông qua update operations:
+   - ✅ Đúng: `PATCH /api/users/{id}` với body `{ "faculty_id": "uuid" }` để assign user to faculty
+   - ❌ Sai: `POST /api/users/{id}/assign-to-faculty`
+
+### 10.2. Laravel API Resources
+
+**BẮT BUỘC**: Mọi API response phải sử dụng Laravel API Resources để format data.
+
+#### 10.2.1. Cấu trúc Resources
+
+Resources phải được đặt trong `app/{BoundedContext}/Infrastructure/Http/Resources/`:
+
+```
+app/
+  OrganizationalStructure/
+    Infrastructure/
+      Http/
+        Resources/
+          User/
+            UserResource.php
+            UserCollection.php
+          Faculty/
+            FacultyResource.php
+            FacultyCollection.php
+          Department/
+            DepartmentResource.php
+            DepartmentCollection.php
+```
+
+#### 10.2.2. Resource Structure
+
+Mỗi Resource phải:
+- Extend `JsonResource`
+- Map Domain Aggregate properties sang API response format
+- Include relationships khi cần thiết
+- Format data theo chuẩn API (snake_case cho keys)
+
+**Ví dụ UserResource**:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace App\OrganizationalStructure\Infrastructure\Http\Resources\User;
+
+use App\OrganizationalStructure\Domain\Aggregates\User;
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
+
+/**
+ * User API resource.
+ * Maps User aggregate to API response format.
+ */
+final class UserResource extends JsonResource
+{
+    /**
+     * Transform the resource into an array.
+     *
+     * @param Request $request
+     * @return array<string, mixed>
+     */
+    public function toArray(Request $request): array
+    {
+        /** @var User $user */
+        $user = $this->resource;
+
+        return [
+            'id' => $user->id()->toString(),
+            'user_name' => $user->userName()->toString(),
+            'email' => (string) $user->email(),
+            'full_name' => $user->fullName()->fullName(),
+            'first_name' => $user->fullName()->firstName(),
+            'last_name' => $user->fullName()->lastName(),
+            'user_code' => $user->userCode()?->toString(),
+            'phone' => $user->phoneNumber()->isNull() ? null : $user->phoneNumber()->toString(),
+            'faculty_id' => $user->facultyId()?->toString(),
+            'department_id' => $user->departmentId()?->toString(),
+            'created_at' => $this->when($this->created_at, fn () => $this->created_at?->toIso8601String()),
+            'updated_at' => $this->when($this->updated_at, fn () => $this->updated_at?->toIso8601String()),
+        ];
+    }
+}
+```
+
+#### 10.2.3. Resource Collections
+
+Sử dụng Resource Collections cho list endpoints:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace App\OrganizationalStructure\Infrastructure\Http\Resources\User;
+
+use Illuminate\Http\Resources\Json\ResourceCollection;
+
+/**
+ * User collection resource.
+ */
+final class UserCollection extends ResourceCollection
+{
+    /**
+     * Transform the resource collection into an array.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return array<string, mixed>
+     */
+    public function toArray($request): array
+    {
+        return [
+            'data' => $this->collection,
+        ];
+    }
+}
+```
+
+### 10.3. Form Requests cho Validation
+
+**BẮT BUỘC**: Mọi API endpoint nhận input phải sử dụng Form Requests để validate.
+
+#### 10.3.1. Cấu trúc Form Requests
+
+Form Requests phải được đặt trong `app/{BoundedContext}/Infrastructure/Http/Requests/`:
+
+```
+app/
+  OrganizationalStructure/
+    Infrastructure/
+      Http/
+        Requests/
+          CreateUserRequest.php
+          UpdateUserRequest.php
+          AssignUserToFacultyRequest.php
+          CreateFacultyRequest.php
+          UpdateFacultyRequest.php
+```
+
+#### 10.3.2. Form Request Structure
+
+Mỗi Form Request phải:
+- Extend `Illuminate\Foundation\Http\FormRequest`
+- Implement `rules()` method với validation rules
+- Implement `authorize()` method để check permissions
+- Map validated data sang DTO format
+
+**Ví dụ CreateUserRequest**:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace App\OrganizationalStructure\Infrastructure\Http\Requests;
+
+use Illuminate\Foundation\Http\FormRequest;
+
+/**
+ * Request for creating a user.
+ */
+final class CreateUserRequest extends FormRequest
+{
+    /**
+     * Determine if the user is authorized to make this request.
+     *
+     * @return bool
+     */
+    public function authorize(): bool
+    {
+        // Use policies to check authorization
+        return $this->user()->can('create', \App\Models\User::class);
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array<string, array<int, string>>
+     */
+    public function rules(): array
+    {
+        return [
+            'user_name' => ['required', 'string', 'max:255', 'unique:users,user_name'],
+            'first_name' => ['required', 'string', 'max:255'],
+            'last_name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255', 'unique:users,email'],
+            'user_code' => ['nullable', 'string', 'max:50', 'unique:users,code'],
+            'phone' => ['nullable', 'string', 'max:20'],
+            'faculty_id' => ['nullable', 'uuid', 'exists:faculties,uuid'],
+            'department_id' => ['nullable', 'uuid', 'exists:departments,uuid'],
+        ];
+    }
+
+    /**
+     * Get custom messages for validator errors.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'user_name.unique' => 'Username already exists',
+            'email.unique' => 'Email already exists',
+            'user_code.unique' => 'User code already exists',
+            'faculty_id.exists' => 'Faculty not found',
+            'department_id.exists' => 'Department not found',
+        ];
+    }
+}
+```
+
+### 10.4. Controller Structure
+
+Controllers phải:
+- Sử dụng Form Requests cho validation
+- Sử dụng API Resources cho responses
+- Delegate business logic to Use Cases
+- Return proper HTTP status codes
+- Handle exceptions properly
+
+**Ví dụ UserController**:
+
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace App\OrganizationalStructure\Infrastructure\Http\Controllers;
+
+use App\OrganizationalStructure\Application\UseCases\CreateUserUseCase;
+use App\OrganizationalStructure\Application\UseCases\FindUserUseCase;
+use App\OrganizationalStructure\Application\UseCases\UpdateUserProfileUseCase;
+use App\OrganizationalStructure\Domain\Exceptions\UserNotFoundException;
+use App\OrganizationalStructure\Infrastructure\Http\Requests\CreateUserRequest;
+use App\OrganizationalStructure\Infrastructure\Http\Requests\UpdateUserRequest;
+use App\OrganizationalStructure\Infrastructure\Http\Resources\User\UserResource;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+
+/**
+ * User API controller.
+ * Handles HTTP requests for User aggregate.
+ */
+final class UserController
+{
+    public function __construct(
+        private readonly CreateUserUseCase $createUserUseCase,
+        private readonly FindUserUseCase $findUserUseCase,
+        private readonly UpdateUserProfileUseCase $updateUserProfileUseCase,
+    ) {
+    }
+
+    /**
+     * Display a listing of users.
+     *
+     * @return AnonymousResourceCollection
+     */
+    public function index(): AnonymousResourceCollection
+    {
+        // Implementation for listing users
+        // ...
+    }
+
+    /**
+     * Store a newly created user.
+     *
+     * @param CreateUserRequest $request
+     * @return JsonResponse
+     */
+    public function store(CreateUserRequest $request): JsonResponse
+    {
+        $dto = CreateUserDTO::fromArray($request->validated());
+        $user = $this->createUserUseCase->execute($dto);
+
+        return (new UserResource($user))
+            ->response()
+            ->setStatusCode(201);
+    }
+
+    /**
+     * Display the specified user.
+     *
+     * @param string $id User ID (UUID)
+     * @return UserResource|JsonResponse
+     */
+    public function show(string $id): UserResource|JsonResponse
+    {
+        try {
+            $user = $this->findUserUseCase->execute($id);
+
+            return new UserResource($user);
+        } catch (UserNotFoundException $e) {
+            return response()->json([
+                'message' => 'User not found',
+            ], 404);
+        }
+    }
+
+    /**
+     * Update the specified user.
+     *
+     * @param UpdateUserRequest $request
+     * @param string $id User ID (UUID)
+     * @return UserResource|JsonResponse
+     */
+    public function update(UpdateUserRequest $request, string $id): UserResource|JsonResponse
+    {
+        try {
+            $dto = UpdateUserProfileDTO::fromArray($request->validated());
+            $user = $this->updateUserProfileUseCase->execute($id, $dto);
+
+            return new UserResource($user);
+        } catch (UserNotFoundException $e) {
+            return response()->json([
+                'message' => 'User not found',
+            ], 404);
+        }
+    }
+}
+```
+
+### 10.5. Routes Structure
+
+Routes phải follow RESTful conventions và map với aggregates:
+
+```php
+// routes/api.php
+
+use App\OrganizationalStructure\Infrastructure\Http\Controllers\UserController;
+use App\OrganizationalStructure\Infrastructure\Http\Controllers\FacultyController;
+use App\OrganizationalStructure\Infrastructure\Http\Controllers\DepartmentController;
+
+Route::middleware(['auth:api'])->group(function (): void {
+    // User aggregate routes
+    Route::apiResource('users', UserController::class);
+    
+    // Faculty aggregate routes
+    Route::apiResource('faculties', FacultyController::class);
+    
+    // Department aggregate routes
+    Route::apiResource('departments', DepartmentController::class);
+    
+    // Nested resources (only when there's a clear aggregate relationship)
+    Route::get('faculties/{faculty}/users', [FacultyController::class, 'users'])
+        ->name('faculties.users.index');
+    Route::get('faculties/{faculty}/departments', [FacultyController::class, 'departments'])
+        ->name('faculties.departments.index');
+});
+```
+
+### 10.6. Response Format
+
+Tất cả API responses phải follow format nhất quán:
+
+**Success Response**:
+```json
+{
+    "data": {
+        "id": "uuid",
+        "user_name": "john.doe",
+        "email": "john@example.com",
+        ...
+    }
+}
+```
+
+**Error Response**:
+```json
+{
+    "message": "Error message",
+    "errors": {
+        "field": ["Error message"]
+    }
+}
+```
+
+**Collection Response**:
+```json
+{
+    "data": [
+        { "id": "uuid", ... },
+        { "id": "uuid", ... }
+    ],
+    "meta": {
+        "current_page": 1,
+        "per_page": 15,
+        "total": 100
+    }
+}
+```
+
+### 10.7. Best Practices
+
+1. **Aggregate-First Design**: Luôn thiết kế API theo aggregate structure trước, sau đó map sang use cases
+2. **Consistent Naming**: Sử dụng snake_case cho API keys, camelCase cho internal code
+3. **Resource Nesting**: Chỉ nest resources khi có quan hệ rõ ràng giữa aggregates
+4. **Status Codes**: Sử dụng proper HTTP status codes (200, 201, 204, 400, 404, 422, 500)
+5. **Error Handling**: Luôn return consistent error format
+6. **Validation**: Validate ở Form Request level, không validate trong Controller
+7. **Authorization**: Check permissions trong Form Request `authorize()` method hoặc Policies
+
+### 10.8. Ví dụ đầy đủ
+
+**Ví dụ: Assign User to Faculty**
+
+❌ **SAI** - Thiết kế theo chức năng:
+```php
+// Route
+Route::post('users/{user}/assign-to-faculty', [UserController::class, 'assignToFaculty']);
+
+// Controller
+public function assignToFaculty(string $id, Request $request): JsonResponse
+{
+    // ...
+}
+```
+
+✅ **ĐÚNG** - Thiết kế theo aggregate:
+```php
+// Route - Sử dụng PATCH để update user aggregate
+Route::patch('users/{user}', [UserController::class, 'update']);
+
+// Form Request
+class UpdateUserRequest extends FormRequest
+{
+    public function rules(): array
+    {
+        return [
+            'faculty_id' => ['nullable', 'uuid', 'exists:faculties,uuid'],
+            'department_id' => ['nullable', 'uuid', 'exists:departments,uuid'],
+            // ... other fields
+        ];
+    }
+}
+
+// Controller - Update method xử lý tất cả updates, bao gồm assign to faculty
+public function update(UpdateUserRequest $request, string $id): UserResource|JsonResponse
+{
+    $dto = UpdateUserProfileDTO::fromArray($request->validated());
+    // Use Case sẽ handle logic assign to faculty nếu faculty_id được provide
+    $user = $this->updateUserProfileUseCase->execute($id, $dto);
+    
+    return new UserResource($user);
+}
+```
+
+**Vui lòng tham khảo file `.ai-knowledge/commons/06-api-design-conventions.md`** để biết chi tiết về API design conventions.
