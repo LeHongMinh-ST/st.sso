@@ -724,73 +724,99 @@ Mỗi task nên follow workflow sau:
 
 **Mục tiêu**: Setup API documentation tool (Swagger/OpenAPI)
 
-#### Subtask 6.2.4.1: Install và Configure Swagger/OpenAPI
+#### Subtask 6.2.4.1: Install và Configure Scramble
 
 **Estimated Time**: 1 giờ
 
 **Steps**:
-1. [ ] Install L5-Swagger:
+1. [ ] Install Scramble:
    ```bash
-   composer require darkaonline/l5-swagger
-   php artisan vendor:publish --provider "L5Swagger\L5SwaggerServiceProvider"
+   composer require dedoc/scramble
+   php artisan vendor:publish --tag=scramble-config
    ```
-2. [ ] Configure Swagger:
+2. [ ] Configure Scramble:
    ```php
-   // config/l5-swagger.php
-   'paths' => [
-       'docs' => base_path('docs'),
-       'annotations' => base_path('app'),
+   // config/scramble.php
+   'api' => [
+       'info' => [
+           'title' => 'SSO API Documentation',
+           'version' => '1.0.0',
+           'description' => 'API documentation for Single Sign-On system',
+       ],
+       'servers' => [
+           [
+               'url' => env('APP_URL', 'http://localhost'),
+               'description' => 'Local development server',
+           ],
+       ],
    ],
+   'middleware' => ['web'],
+   'routes' => ['api'],
    ```
-3. [ ] Add annotations to API Controllers:
+3. [ ] Add route để access documentation (nếu cần):
    ```php
-   /**
-    * @OA\Get(
-    *     path="/api/users",
-    *     summary="List users",
-    *     tags={"Users"},
-    *     @OA\Response(
-    *         response=200,
-    *         description="Successful operation",
-    *         @OA\JsonContent(
-    *             type="array",
-    *             @OA\Items(ref="#/components/schemas/User")
-    *         )
-    *     )
-    * )
-    */
-   public function index(Request $request): JsonResponse
-   {
-       // ...
-   }
+   // routes/web.php
+   Route::get('/api-docs', function () {
+       return view('scramble::docs');
+   })->middleware('web');
    ```
-4. [ ] Generate documentation:
-   ```bash
-   php artisan l5-swagger:generate
-   ```
+4. [ ] Add Scramble annotations to API Controllers theo conventions:
+   - Tham khảo `.ai-knowledge/commons/05-api-documentation-scramble.md`
+   - Sử dụng `@group`, `@queryParam`, `@urlParam`, `@bodyParam`
+   - Document responses với `@response`
+   - Chỉ định authentication với `@authenticated` hoặc `@unauthenticated`
 
 **Verification**:
-- [ ] Swagger installed
+- [ ] Scramble installed
 - [ ] Configured correctly
-- [ ] Documentation generated
+- [ ] Documentation accessible tại `/api-docs` (hoặc route đã config)
+- [ ] All API endpoints documented với Scramble annotations
 
 ---
 
-#### Subtask 6.2.4.2: Document All API Endpoints
+#### Subtask 6.2.4.2: Document All API Endpoints với Scramble
 
-**Estimated Time**: 1 giờ
+**Estimated Time**: 2-3 giờ
 
 **Steps**:
-1. [ ] Add annotations cho tất cả API endpoints
-2. [ ] Document request/response formats
-3. [ ] Document error responses
-4. [ ] Document authentication requirements
-5. [ ] Generate và verify documentation
+1. [ ] Review conventions trong `.ai-knowledge/commons/05-api-documentation-scramble.md`
+2. [ ] Add Scramble annotations cho tất cả API endpoints:
+   - [ ] User API endpoints (`UserController`)
+   - [ ] Faculty API endpoints (`FacultyController`)
+   - [ ] SSO Authentication API endpoints (`AuthenticateSSOController`)
+   - [ ] Health check endpoints (`HealthCheckController`)
+3. [ ] Document request/response formats:
+   - [ ] Query parameters với `@queryParam`
+   - [ ] URL parameters với `@urlParam`
+   - [ ] Body parameters với `@bodyParam`
+   - [ ] Response structure với `@response`
+4. [ ] Document error responses:
+   - [ ] 400 Bad Request
+   - [ ] 401 Unauthorized
+   - [ ] 403 Forbidden
+   - [ ] 404 Not Found
+   - [ ] 422 Validation Error
+   - [ ] 500 Internal Server Error
+5. [ ] Document authentication requirements:
+   - [ ] `@authenticated` cho protected endpoints
+   - [ ] `@unauthenticated` cho public endpoints
+   - [ ] OAuth2 documentation cho authentication endpoints
+6. [ ] Group endpoints với `@group`:
+   - [ ] `@group Users`
+   - [ ] `@group Faculties`
+   - [ ] `@group Authentication`
+   - [ ] `@group Health`
+7. [ ] Verify documentation:
+   - [ ] Access documentation UI
+   - [ ] Test examples trong documentation
+   - [ ] Verify response structures match API Resources
 
 **Verification**:
-- [ ] All endpoints documented
-- [ ] Documentation complete
-- [ ] Accessible tại `/api/documentation`
+- [ ] All endpoints documented với Scramble annotations
+- [ ] Documentation complete và accurate
+- [ ] Accessible tại `/api-docs` (hoặc route đã config)
+- [ ] Examples are realistic và meaningful
+- [ ] Response structures match API Resources
 
 ---
 

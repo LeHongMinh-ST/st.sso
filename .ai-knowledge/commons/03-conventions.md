@@ -223,3 +223,52 @@ public function test_user_cannot_be_created_with_invalid_email(): void
 Để đảm bảo tính nhất quán và cung cấp các ví dụ mẫu chi tiết, toàn bộ kiến trúc xử lý sự kiện (event-driven architecture), bao gồm luồng xử lý, mẫu file và ví dụ mã nguồn cho từng thành phần (Event, Dispatcher, Listener), được định nghĩa tập trung tại tài liệu kiến trúc chính.
 
 **Vui lòng tham khảo mục "5. Kiến trúc Event-Driven với Transactional Outbox Pattern" trong tệp tin `.ai-knowledge/commons/02-architecture.md`** để biết thông tin chi tiết.
+
+## 8. Quy ước về API Documentation (Scramble)
+
+**BẮT BUỘC**: Mọi API endpoint phải được document đầy đủ sử dụng Scramble annotations để tự động generate API documentation.
+
+### 8.1. Yêu cầu chung
+
+1. **PHPDoc Blocks**: Mọi API Controller method **BẮT BUỘC** phải có PHPDoc với Scramble annotations
+2. **Group Documentation**: Sử dụng `@group` để nhóm các endpoints liên quan
+3. **Parameter Documentation**: Document tất cả parameters (query, url, body) với examples
+4. **Response Documentation**: Document success và error responses với status codes và structure
+5. **Authentication Documentation**: Chỉ định authentication requirement (`@authenticated` hoặc `@unauthenticated`)
+
+### 8.2. Cấu trúc Documentation
+
+```php
+/**
+ * Method description
+ * 
+ * @group GroupName
+ * 
+ * @queryParam param_name type Description. Example: example_value
+ * @urlParam param_name type required Description. Example: example_value
+ * @bodyParam param_name type required Description. Example: example_value
+ * 
+ * @response 200 {
+     *   "data": {...}
+     * }
+     * @response 400 {
+     *   "message": "Error message"
+     * }
+     * 
+ * @authenticated
+ */
+public function methodName(Request $request): JsonResponse
+{
+    // Implementation
+}
+```
+
+### 8.3. Best Practices
+
+- ✅ Luôn cung cấp examples cho mọi parameter
+- ✅ Document tất cả error responses có thể xảy ra
+- ✅ Response structure phải match với API Resource structure
+- ✅ Sử dụng consistent naming cho parameters
+- ✅ Group related endpoints lại với nhau
+
+**Vui lòng tham khảo file `.ai-knowledge/commons/05-api-documentation-scramble.md`** để biết chi tiết về conventions viết API documentation theo Scramble.
