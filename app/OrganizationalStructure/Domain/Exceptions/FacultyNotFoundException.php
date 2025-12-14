@@ -19,7 +19,7 @@ final class FacultyNotFoundException extends EntityNotFoundException
      */
     public static function withId(string $facultyId): self
     {
-        return new self("Faculty with ID {$facultyId} not found");
+        return new self('Faculty', $facultyId);
     }
 
     /**
@@ -30,6 +30,6 @@ final class FacultyNotFoundException extends EntityNotFoundException
      */
     public static function withName(string $name): self
     {
-        return new self("Faculty with name {$name} not found");
+        return new self('Faculty', $name);
     }
 }

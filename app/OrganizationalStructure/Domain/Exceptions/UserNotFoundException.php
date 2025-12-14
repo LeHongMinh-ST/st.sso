@@ -19,7 +19,7 @@ final class UserNotFoundException extends EntityNotFoundException
      */
     public static function withId(string $userId): self
     {
-        return new self("User with ID {$userId} not found");
+        return new self('User', $userId);
     }
 
     /**
@@ -30,7 +30,7 @@ final class UserNotFoundException extends EntityNotFoundException
      */
     public static function withUsername(string $username): self
     {
-        return new self("User with username {$username} not found");
+        return new self('User', $username);
     }
 
     /**
@@ -41,6 +41,6 @@ final class UserNotFoundException extends EntityNotFoundException
      */
     public static function withEmail(string $email): self
     {
-        return new self("User with email {$email} not found");
+        return new self('User', $email);
     }
 }

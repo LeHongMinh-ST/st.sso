@@ -19,7 +19,7 @@ final class DepartmentNotFoundException extends EntityNotFoundException
      */
     public static function withId(string $departmentId): self
     {
-        return new self("Department with ID {$departmentId} not found");
+        return new self('Department', $departmentId);
     }
 
     /**
@@ -30,6 +30,6 @@ final class DepartmentNotFoundException extends EntityNotFoundException
      */
     public static function withName(string $name): self
     {
-        return new self("Department with name {$name} not found");
+        return new self('Department', $name);
     }
 }
