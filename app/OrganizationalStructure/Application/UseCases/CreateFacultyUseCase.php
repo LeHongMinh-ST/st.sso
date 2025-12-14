@@ -9,7 +9,7 @@ use App\OrganizationalStructure\Application\DTOs\CreateFacultyDTO;
 use App\OrganizationalStructure\Domain\Entities\Faculty;
 use App\OrganizationalStructure\Domain\Repositories\FacultyRepositoryInterface;
 use App\OrganizationalStructure\Domain\ValueObjects\FacultyId;
-use App\SharedKernel\Infrastructure\Outbox\OutboxEvent;
+use App\SharedKernel\Domain\Repositories\OutboxEventRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -20,6 +20,7 @@ final class CreateFacultyUseCase
 {
     public function __construct(
         private readonly FacultyRepositoryInterface $facultyRepository,
+        private readonly OutboxEventRepositoryInterface $outboxEventRepository,
     ) {
     }
 
@@ -47,13 +48,13 @@ final class CreateFacultyUseCase
             // Save domain events to outbox
             $events = $faculty->pullDomainEvents();
             foreach ($events as $event) {
-                OutboxEvent::create([
-                    'id' => Str::uuid()->toString(),
-                    'aggregate_type' => 'faculty',
-                    'aggregate_id' => $facultyId->toString(),
-                    'event_type' => $event::class,
-                    'payload' => $event->toPayload(),
-                ]);
+                $this->outboxEventRepository->store(
+                    Str::uuid()->toString(),
+                    'faculty',
+                    $facultyId->toString(),
+                    $event::class,
+                    $event->toPayload()
+                );
             }
 
             return $faculty;

@@ -15,8 +15,8 @@ use App\OrganizationalStructure\Domain\ValueObjects\PhoneNumber;
 use App\OrganizationalStructure\Domain\ValueObjects\UserCode;
 use App\OrganizationalStructure\Domain\ValueObjects\UserId;
 use App\OrganizationalStructure\Domain\ValueObjects\UserName;
+use App\SharedKernel\Domain\Repositories\OutboxEventRepositoryInterface;
 use App\SharedKernel\Domain\ValueObjects\Email;
-use App\SharedKernel\Infrastructure\Outbox\OutboxEvent;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -27,6 +27,7 @@ final class CreateUserUseCase
 {
     public function __construct(
         private readonly UserRepositoryInterface $userRepository,
+        private readonly OutboxEventRepositoryInterface $outboxEventRepository,
     ) {
     }
 
@@ -87,13 +88,13 @@ final class CreateUserUseCase
             // Save domain events to outbox
             $events = $user->pullDomainEvents();
             foreach ($events as $event) {
-                OutboxEvent::create([
-                    'id' => Str::uuid()->toString(),
-                    'aggregate_type' => 'user',
-                    'aggregate_id' => $userId->toString(),
-                    'event_type' => $event::class,
-                    'payload' => $event->toPayload(),
-                ]);
+                $this->outboxEventRepository->store(
+                    Str::uuid()->toString(),
+                    'user',
+                    $userId->toString(),
+                    $event::class,
+                    $event->toPayload()
+                );
             }
 
             return $user;

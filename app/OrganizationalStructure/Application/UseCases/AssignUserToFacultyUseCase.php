@@ -9,7 +9,7 @@ use App\OrganizationalStructure\Domain\Exceptions\UserNotFoundException;
 use App\OrganizationalStructure\Domain\Repositories\UserRepositoryInterface;
 use App\OrganizationalStructure\Domain\ValueObjects\FacultyId;
 use App\OrganizationalStructure\Domain\ValueObjects\UserId;
-use App\SharedKernel\Infrastructure\Outbox\OutboxEvent;
+use App\SharedKernel\Domain\Repositories\OutboxEventRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -20,6 +20,7 @@ final class AssignUserToFacultyUseCase
 {
     public function __construct(
         private readonly UserRepositoryInterface $userRepository,
+        private readonly OutboxEventRepositoryInterface $outboxEventRepository,
     ) {
     }
 
@@ -49,13 +50,13 @@ final class AssignUserToFacultyUseCase
             // Save domain events to outbox
             $events = $user->pullDomainEvents();
             foreach ($events as $event) {
-                OutboxEvent::create([
-                    'id' => Str::uuid()->toString(),
-                    'aggregate_type' => 'user',
-                    'aggregate_id' => $userId,
-                    'event_type' => $event::class,
-                    'payload' => $event->toPayload(),
-                ]);
+                $this->outboxEventRepository->store(
+                    Str::uuid()->toString(),
+                    'user',
+                    $userId,
+                    $event::class,
+                    $event->toPayload()
+                );
             }
 
             return $user;

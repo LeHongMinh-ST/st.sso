@@ -12,7 +12,7 @@ use App\OrganizationalStructure\Domain\Repositories\DepartmentRepositoryInterfac
 use App\OrganizationalStructure\Domain\Repositories\FacultyRepositoryInterface;
 use App\OrganizationalStructure\Domain\ValueObjects\DepartmentId;
 use App\OrganizationalStructure\Domain\ValueObjects\FacultyId;
-use App\SharedKernel\Infrastructure\Outbox\OutboxEvent;
+use App\SharedKernel\Domain\Repositories\OutboxEventRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -24,6 +24,7 @@ final class CreateDepartmentUseCase
     public function __construct(
         private readonly DepartmentRepositoryInterface $departmentRepository,
         private readonly FacultyRepositoryInterface $facultyRepository,
+        private readonly OutboxEventRepositoryInterface $outboxEventRepository,
     ) {
     }
 
@@ -60,13 +61,13 @@ final class CreateDepartmentUseCase
             // Save domain events to outbox
             $events = $department->pullDomainEvents();
             foreach ($events as $event) {
-                OutboxEvent::create([
-                    'id' => Str::uuid()->toString(),
-                    'aggregate_type' => 'department',
-                    'aggregate_id' => $departmentId->toString(),
-                    'event_type' => $event::class,
-                    'payload' => $event->toPayload(),
-                ]);
+                $this->outboxEventRepository->store(
+                    Str::uuid()->toString(),
+                    'department',
+                    $departmentId->toString(),
+                    $event::class,
+                    $event->toPayload()
+                );
             }
 
             return $department;

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Console\Commands\SharedKernel\Infrastructure\Console;
 
-use App\SharedKernel\Infrastructure\Outbox\OutboxEvent;
+use App\SharedKernel\Domain\Repositories\OutboxEventRepositoryInterface;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Event;
-use Log;
+use Illuminate\Support\Facades\Log;
 use ReflectionClass;
 use RuntimeException;
 use Throwable;
@@ -22,31 +22,34 @@ final class ProcessOutboxCommand extends Command
 
     protected $description = 'Process unprocessed events from outbox';
 
+    public function __construct(
+        private readonly OutboxEventRepositoryInterface $outboxEventRepository
+    ) {
+        parent::__construct();
+    }
+
     public function handle(): int
     {
         $limit = (int) $this->option('limit');
         $processedCount = 0;
 
-        OutboxEvent::whereNull('processed_at')
-            ->orderBy('created_at')
-            ->limit($limit)
-            ->chunk(100, function ($events) use (&$processedCount): void {
-                foreach ($events as $outboxEvent) {
-                    try {
-                        $this->processEvent($outboxEvent);
-                        $outboxEvent->markAsProcessed();
-                        $processedCount++;
-                    } catch (Throwable $e) {
-                        $this->error("Failed to process event {$outboxEvent->id}: {$e->getMessage()}");
-                        // Log error but continue processing other events
-                        Log::error('Outbox event processing failed', [
-                            'event_id' => $outboxEvent->id,
-                            'error' => $e->getMessage(),
-                            'trace' => $e->getTraceAsString(),
-                        ]);
-                    }
+        $this->outboxEventRepository->getUnprocessedEvents($limit, function (array $events) use (&$processedCount): void {
+            foreach ($events as $eventData) {
+                try {
+                    $this->processEvent($eventData);
+                    $this->outboxEventRepository->markAsProcessed($eventData['id']);
+                    $processedCount++;
+                } catch (Throwable $e) {
+                    $this->error("Failed to process event {$eventData['id']}: {$e->getMessage()}");
+                    // Log error but continue processing other events
+                    Log::error('Outbox event processing failed', [
+                        'event_id' => $eventData['id'],
+                        'error' => $e->getMessage(),
+                        'trace' => $e->getTraceAsString(),
+                    ]);
                 }
-            });
+            }
+        });
 
         $this->info("Processed {$processedCount} events");
 
@@ -56,13 +59,13 @@ final class ProcessOutboxCommand extends Command
     /**
      * Process a single outbox event.
      *
-     * @param OutboxEvent $outboxEvent
+     * @param array<string, mixed> $eventData Event data array from repository
      * @return void
      */
-    private function processEvent(OutboxEvent $outboxEvent): void
+    private function processEvent(array $eventData): void
     {
         // Reconstitute domain event from payload
-        $eventClass = $outboxEvent->event_type;
+        $eventClass = $eventData['event_type'];
 
         if (!class_exists($eventClass)) {
             throw new RuntimeException("Event class {$eventClass} does not exist");
@@ -70,7 +73,7 @@ final class ProcessOutboxCommand extends Command
 
         // Create event instance from payload
         // This assumes event has a static factory method or constructor that accepts array
-        $event = $this->reconstituteEvent($eventClass, $outboxEvent->payload);
+        $event = $this->reconstituteEvent($eventClass, $eventData['payload']);
 
         // Dispatch event using Laravel's event system
         Event::dispatch($event);

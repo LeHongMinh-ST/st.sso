@@ -6,8 +6,10 @@ namespace App\SharedKernel\Infrastructure\Providers;
 
 use App\SharedKernel\Domain\Interfaces\ClockInterface;
 use App\SharedKernel\Domain\Interfaces\EventDispatcherInterface;
+use App\SharedKernel\Domain\Repositories\OutboxEventRepositoryInterface;
 use App\SharedKernel\Infrastructure\Clock\SystemClock;
 use App\SharedKernel\Infrastructure\EventDispatcher\LaravelEventDispatcher;
+use App\SharedKernel\Infrastructure\Outbox\EloquentOutboxEventRepository;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Support\ServiceProvider;
 
@@ -28,6 +30,9 @@ class SharedKernelServiceProvider extends ServiceProvider
 
         // Bind ClockInterface
         $this->app->singleton(ClockInterface::class, SystemClock::class);
+
+        // Bind OutboxEventRepositoryInterface
+        $this->app->singleton(OutboxEventRepositoryInterface::class, EloquentOutboxEventRepository::class);
     }
 
     /**
