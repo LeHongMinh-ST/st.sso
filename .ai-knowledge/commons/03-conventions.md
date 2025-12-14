@@ -139,6 +139,7 @@ try {
 ## 5. Quy ước về Testing
 
 ### 5.1. Phân loại Test
+**Yêu cầu quan trọng** Yêu cầu các chức năng use case và domain logic đều được test.
 
 1. **Unit Tests:**
    - Test các thành phần độc lập (Domain Objects, Value Objects)
