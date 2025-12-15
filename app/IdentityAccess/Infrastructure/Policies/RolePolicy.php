@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace App\OrganizationalStructure\Infrastructure\Policies;
+namespace App\IdentityAccess\Infrastructure\Policies;
 
 use App\IdentityAccess\Application\Services\AuthorizationService;
-use App\Models\Client;
+use App\Models\Role;
 use App\OrganizationalStructure\Infrastructure\Eloquent\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 /**
- * Client policy.
+ * Role policy.
  * Uses AuthorizationService from IdentityAccess Context for permission checks.
  */
-class ClientPolicy
+class RolePolicy
 {
     use HandlesAuthorization;
 
@@ -30,15 +30,15 @@ class ClientPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $this->authorizationService->can($user, 'client.view');
+        return $this->authorizationService->can($user, 'role.view');
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Client $client): bool
+    public function view(User $user, Role $role): bool
     {
-        return $this->authorizationService->can($user, 'client.view');
+        return $this->authorizationService->can($user, 'role.view');
     }
 
     /**
@@ -46,22 +46,22 @@ class ClientPolicy
      */
     public function create(User $user): bool
     {
-        return $this->authorizationService->can($user, 'client.create');
+        return $this->authorizationService->can($user, 'role.create');
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Client $client): bool
+    public function update(User $user, Role $role): bool
     {
-        return $this->authorizationService->can($user, 'client.edit');
+        return $this->authorizationService->can($user, 'role.edit');
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Client $client): bool
+    public function delete(User $user, Role $role): bool
     {
-        return $this->authorizationService->can($user, 'client.delete');
+        return $this->authorizationService->can($user, 'role.delete');
     }
 }

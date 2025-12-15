@@ -16,9 +16,14 @@ use App\IdentityAccess\Infrastructure\Persistence\EloquentClientRepository;
 use App\IdentityAccess\Infrastructure\Persistence\EloquentPermissionRepository;
 use App\IdentityAccess\Infrastructure\Persistence\EloquentRoleRepository;
 use App\IdentityAccess\Infrastructure\Persistence\EloquentUserIdentityRepository;
+use App\IdentityAccess\Infrastructure\Policies\ClientPolicy;
+use App\IdentityAccess\Infrastructure\Policies\RolePolicy;
 use App\IdentityAccess\Infrastructure\Services\LaravelPasswordHasher;
 use App\IdentityAccess\Infrastructure\Services\PassportTokenGenerator;
 use App\IdentityAccess\Infrastructure\Services\UserIdentityBridgeService;
+use App\Models\Client;
+use App\Models\Role;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -85,6 +90,7 @@ final class IdentityAccessServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-
+        Gate::policy(Client::class, ClientPolicy::class);
+        Gate::policy(Role::class, RolePolicy::class);
     }
 }
