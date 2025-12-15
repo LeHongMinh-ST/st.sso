@@ -8,6 +8,7 @@ use App\IdentityAccess\Domain\Aggregates\Role;
 use App\IdentityAccess\Domain\Repositories\RoleRepositoryInterface;
 use App\IdentityAccess\Domain\ValueObjects\RoleId;
 use App\IdentityAccess\Infrastructure\Eloquent\Role as EloquentRole;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Ramsey\Uuid\Uuid as RamseyUuid;
@@ -77,14 +78,17 @@ final class EloquentRoleRepository implements RoleRepositoryInterface
 
     /**
      * Find all roles.
+     * Cached for 1 hour since roles rarely change.
      *
      * @return array<Role>
      */
     public function findAll(): array
     {
-        $eloquentRoles = EloquentRole::with('permissions')->get();
+        return Cache::remember('roles.all', 3600, function () {
+            $eloquentRoles = EloquentRole::with('permissions')->get();
 
-        return $eloquentRoles->map(fn ($role) => $this->toDomain($role))->toArray();
+            return $eloquentRoles->map(fn ($role) => $this->toDomain($role))->toArray();
+        });
     }
 
     /**
@@ -131,6 +135,9 @@ final class EloquentRoleRepository implements RoleRepositoryInterface
             } else {
                 $eloquentRole->permissions()->detach();
             }
+
+            // Invalidate cache when role is saved
+            Cache::forget('roles.all');
         });
     }
 
@@ -152,6 +159,9 @@ final class EloquentRoleRepository implements RoleRepositoryInterface
                 EloquentRole::destroy($integerId);
             }
         }
+
+        // Invalidate cache when role is deleted
+        Cache::forget('roles.all');
     }
 
     /**

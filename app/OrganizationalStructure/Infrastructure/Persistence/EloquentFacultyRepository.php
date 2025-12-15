@@ -8,6 +8,7 @@ use App\OrganizationalStructure\Domain\Entities\Faculty;
 use App\OrganizationalStructure\Domain\Repositories\FacultyRepositoryInterface;
 use App\OrganizationalStructure\Domain\ValueObjects\FacultyId;
 use App\OrganizationalStructure\Infrastructure\Eloquent\Faculty as EloquentFaculty;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Ramsey\Uuid\Uuid as RamseyUuid;
@@ -47,6 +48,9 @@ final class EloquentFacultyRepository implements FacultyRepositoryInterface
             $eloquentFaculty->description = $faculty->description();
 
             $eloquentFaculty->save();
+
+            // Invalidate cache when faculty is saved
+            Cache::forget('faculties.all');
         });
     }
 
@@ -96,14 +100,17 @@ final class EloquentFacultyRepository implements FacultyRepositoryInterface
 
     /**
      * Find all faculties.
+     * Cached for 30 minutes since faculties rarely change.
      *
      * @return array<Faculty>
      */
     public function findAll(): array
     {
-        $eloquentFaculties = EloquentFaculty::all();
+        return Cache::remember('faculties.all', 1800, function () {
+            $eloquentFaculties = EloquentFaculty::all();
 
-        return $eloquentFaculties->map(fn ($faculty) => $this->toDomain($faculty))->toArray();
+            return $eloquentFaculties->map(fn ($faculty) => $this->toDomain($faculty))->toArray();
+        });
     }
 
     /**
@@ -124,6 +131,9 @@ final class EloquentFacultyRepository implements FacultyRepositoryInterface
                 EloquentFaculty::destroy($integerId);
             }
         }
+
+        // Invalidate cache when faculty is deleted
+        Cache::forget('faculties.all');
     }
 
     /**

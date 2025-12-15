@@ -8,6 +8,7 @@ use App\IdentityAccess\Domain\Aggregates\Permission;
 use App\IdentityAccess\Domain\Repositories\PermissionRepositoryInterface;
 use App\IdentityAccess\Domain\ValueObjects\PermissionId;
 use App\IdentityAccess\Infrastructure\Eloquent\Permission as EloquentPermission;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Ramsey\Uuid\Uuid as RamseyUuid;
@@ -73,14 +74,17 @@ final class EloquentPermissionRepository implements PermissionRepositoryInterfac
 
     /**
      * Find all permissions.
+     * Cached for 1 hour since permissions rarely change.
      *
      * @return array<Permission>
      */
     public function findAll(): array
     {
-        $eloquentPermissions = EloquentPermission::all();
+        return Cache::remember('permissions.all', 3600, function () {
+            $eloquentPermissions = EloquentPermission::all();
 
-        return $eloquentPermissions->map(fn ($permission) => $this->toDomain($permission))->toArray();
+            return $eloquentPermissions->map(fn ($permission) => $this->toDomain($permission))->toArray();
+        });
     }
 
     /**
@@ -154,6 +158,9 @@ final class EloquentPermissionRepository implements PermissionRepositoryInterfac
             }
 
             $eloquentPermission->save();
+
+            // Invalidate cache when permission is saved
+            Cache::forget('permissions.all');
         });
     }
 
@@ -175,6 +182,9 @@ final class EloquentPermissionRepository implements PermissionRepositoryInterfac
                 EloquentPermission::destroy($integerId);
             }
         }
+
+        // Invalidate cache when permission is deleted
+        Cache::forget('permissions.all');
     }
 
     /**
