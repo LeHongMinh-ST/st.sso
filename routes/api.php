@@ -15,6 +15,13 @@ use Illuminate\Support\Facades\Route;
 Route::get('/health', [HealthCheckController::class, 'basic']);
 Route::get('/health/detailed', [HealthCheckController::class, 'detailed']);
 
+// SSO Authentication API endpoints (IdentityAccess Context)
+use App\IdentityAccess\Infrastructure\Http\Controllers\Api\AuthenticateSSOController;
+
+Route::post('/oauth/token', [AuthenticateSSOController::class, 'issueToken'])->name('oauth.token');
+Route::get('/oauth/token/validate', [AuthenticateSSOController::class, 'validateToken'])->name('oauth.token.validate');
+Route::post('/oauth/token/revoke', [AuthenticateSSOController::class, 'revokeToken'])->name('oauth.token.revoke');
+
 // Current user endpoint
 Route::get('/user', fn (Request $request) => $request->user())->middleware('auth:api');
 
