@@ -35,16 +35,27 @@ Route::middleware(['auth:api'])->group(function (): void {
         ->name('users.reset-password');
 
     // Faculty aggregate routes
-    Route::apiResource('faculties', FacultyController::class);
+    // Support both integer ID and UUID for backward compatibility
+    Route::get('faculties', [FacultyController::class, 'index'])->name('faculties.index');
+    Route::get('faculties/all', [FacultyController::class, 'all'])->name('faculties.all');
+    Route::post('faculties', [FacultyController::class, 'store'])->name('faculties.store');
+    Route::get('faculties/{identifier}', [FacultyController::class, 'show'])
+        ->where('identifier', '[0-9]+|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}')
+        ->name('faculties.show');
+
+    // Nested resources (only when there's a clear aggregate relationship)
+    Route::get('faculties/{identifier}/users', [FacultyController::class, 'users'])
+        ->where('identifier', '[0-9]+|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}')
+        ->name('faculties.users.index');
+    Route::get('faculties/{identifier}/teachers', [FacultyController::class, 'teachers'])
+        ->where('identifier', '[0-9]+|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}')
+        ->name('faculties.teachers.index');
+    Route::get('faculties/{identifier}/departments', [FacultyController::class, 'departments'])
+        ->where('identifier', '[0-9]+|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}')
+        ->name('faculties.departments.index');
 
     // Department aggregate routes
     Route::apiResource('departments', DepartmentController::class);
-
-    // Nested resources (only when there's a clear aggregate relationship)
-    Route::get('faculties/{faculty}/users', [FacultyController::class, 'users'])
-        ->name('faculties.users.index');
-    Route::get('faculties/{faculty}/departments', [FacultyController::class, 'departments'])
-        ->name('faculties.departments.index');
 });
 
 // Legacy routes (to be deprecated)
