@@ -8,7 +8,7 @@ use App\OrganizationalStructure\Infrastructure\Eloquent\Department;
 use App\OrganizationalStructure\Infrastructure\Eloquent\User;
 
 use App\Enums\Role;
-use App\Enums\Status;
+use App\SharedKernel\Domain\Enums\Status;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 

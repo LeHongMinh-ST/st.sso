@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\View\Components\Commons;
 
-use App\Enums\Status;
+use App\SharedKernel\Domain\Enums\Status;
 use Illuminate\View\Component;
 
 class StatusBadge extends Component

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\OrganizationalStructure\Application\UseCases;
 
-use App\Enums\Status;
+use App\SharedKernel\Domain\Enums\Status;
 use App\OrganizationalStructure\Application\DTOs\CreateFacultyDTO;
 use App\OrganizationalStructure\Domain\Entities\Faculty;
 use App\OrganizationalStructure\Domain\Repositories\FacultyRepositoryInterface;

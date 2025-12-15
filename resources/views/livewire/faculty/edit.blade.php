@@ -40,7 +40,7 @@
                                         Trạng thái
                                     </label>
                                     <div class="mb-2 form-check form-switch">
-                                        <input type="checkbox" class="form-check-input" wire:click="toggleStatus" {{ $status == \App\Enums\Status::Active ? 'checked' : '' }}>
+                                        <input type="checkbox" class="form-check-input" wire:click="toggleStatus" {{ $status == \App\SharedKernel\Domain\Enums\Status::Active ? 'checked' : '' }}>
                                         {{ $status->getLabel() }}
                                     </div>
                                 </div>

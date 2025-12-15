@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\OrganizationalStructure\Application\UseCases;
 
-use App\Enums\Status;
+use App\SharedKernel\Domain\Enums\Status;
 use App\OrganizationalStructure\Application\DTOs\CreateDepartmentDTO;
 use App\OrganizationalStructure\Domain\Entities\Department;
 use App\OrganizationalStructure\Domain\Exceptions\FacultyNotFoundException;

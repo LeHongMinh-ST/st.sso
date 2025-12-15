@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\OrganizationalStructure\Domain\Entities;
 
-use App\Enums\Status;
+use App\SharedKernel\Domain\Enums\Status;
 use App\OrganizationalStructure\Domain\Events\FacultyWasCreated;
 use App\OrganizationalStructure\Domain\Events\FacultyWasUpdated;
 use App\OrganizationalStructure\Domain\ValueObjects\FacultyId;

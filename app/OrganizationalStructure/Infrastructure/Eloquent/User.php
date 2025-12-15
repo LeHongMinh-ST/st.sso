@@ -10,7 +10,7 @@ use App\OrganizationalStructure\Infrastructure\Eloquent\Faculty;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 use App\Enums\Role;
-use App\Enums\Status;
+use App\SharedKernel\Domain\Enums\Status;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire\User;
 
 use App\Enums\Role;
-use App\Enums\Status;
+use App\SharedKernel\Domain\Enums\Status;
 use App\OrganizationalStructure\Infrastructure\Eloquent\Faculty;
 use App\OrganizationalStructure\Infrastructure\Eloquent\User;
 use App\OrganizationalStructure\Application\DTOs\UpdateUserProfileDTO;

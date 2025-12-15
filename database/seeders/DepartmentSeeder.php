@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
-use App\Enums\Status;
+use App\SharedKernel\Domain\Enums\Status;
 use App\OrganizationalStructure\Infrastructure\Eloquent\Department;
 use App\OrganizationalStructure\Infrastructure\Eloquent\Faculty;
 use Illuminate\Database\Seeder;
