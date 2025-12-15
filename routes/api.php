@@ -21,7 +21,18 @@ Route::get('/user', fn (Request $request) => $request->user())->middleware('auth
 // OrganizationalStructure Context - DDD API Routes
 Route::middleware(['auth:api'])->group(function (): void {
     // User aggregate routes
-    Route::apiResource('users', UserController::class);
+    // Support both integer ID and UUID for backward compatibility
+    Route::get('users', [UserController::class, 'index'])->name('users.index');
+    Route::post('users', [UserController::class, 'store'])->name('users.store');
+    Route::get('users/{identifier}', [UserController::class, 'show'])
+        ->where('identifier', '[0-9]+|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}')
+        ->name('users.show');
+    Route::put('users/{identifier}', [UserController::class, 'update'])
+        ->where('identifier', '[0-9]+|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}')
+        ->name('users.update');
+    Route::post('users/{identifier}/reset-password', [UserController::class, 'resetPassword'])
+        ->where('identifier', '[0-9]+|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}')
+        ->name('users.reset-password');
 
     // Faculty aggregate routes
     Route::apiResource('faculties', FacultyController::class);
