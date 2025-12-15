@@ -2,14 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Notifications;
+namespace App\OrganizationalStructure\Infrastructure\Notifications;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Notification;
 
-class ImportCompleted extends Notification implements ShouldQueue
+/**
+ * Notify user when an import process finishes.
+ */
+final class ImportCompleted extends Notification implements ShouldQueue
 {
     use Queueable;
 
@@ -30,16 +33,16 @@ class ImportCompleted extends Notification implements ShouldQueue
     public function toArray($notifiable): array
     {
         return [
-            'message' => "Đã nhập {$this->imported} sinh viên thành công" . ($this->errors > 0 ? ", {$this->errors} lỗi" : ""),
-            'type' => 'import_completed'
+            'message' => "Đã nhập {$this->imported} sinh viên thành công" . ($this->errors > 0 ? ", {$this->errors} lỗi" : ''),
+            'type' => 'import_completed',
         ];
     }
 
     public function toBroadcast($notifiable): BroadcastMessage
     {
         return new BroadcastMessage([
-            'message' => "Đã nhập {$this->imported} sinh viên thành công" . ($this->errors > 0 ? ", {$this->errors} lỗi" : ""),
-            'type' => 'import_completed'
+            'message' => "Đã nhập {$this->imported} sinh viên thành công" . ($this->errors > 0 ? ", {$this->errors} lỗi" : ''),
+            'type' => 'import_completed',
         ]);
     }
 }

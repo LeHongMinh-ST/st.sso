@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Events;
+namespace App\OrganizationalStructure\Infrastructure\Events;
 
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
@@ -10,7 +10,10 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class ImportProgressUpdated implements ShouldBroadcast
+/**
+ * Import progress event (Infrastructure layer for broadcasting).
+ */
+final class ImportProgressUpdated implements ShouldBroadcast
 {
     use Dispatchable;
     use InteractsWithSockets;

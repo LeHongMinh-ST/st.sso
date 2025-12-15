@@ -29,7 +29,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-
     }
 
     /**
@@ -43,9 +42,9 @@ class AppServiceProvider extends ServiceProvider
         }
 
         LogViewer::auth(fn ($request) => $request->user()
-                && in_array($request->user()->role, [
-                    Role::SuperAdmin,
-                ]));
+            && in_array($request->user()->role, [
+                Role::SuperAdmin,
+            ]));
 
         Event::listen(function (\SocialiteProviders\Manager\SocialiteWasCalled $event): void {
             $event->extendSocialite('azure', \SocialiteProviders\Azure\Provider::class);

@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace App\OrganizationalStructure\Infrastructure\Imports;
 
-use App\Events\ImportProgressUpdated;
-use App\Notifications\ImportCompleted;
 use App\OrganizationalStructure\Application\UseCases\ImportUsersFromExcelUseCase;
 use App\OrganizationalStructure\Domain\Repositories\FacultyRepositoryInterface;
 use App\OrganizationalStructure\Domain\ValueObjects\FacultyId;
 use App\OrganizationalStructure\Infrastructure\Eloquent\Faculty;
+use App\OrganizationalStructure\Infrastructure\Eloquent\User;
+use App\OrganizationalStructure\Infrastructure\Events\ImportProgressUpdated;
+use App\OrganizationalStructure\Infrastructure\Notifications\ImportCompleted;
 use Exception;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
@@ -88,7 +89,7 @@ final class StudentsImport implements ToCollection, WithHeadingRow, WithValidati
             }
 
             // Send notification
-            $user = \App\OrganizationalStructure\Infrastructure\Eloquent\User::find($this->userId);
+            $user = User::find($this->userId);
             if ($user) {
                 Notification::send($user, new ImportCompleted($this->imported, $this->errors));
             }
