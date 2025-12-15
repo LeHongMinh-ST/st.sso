@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\OrganizationalStructure\Infrastructure\Persistence;
 
-use App\Models\Department as EloquentDepartment;
+use App\OrganizationalStructure\Infrastructure\Eloquent\Department as EloquentDepartment;
 use App\OrganizationalStructure\Domain\Entities\Department;
 use App\OrganizationalStructure\Domain\Repositories\DepartmentRepositoryInterface;
 use App\OrganizationalStructure\Domain\ValueObjects\DepartmentId;

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Faculty;
 
-use App\Models\Faculty;
+use App\OrganizationalStructure\Infrastructure\Eloquent\Faculty;
 use App\OrganizationalStructure\Application\DTOs\CreateFacultyDTO;
 use App\OrganizationalStructure\Application\UseCases\CreateFacultyUseCase;
 use Illuminate\Support\Facades\Log;

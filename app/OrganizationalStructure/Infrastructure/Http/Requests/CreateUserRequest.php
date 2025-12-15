@@ -19,7 +19,7 @@ final class CreateUserRequest extends FormRequest
     public function authorize(): bool
     {
         // Use policies to check authorization
-        return $this->user()?->can('create', \App\Models\User::class) ?? false;
+        return $this->user()?->can('create', \App\OrganizationalStructure\Infrastructure\Eloquent\User::class) ?? false;
     }
 
     /**

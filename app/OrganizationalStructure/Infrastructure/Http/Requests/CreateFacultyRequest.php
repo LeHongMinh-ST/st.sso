@@ -18,7 +18,7 @@ final class CreateFacultyRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()?->can('create', \App\Models\Faculty::class) ?? false;
+        return $this->user()?->can('create', \App\OrganizationalStructure\Infrastructure\Eloquent\Faculty::class) ?? false;
     }
 
     /**

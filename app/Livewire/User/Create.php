@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Livewire\User;
 
 use App\Enums\Role;
-use App\Models\Faculty;
-use App\Models\User;
+use App\OrganizationalStructure\Infrastructure\Eloquent\Faculty;
+use App\OrganizationalStructure\Infrastructure\Eloquent\User;
 use App\OrganizationalStructure\Application\DTOs\CreateUserDTO;
 use App\OrganizationalStructure\Application\UseCases\AssignUserToDepartmentUseCase;
 use App\OrganizationalStructure\Application\UseCases\AssignUserToFacultyUseCase;
@@ -214,7 +214,7 @@ class Create extends Component
             return null;
         }
 
-        $department = \App\Models\Department::find($departmentId);
+        $department = \App\OrganizationalStructure\Infrastructure\Eloquent\Department::find($departmentId);
         if (null === $department) {
             return null;
         }

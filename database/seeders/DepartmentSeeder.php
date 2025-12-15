@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Database\Seeders;
 
 use App\Enums\Status;
-use App\Models\Department;
-use App\Models\Faculty;
+use App\OrganizationalStructure\Infrastructure\Eloquent\Department;
+use App\OrganizationalStructure\Infrastructure\Eloquent\Faculty;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Schema;
 

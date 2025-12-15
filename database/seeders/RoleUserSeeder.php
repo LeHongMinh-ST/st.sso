@@ -6,7 +6,7 @@ namespace Database\Seeders;
 
 use App\Enums\Role as RoleEnum;
 use App\Models\Role;
-use App\Models\User;
+use App\OrganizationalStructure\Infrastructure\Eloquent\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;

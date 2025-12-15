@@ -6,7 +6,7 @@ namespace App\Imports;
 
 use App\Enums\Role;
 use App\Enums\Status;
-use App\Models\User;
+use App\OrganizationalStructure\Infrastructure\Eloquent\User;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\ToModel;

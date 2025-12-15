@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
-use App\Models\Department;
-use App\Models\Faculty;
-use App\Models\User;
+use App\OrganizationalStructure\Infrastructure\Eloquent\Department;
+use App\OrganizationalStructure\Infrastructure\Eloquent\Faculty;
+use App\OrganizationalStructure\Infrastructure\Eloquent\User;
 use App\SharedKernel\Domain\ValueObjects\Uuid;
 use Exception;
 use Illuminate\Console\Command;

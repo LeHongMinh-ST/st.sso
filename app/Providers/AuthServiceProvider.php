@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Providers;
 
 use App\Models\Client;
-use App\Models\Department;
-use App\Models\Faculty;
+use App\OrganizationalStructure\Infrastructure\Eloquent\Department;
+use App\OrganizationalStructure\Infrastructure\Eloquent\Faculty;
 use App\Models\Role;
-use App\Models\User;
+use App\OrganizationalStructure\Infrastructure\Eloquent\User;
 use App\Policies\ClientPolicy;
 use App\Policies\DepartmentPolicy;
 use App\Policies\FacultyPolicy;

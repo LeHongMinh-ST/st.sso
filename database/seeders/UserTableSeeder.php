@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
-use App\Models\User;
+use App\OrganizationalStructure\Infrastructure\Eloquent\User;
 use Illuminate\Database\Seeder;
 
 class UserTableSeeder extends Seeder

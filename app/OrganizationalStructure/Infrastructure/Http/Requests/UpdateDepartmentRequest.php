@@ -18,7 +18,7 @@ final class UpdateDepartmentRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()?->can('update', \App\Models\Department::class) ?? false;
+        return $this->user()?->can('update', \App\OrganizationalStructure\Infrastructure\Eloquent\Department::class) ?? false;
     }
 
     /**

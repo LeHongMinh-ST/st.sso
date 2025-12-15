@@ -20,7 +20,7 @@ final class UpdateUserRequest extends FormRequest
     public function authorize(): bool
     {
         // Use policies to check authorization
-        return $this->user()?->can('update', \App\Models\User::class) ?? false;
+        return $this->user()?->can('update', \App\OrganizationalStructure\Infrastructure\Eloquent\User::class) ?? false;
     }
 
     /**

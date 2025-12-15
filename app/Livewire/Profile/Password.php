@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Profile;
 
-use App\Models\User;
+use App\OrganizationalStructure\Infrastructure\Eloquent\User;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;

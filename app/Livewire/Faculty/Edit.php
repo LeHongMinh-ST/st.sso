@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire\Faculty;
 
 use App\Enums\Status;
-use App\Models\Faculty;
+use App\OrganizationalStructure\Infrastructure\Eloquent\Faculty;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Validate;
 use Livewire\Component;

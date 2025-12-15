@@ -7,7 +7,7 @@ namespace App\Http\Controllers\Auth;
 use App\Enums\Role;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Authenticate\LoginRequest;
-use App\Models\User;
+use App\OrganizationalStructure\Infrastructure\Eloquent\User;
 use App\SharedKernel\Helpers\Helper;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;

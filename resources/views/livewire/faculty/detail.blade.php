@@ -32,13 +32,13 @@
         </div>
     </div>
 
-    @if($showCreateUserForm && auth()->user()->can('create', App\Models\User::class))
+    @if($showCreateUserForm && auth()->user()->can('create', App\OrganizationalStructure\Infrastructure\Eloquent\User::class))
         <div class="mb-3">
             <livewire:faculty.create-user :faculty="$faculty" />
         </div>
     @endif
 
-    @if($showImportStudentsForm && auth()->user()->can('create', App\Models\User::class))
+    @if($showImportStudentsForm && auth()->user()->can('create', App\OrganizationalStructure\Infrastructure\Eloquent\User::class))
         <div class="mb-3">
             <livewire:faculty.import-students :faculty="$faculty" />
         </div>
@@ -48,7 +48,7 @@
         <div class="py-3 card-header">
             <div class="d-flex justify-content-between align-items-center mb-2">
                 <h5 class="mb-0"><i class="ph-users me-1"></i> Danh sách người dùng trong khoa</h5>
-                @can('create', App\Models\User::class)
+                @can('create', App\OrganizationalStructure\Infrastructure\Eloquent\User::class)
                 <div class="d-flex gap-2">
                     <button wire:click="toggleImportStudentsForm()" class="btn btn-success btn-icon fw-semibold" title="Nhập sinh viên từ Excel">
                         <i class="ph-{{ $showImportStudentsForm ? 'minus' : 'microsoft-excel-logo' }} me-1"></i>

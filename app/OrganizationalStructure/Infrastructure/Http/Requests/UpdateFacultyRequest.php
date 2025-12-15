@@ -19,7 +19,7 @@ final class UpdateFacultyRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()?->can('update', \App\Models\Faculty::class) ?? false;
+        return $this->user()?->can('update', \App\OrganizationalStructure\Infrastructure\Eloquent\Faculty::class) ?? false;
     }
 
     /**

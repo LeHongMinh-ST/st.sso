@@ -6,7 +6,7 @@ namespace App\Livewire\Faculty;
 
 use App\Imports\StudentsImportChunk;
 use App\Jobs\ImportStudentsJob;
-use App\Models\Faculty;
+use App\OrganizationalStructure\Infrastructure\Eloquent\Faculty;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -46,7 +46,7 @@ class ImportStudents extends Component
 
     public function toggleImportForm(): void
     {
-        if (!auth()->user()->can('create', \App\Models\User::class)) {
+        if (!auth()->user()->can('create', \App\OrganizationalStructure\Infrastructure\Eloquent\User::class)) {
             return;
         }
         $this->showImportForm = !$this->showImportForm;
@@ -59,7 +59,7 @@ class ImportStudents extends Component
             return;
         }
 
-        if (!auth()->user()->can('create', \App\Models\User::class)) {
+        if (!auth()->user()->can('create', \App\OrganizationalStructure\Infrastructure\Eloquent\User::class)) {
             $this->dispatch('alert', type: 'error', message: 'Bạn không có quyền nhập sinh viên!');
             return;
         }

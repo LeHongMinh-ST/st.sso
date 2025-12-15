@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\OrganizationalStructure\Infrastructure\Persistence;
 
-use App\Models\User as EloquentUser;
+use App\OrganizationalStructure\Infrastructure\Eloquent\User as EloquentUser;
 use App\OrganizationalStructure\Domain\Aggregates\User;
 use App\OrganizationalStructure\Domain\Repositories\UserRepositoryInterface;
 use App\OrganizationalStructure\Domain\ValueObjects\DepartmentId;

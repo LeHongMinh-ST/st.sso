@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Livewire\Faculty;
 
 use App\Enums\Role;
-use App\Models\Faculty;
-use App\Models\User;
+use App\OrganizationalStructure\Infrastructure\Eloquent\Faculty;
+use App\OrganizationalStructure\Infrastructure\Eloquent\User;
 use App\OrganizationalStructure\Application\DTOs\CreateUserDTO;
 use App\OrganizationalStructure\Application\UseCases\CreateUserUseCase;
 use Illuminate\Support\Facades\Hash;

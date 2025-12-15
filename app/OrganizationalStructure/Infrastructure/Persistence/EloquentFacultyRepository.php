@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\OrganizationalStructure\Infrastructure\Persistence;
 
-use App\Models\Faculty as EloquentFaculty;
+use App\OrganizationalStructure\Infrastructure\Eloquent\Faculty as EloquentFaculty;
 use App\OrganizationalStructure\Domain\Entities\Faculty;
 use App\OrganizationalStructure\Domain\Repositories\FacultyRepositoryInterface;
 use App\OrganizationalStructure\Domain\ValueObjects\FacultyId;

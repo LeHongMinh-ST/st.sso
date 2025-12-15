@@ -28,8 +28,8 @@ Route::middleware(['auth', 'check.password'])->group(function (): void {
 
     // Quản lý khoa
     Route::prefix('/faculties')->group(function (): void {
-        Route::get('/', [FacultyController::class, 'index'])->name('faculty.index')->middleware('can:viewAny,App\Models\Faculty');
-        Route::get('/create', [FacultyController::class, 'create'])->name('faculty.create')->middleware('can:create,App\Models\Faculty');
+        Route::get('/', [FacultyController::class, 'index'])->name('faculty.index')->middleware('can:viewAny,App\OrganizationalStructure\Infrastructure\Eloquent\Faculty');
+        Route::get('/create', [FacultyController::class, 'create'])->name('faculty.create')->middleware('can:create,App\OrganizationalStructure\Infrastructure\Eloquent\Faculty');
         Route::get('/{faculty}', [FacultyController::class, 'show'])->name('faculty.show')->middleware('can:view,faculty');
         Route::get('/{faculty}/edit', [FacultyController::class, 'edit'])->name('faculty.edit')->middleware('can:update,faculty');
     });
@@ -44,8 +44,8 @@ Route::middleware(['auth', 'check.password'])->group(function (): void {
 
     // Quản lý người dùng
     Route::prefix('/users')->group(function (): void {
-        Route::get('/', [UserController::class, 'index'])->name('user.index')->middleware('can:viewAny,App\Models\User');
-        Route::get('/create', [UserController::class, 'create'])->name('user.create')->middleware('can:create,App\Models\User');
+        Route::get('/', [UserController::class, 'index'])->name('user.index')->middleware('can:viewAny,App\OrganizationalStructure\Infrastructure\Eloquent\User');
+        Route::get('/create', [UserController::class, 'create'])->name('user.create')->middleware('can:create,App\OrganizationalStructure\Infrastructure\Eloquent\User');
         Route::get('/{user}', [UserController::class, 'show'])->name('user.show')->middleware('can:view,user');
         Route::get('/{user}/edit', [UserController::class, 'edit'])->name('user.edit')->middleware('can:update,user');
         Route::get('/{user}/roles', [UserRoleController::class, 'edit'])->name('user.roles.edit')->middleware('can:viewAny,App\Models\Role');

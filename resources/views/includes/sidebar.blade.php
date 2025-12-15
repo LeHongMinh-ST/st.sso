@@ -54,8 +54,8 @@
                         </li>
                     @endcan
 
-                    @if(auth()->user()->can('viewAny', App\Models\Faculty::class) ||
-                        auth()->user()->can('viewAny', App\Models\User::class) ||
+                    @if(auth()->user()->can('viewAny', App\OrganizationalStructure\Infrastructure\Eloquent\Faculty::class) ||
+                        auth()->user()->can('viewAny', App\OrganizationalStructure\Infrastructure\Eloquent\User::class) ||
                         auth()->user()->can('viewAny', App\Models\Role::class))
                         <li class="nav-item-header">
                             <div class="opacity-50 text-uppercase fs-sm lh-sm sidebar-resize-hide">Hệ thống</div>
@@ -63,7 +63,7 @@
                         </li>
                     @endif
 
-                    @can('viewAny', App\Models\Faculty::class)
+                    @can('viewAny', App\OrganizationalStructure\Infrastructure\Eloquent\Faculty::class)
                         <li class="nav-item">
                             <a href="{{ route('faculty.index') }}"
                                class="nav-link {{ request()->routeIs('faculty.*') ? 'active' : '' }}">
@@ -73,7 +73,7 @@
                         </li>
                     @endcan
 
-                    @can('viewAny', App\Models\User::class)
+                    @can('viewAny', App\OrganizationalStructure\Infrastructure\Eloquent\User::class)
                         <li class="nav-item">
                             <a href="{{ route('user.index') }}"
                                class="nav-link {{ request()->routeIs('user.*') ? 'active' : '' }}">

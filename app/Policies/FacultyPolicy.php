@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Policies;
 
-use App\Models\Faculty;
-use App\Models\User;
+use App\OrganizationalStructure\Infrastructure\Eloquent\Faculty;
+use App\OrganizationalStructure\Infrastructure\Eloquent\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class FacultyPolicy

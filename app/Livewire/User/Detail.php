@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\User;
 
-use App\Models\User;
+use App\OrganizationalStructure\Infrastructure\Eloquent\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\On;
