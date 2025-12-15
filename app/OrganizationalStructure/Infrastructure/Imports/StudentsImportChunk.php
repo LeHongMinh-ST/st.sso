@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Imports;
+namespace App\OrganizationalStructure\Infrastructure\Imports;
 
 use App\IdentityAccess\Domain\Enums\Role;
 use App\OrganizationalStructure\Infrastructure\Eloquent\User;
@@ -19,7 +19,11 @@ use Maatwebsite\Excel\Events\AfterChunk;
 use Maatwebsite\Excel\Events\ImportFailed;
 use Throwable;
 
-class StudentsImportChunk implements ToModel, WithHeadingRow, WithValidation, WithChunkReading, ShouldQueue, WithBatchInserts, WithEvents
+/**
+ * Legacy chunk-based import (OrganizationalStructure context).
+ * Kept for compatibility with Livewire import workflow.
+ */
+final class StudentsImportChunk implements ToModel, WithHeadingRow, WithValidation, WithChunkReading, ShouldQueue, WithBatchInserts, WithEvents
 {
     private int $facultyId;
     private int $errors = 0;
@@ -35,10 +39,10 @@ class StudentsImportChunk implements ToModel, WithHeadingRow, WithValidation, Wi
     {
         return [
             ImportFailed::class => function (ImportFailed $event): void {
-                \Log::error('Import failed: ' . $event->getException()->getMessage());
+                Log::error('Import failed: ' . $event->getException()->getMessage());
             },
             AfterChunk::class => function (AfterChunk $event): void {
-                \Log::info('After chunk: ' . $event->chunk()->count());
+                Log::info('After chunk: ' . $event->chunk()->count());
             },
         ];
     }
@@ -56,19 +60,9 @@ class StudentsImportChunk implements ToModel, WithHeadingRow, WithValidation, Wi
             // Check if user exists by code
             $user = User::where('code', $row['ma_sinh_vien'])->first();
             if ($user) {
-                // // Update existing user
-                // $user->update([
-                //     'user_name' => $row['email'],
-                //     'first_name' => $row['ten'],
-                //     'last_name' => $row['ho'],
-                //     'email' => $row['email'],
-                //     'phone' => $row['so_dien_thoai'] ?? null,
-                //     'faculty_id' => $this->facultyId,
-                //     'code' => $row['ma_sinh_vien'],
-                // ]);
-                return null; // No need to return model for update
+                return null; // Skip existing
             }
-            // Return new User model for insert
+
             return new User([
                 'user_name' => $row['email'],
                 'first_name' => $row['ten'],
@@ -82,7 +76,6 @@ class StudentsImportChunk implements ToModel, WithHeadingRow, WithValidation, Wi
                 'code' => $row['ma_sinh_vien'],
                 'is_change_password' => false,
             ]);
-
         } catch (Throwable $e) {
             Log::error('Lỗi khi xử lý dòng: ' . $e->getMessage(), ['row' => $row]);
             $this->errors++;
@@ -90,26 +83,14 @@ class StudentsImportChunk implements ToModel, WithHeadingRow, WithValidation, Wi
         }
     }
 
-    /**
-     * Specify the chunk size for reading the file.
-     * This helps to process large files efficiently by splitting them into smaller parts.
-     *
-     * @return int
-     */
     public function chunkSize(): int
     {
-        return 100; // You can adjust this number based on your server capacity
+        return 100;
     }
 
-    /**
-     * Specify the batch size for bulk inserts.
-     * This improves performance when inserting multiple records.
-     *
-     * @return int
-     */
     public function batchSize(): int
     {
-        return 50; // Should match chunkSize for optimal performance
+        return 50;
     }
 
     public function rules(): array

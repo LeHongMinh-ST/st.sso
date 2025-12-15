@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Imports;
+namespace App\OrganizationalStructure\Infrastructure\Imports;
 
 use App\Events\ImportProgressUpdated;
 use App\Notifications\ImportCompleted;
@@ -10,7 +10,6 @@ use App\OrganizationalStructure\Application\UseCases\ImportUsersFromExcelUseCase
 use App\OrganizationalStructure\Domain\Repositories\FacultyRepositoryInterface;
 use App\OrganizationalStructure\Domain\ValueObjects\FacultyId;
 use App\OrganizationalStructure\Infrastructure\Eloquent\Faculty;
-use App\OrganizationalStructure\Infrastructure\Eloquent\User;
 use Exception;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
@@ -22,11 +21,11 @@ use RuntimeException;
 use Throwable;
 
 /**
- * Students import class refactored to use DDD Use Cases.
+ * Students import class (OrganizationalStructure context).
  * IdentityAccess credentials are created via Domain Event listener
  * (CreateDefaultCredentialsWhenUserWasCreated). No manual password/role mutation here.
  */
-class StudentsImport implements ToCollection, WithHeadingRow, WithValidation
+final class StudentsImport implements ToCollection, WithHeadingRow, WithValidation
 {
     private int $facultyId;
     private int $imported = 0;
@@ -55,7 +54,7 @@ class StudentsImport implements ToCollection, WithHeadingRow, WithValidation
     {
         try {
             $this->totalRows += $rows->count();
-            Log::info("Total rows: " . $this->totalRows);
+            Log::info('Total rows: ' . $this->totalRows);
 
             // Get faculty UUID from integer ID
             $this->facultyUuid = $this->getFacultyUuid();
@@ -89,7 +88,7 @@ class StudentsImport implements ToCollection, WithHeadingRow, WithValidation
             }
 
             // Send notification
-            $user = User::find($this->userId);
+            $user = \App\OrganizationalStructure\Infrastructure\Eloquent\User::find($this->userId);
             if ($user) {
                 Notification::send($user, new ImportCompleted($this->imported, $this->errors));
             }
@@ -217,7 +216,7 @@ class StudentsImport implements ToCollection, WithHeadingRow, WithValidation
             'type' => 'completed',
             'imported' => $this->imported,
             'errors' => $this->errors,
-            'message' => "Đã nhập {$this->imported} sinh viên thành công" . ($this->errors > 0 ? ", {$this->errors} lỗi" : ""),
+            'message' => "Đã nhập {$this->imported} sinh viên thành công" . ($this->errors > 0 ? ", {$this->errors} lỗi" : ''),
         ]));
     }
 }

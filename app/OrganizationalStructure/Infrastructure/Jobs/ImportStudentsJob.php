@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Jobs;
+namespace App\OrganizationalStructure\Infrastructure\Jobs;
 
-use App\Imports\StudentsImport;
+use App\OrganizationalStructure\Infrastructure\Imports\StudentsImport;
 use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -15,19 +15,16 @@ use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
 
 /**
- * Job for importing students from Excel file.
- * Refactored to use DDD Use Cases through StudentsImport class.
+ * Job for importing students from Excel file (OrganizationalStructure context).
+ * Delegates import logic to StudentsImport which uses DDD Use Cases.
  */
-class ImportStudentsJob implements ShouldQueue
+final class ImportStudentsJob implements ShouldQueue
 {
     use Dispatchable;
     use InteractsWithQueue;
     use Queueable;
     use SerializesModels;
 
-    /**
-     * Create a new job instance.
-     */
     public function __construct(
         private readonly int $facultyId,
         private readonly int $userId,
@@ -43,13 +40,11 @@ class ImportStudentsJob implements ShouldQueue
     public function handle(): void
     {
         try {
-            Log::info("ImportStudentsJob started: " . $this->filePath);
-            // Create StudentsImport instance with required parameters
-            // StudentsImport will use app() helper internally to resolve Use Cases
+            Log::info('ImportStudentsJob started: ' . $this->filePath);
             $studentsImport = new StudentsImport($this->facultyId, $this->userId);
             Excel::import($studentsImport, $this->filePath);
         } catch (Exception $e) {
-            Log::error("ImportStudentsJob failed: " . $e->getMessage());
+            Log::error('ImportStudentsJob failed: ' . $e->getMessage());
             throw $e;
         }
     }

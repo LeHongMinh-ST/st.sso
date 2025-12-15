@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Livewire\Faculty;
 
-use App\Imports\StudentsImportChunk;
-use App\Jobs\ImportStudentsJob;
 use App\OrganizationalStructure\Application\Services\PolicyAuthorizationServiceInterface;
 use App\OrganizationalStructure\Infrastructure\Eloquent\Faculty;
 use App\OrganizationalStructure\Infrastructure\Eloquent\User as EloquentUser;
+use App\OrganizationalStructure\Infrastructure\Imports\StudentsImportChunk;
+use App\OrganizationalStructure\Infrastructure\Jobs\ImportStudentsJob;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\On;
 use Livewire\Component;
