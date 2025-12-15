@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\View\Components\User;
 
-use App\Enums\Role;
+use App\IdentityAccess\Domain\Enums\Role;
 use Illuminate\View\Component;
 
 class RoleBadge extends Component

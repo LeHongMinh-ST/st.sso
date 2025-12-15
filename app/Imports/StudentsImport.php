@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Imports;
 
-use App\Enums\Role;
 use App\Events\ImportProgressUpdated;
+use App\IdentityAccess\Domain\Enums\Role;
 use App\Notifications\ImportCompleted;
 use App\OrganizationalStructure\Application\UseCases\ImportUsersFromExcelUseCase;
 use App\OrganizationalStructure\Domain\Repositories\FacultyRepositoryInterface;

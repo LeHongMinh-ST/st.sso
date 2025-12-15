@@ -57,12 +57,12 @@
                     </div>
                     <div class="card-body">
                         <div class="row">
-                            @foreach (\App\Enums\Role::getDescription() as $key => $role)
+                            @foreach (\App\IdentityAccess\Domain\Enums\Role::getDescription() as $key => $role)
                                 <div class="col-12">
                                     <div class="mb-2 form-check">
                                         <input type="checkbox" class="form-check-input" wire:model.live="allowed_roles"
                                                value="{{ $key }}"
-                                               @if ($key === \App\Enums\Role::SuperAdmin->value) disabled checked @endif
+                                               @if ($key === \App\IdentityAccess\Domain\Enums\Role::SuperAdmin->value) disabled checked @endif
                                                id="role_{{ $key }}">
                                         <label class="form-check-label" for="role_{{ $key }}">{{ $role }}</label>
                                     </div>

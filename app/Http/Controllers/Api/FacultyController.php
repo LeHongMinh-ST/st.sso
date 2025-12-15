@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api;
 
-use App\Enums\Role;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Department\DepartmentResource;
 use App\Http\Resources\Faculty\FacultyResource;
 use App\Http\Resources\User\UserResource;
+use App\IdentityAccess\Domain\Enums\Role;
 use App\OrganizationalStructure\Infrastructure\Eloquent\Faculty;
 use App\SharedKernel\Helpers\Constants;
 use Illuminate\Http\Request;

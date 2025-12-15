@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Client;
 
-use App\Enums\Role;
+use App\IdentityAccess\Domain\Enums\Role;
 use App\Models\Client;
 use App\OrganizationalStructure\Application\Services\PolicyAuthorizationServiceInterface;
 use Livewire\Attributes\Validate;

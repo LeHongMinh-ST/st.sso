@@ -60,8 +60,8 @@
                     <div class="mb-3">
                         <label class="form-label">Loại tài khoản</label>
                         <select wire:model.live="role" class="form-select">
-                            @foreach (\App\Enums\Role::getDescription() as $roleItem => $description)
-                                @if($roleItem != \App\Enums\Role::SuperAdmin->value)
+                            @foreach (\App\IdentityAccess\Domain\Enums\Role::getDescription() as $roleItem => $description)
+                                @if($roleItem != \App\IdentityAccess\Domain\Enums\Role::SuperAdmin->value)
                                     <option value="{{ $roleItem }}">{{ $description }}</option>
                                 @endif
                             @endforeach
@@ -69,12 +69,12 @@
                     </div>
                 </div>
             </div>
-            @if($role == \App\Enums\Role::Student || $role == \App\Enums\Role::Officer)
+            @if($role == \App\IdentityAccess\Domain\Enums\Role::Student || $role == \App\IdentityAccess\Domain\Enums\Role::Officer)
             <div class="row">
                 <div class="col-lg-6">
                     <div class="mb-3">
-                        <label class="form-label">{{ $role == \App\Enums\Role::Student ? 'Mã sinh viên' : 'Mã giảng viên' }} @if($role == \App\Enums\Role::Student) <span class="text-danger">*</span> @endif</label>
-                        <input type="text" wire:model="code" placeholder="{{ $role == \App\Enums\Role::Student ? 'Nhập mã sinh viên' : 'Nhập mã giảng viên' }}" class="form-control @error('code') is-invalid @enderror">
+                        <label class="form-label">{{ $role == \App\IdentityAccess\Domain\Enums\Role::Student ? 'Mã sinh viên' : 'Mã giảng viên' }} @if($role == \App\IdentityAccess\Domain\Enums\Role::Student) <span class="text-danger">*</span> @endif</label>
+                        <input type="text" wire:model="code" placeholder="{{ $role == \App\IdentityAccess\Domain\Enums\Role::Student ? 'Nhập mã sinh viên' : 'Nhập mã giảng viên' }}" class="form-control @error('code') is-invalid @enderror">
                         @error('code')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror

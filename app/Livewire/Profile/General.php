@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Profile;
 
-use App\Enums\Role;
+use App\IdentityAccess\Domain\Enums\Role;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Validate;
 use Livewire\Component;

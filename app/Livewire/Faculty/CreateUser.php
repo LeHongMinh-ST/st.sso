@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Faculty;
 
-use App\Enums\Role;
+use App\IdentityAccess\Domain\Enums\Role;
 use App\OrganizationalStructure\Application\DTOs\CreateUserDTO;
 use App\OrganizationalStructure\Application\UseCases\CreateUserUseCase;
 use App\OrganizationalStructure\Infrastructure\Eloquent\Faculty;

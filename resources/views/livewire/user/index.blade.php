@@ -41,7 +41,7 @@
                         <label class="form-label">Loại người dùng</label>
                         <select wire:model.live="role" class="form-select">
                             <option value="">Tất cả</option>
-                            @foreach (\App\Enums\Role::getDescription() as $role => $description)
+                            @foreach (\App\IdentityAccess\Domain\Enums\Role::getDescription() as $role => $description)
                                 <option value="{{ $role }}">{{ $description }}</option>
                             @endforeach
                         </select>

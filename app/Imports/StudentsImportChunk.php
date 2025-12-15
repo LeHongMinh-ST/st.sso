@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Imports;
 
-use App\Enums\Role;
+use App\IdentityAccess\Domain\Enums\Role;
 use App\OrganizationalStructure\Infrastructure\Eloquent\User;
 use App\SharedKernel\Domain\Enums\Status;
 use Illuminate\Contracts\Queue\ShouldQueue;

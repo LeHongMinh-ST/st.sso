@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Livewire\Client;
 
-use App\Enums\Role;
 use App\IdentityAccess\Application\UseCases\RegisterClientUseCase;
+use App\IdentityAccess\Domain\Enums\Role;
 use App\Models\Client;
 use App\OrganizationalStructure\Application\Services\PolicyAuthorizationServiceInterface;
 use Illuminate\Support\Facades\Log;

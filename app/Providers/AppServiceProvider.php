@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
-use App\Enums\Role;
+use App\IdentityAccess\Domain\Enums\Role;
 use App\IdentityAccess\Infrastructure\Listeners\CreateDefaultCredentialsWhenUserWasCreated;
 use App\Models\Client;
 use App\OrganizationalStructure\Domain\Events\UserWasCreated;

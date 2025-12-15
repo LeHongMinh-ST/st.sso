@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
-use App\Enums\Role as RoleEnum;
+use App\IdentityAccess\Domain\Enums\Role as RoleEnum;
 use App\Models\Role;
 use App\OrganizationalStructure\Infrastructure\Eloquent\User;
 use Illuminate\Database\Seeder;

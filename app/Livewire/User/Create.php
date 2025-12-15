@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\User;
 
-use App\Enums\Role;
+use App\IdentityAccess\Domain\Enums\Role;
 use App\OrganizationalStructure\Application\DTOs\CreateUserDTO;
 use App\OrganizationalStructure\Application\Services\PolicyAuthorizationServiceInterface;
 use App\OrganizationalStructure\Application\UseCases\AssignUserToDepartmentUseCase;
