@@ -68,10 +68,15 @@ final class FindUsersUseCase
         // Order by created_at desc
         $query->orderBy('created_at', 'desc');
 
+        // Eager load relationships to avoid N+1 queries
+        $query->with(['faculty', 'department']);
+
         // Paginate
         $eloquentUsers = $query->paginate($perPage, ['*'], 'page', $page);
 
         // Convert Eloquent models to Domain aggregates
+        // Note: This still causes N+1 queries because we call findById for each user
+        // TODO: Optimize by batch loading or caching
         $users = [];
         foreach ($eloquentUsers->items() as $eloquentUser) {
             $user = $this->convertToDomainAggregate($eloquentUser);

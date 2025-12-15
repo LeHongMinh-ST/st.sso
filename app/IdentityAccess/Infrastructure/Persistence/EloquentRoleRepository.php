@@ -39,11 +39,13 @@ final class EloquentRoleRepository implements RoleRepositoryInterface
 
         $eloquentRole = null;
         if ($hasUuidColumn) {
-            $eloquentRole = EloquentRole::where('uuid', $id->toString())->first();
+            $eloquentRole = EloquentRole::with('permissions')
+                ->where('uuid', $id->toString())
+                ->first();
         } else {
             $integerId = $this->getIntegerIdFromUuid('roles', $id->toString());
             if (null !== $integerId) {
-                $eloquentRole = EloquentRole::find($integerId);
+                $eloquentRole = EloquentRole::with('permissions')->find($integerId);
             }
         }
 
@@ -62,7 +64,9 @@ final class EloquentRoleRepository implements RoleRepositoryInterface
      */
     public function findByName(string $name): ?Role
     {
-        $eloquentRole = EloquentRole::where('name', $name)->first();
+        $eloquentRole = EloquentRole::with('permissions')
+            ->where('name', $name)
+            ->first();
 
         if (null === $eloquentRole) {
             return null;
@@ -78,7 +82,7 @@ final class EloquentRoleRepository implements RoleRepositoryInterface
      */
     public function findAll(): array
     {
-        $eloquentRoles = EloquentRole::all();
+        $eloquentRoles = EloquentRole::with('permissions')->get();
 
         return $eloquentRoles->map(fn ($role) => $this->toDomain($role))->toArray();
     }
