@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\OrganizationalStructure\Application\UseCases;
 
-use App\SharedKernel\Domain\Enums\Status;
 use App\OrganizationalStructure\Application\DTOs\CreateDepartmentDTO;
 use App\OrganizationalStructure\Domain\Entities\Department;
 use App\OrganizationalStructure\Domain\Exceptions\FacultyNotFoundException;
@@ -12,6 +11,7 @@ use App\OrganizationalStructure\Domain\Repositories\DepartmentRepositoryInterfac
 use App\OrganizationalStructure\Domain\Repositories\FacultyRepositoryInterface;
 use App\OrganizationalStructure\Domain\ValueObjects\DepartmentId;
 use App\OrganizationalStructure\Domain\ValueObjects\FacultyId;
+use App\SharedKernel\Domain\Enums\Status;
 use App\SharedKernel\Domain\Repositories\OutboxEventRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;

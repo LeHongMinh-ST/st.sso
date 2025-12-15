@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace App\OrganizationalStructure\Infrastructure\Eloquent;
 
-use App\OrganizationalStructure\Infrastructure\Eloquent\Department;
-use App\OrganizationalStructure\Infrastructure\Eloquent\User;
-
 use App\Enums\Role;
 use App\SharedKernel\Domain\Enums\Status;
 use Illuminate\Database\Eloquent\Model;
@@ -19,11 +16,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property Status $status
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\OrganizationalStructure\Infrastructure\Eloquent\Department> $departments
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Department> $departments
  * @property-read int|null $departments_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\OrganizationalStructure\Infrastructure\Eloquent\User> $teachers
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, User> $teachers
  * @property-read int|null $teachers_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\OrganizationalStructure\Infrastructure\Eloquent\User> $users
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, User> $users
  * @property-read int|null $users_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Faculty newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Faculty newQuery()

@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\OrganizationalStructure\Domain\Entities;
 
-use App\SharedKernel\Domain\Enums\Status;
 use App\OrganizationalStructure\Domain\Events\DepartmentWasCreated;
 use App\OrganizationalStructure\Domain\Events\DepartmentWasUpdated;
 use App\OrganizationalStructure\Domain\ValueObjects\DepartmentId;
 use App\OrganizationalStructure\Domain\ValueObjects\FacultyId;
+use App\SharedKernel\Domain\Enums\Status;
 
 /**
  * Department entity.

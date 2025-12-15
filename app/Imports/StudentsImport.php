@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace App\Imports;
 
 use App\Enums\Role;
-use App\SharedKernel\Domain\Enums\Status;
 use App\Events\ImportProgressUpdated;
-use App\OrganizationalStructure\Infrastructure\Eloquent\Faculty;
-use App\OrganizationalStructure\Infrastructure\Eloquent\User;
 use App\Notifications\ImportCompleted;
 use App\OrganizationalStructure\Application\UseCases\ImportUsersFromExcelUseCase;
 use App\OrganizationalStructure\Domain\Repositories\FacultyRepositoryInterface;
 use App\OrganizationalStructure\Domain\ValueObjects\FacultyId;
+use App\OrganizationalStructure\Infrastructure\Eloquent\Faculty;
+use App\OrganizationalStructure\Infrastructure\Eloquent\User;
+use App\SharedKernel\Domain\Enums\Status;
 use Exception;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Hash;

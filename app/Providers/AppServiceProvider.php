@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Providers;
 
 use App\Enums\Role;
+use App\IdentityAccess\Infrastructure\Listeners\CreateDefaultCredentialsWhenUserWasCreated;
 use App\Models\Client;
+use App\OrganizationalStructure\Domain\Events\UserWasCreated;
 use App\View\Components\Commons\StatusBadge;
 use App\View\Components\Layouts\AdminLayout;
 use App\View\Components\Layouts\AuthLayout;
@@ -48,6 +50,12 @@ class AppServiceProvider extends ServiceProvider
         Event::listen(function (\SocialiteProviders\Manager\SocialiteWasCalled $event): void {
             $event->extendSocialite('azure', \SocialiteProviders\Azure\Provider::class);
         });
+
+        // Register IdentityAccess event listeners
+        Event::listen(
+            UserWasCreated::class,
+            CreateDefaultCredentialsWhenUserWasCreated::class,
+        );
 
         // Passport::hashClientSecrets(false);
         Passport::tokensExpireIn(now()->addDays(15));

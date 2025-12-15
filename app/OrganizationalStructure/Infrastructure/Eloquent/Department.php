@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace App\OrganizationalStructure\Infrastructure\Eloquent;
 
-use App\OrganizationalStructure\Infrastructure\Eloquent\Faculty;
-use App\OrganizationalStructure\Infrastructure\Eloquent\User;
-
 use App\SharedKernel\Domain\Enums\Status;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -19,8 +16,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property Status $status
- * @property-read \App\OrganizationalStructure\Infrastructure\Eloquent\Faculty|null $faculty
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\OrganizationalStructure\Infrastructure\Eloquent\User> $users
+ * @property-read Faculty|null $faculty
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, User> $users
  * @property-read int|null $users_count
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Department newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Department newQuery()

@@ -9,7 +9,7 @@ use App\Http\Controllers\Admin\ProfileController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\UserRoleController;
-use App\Http\Controllers\Auth\AuthenticateController;
+use App\IdentityAccess\Infrastructure\Http\Controllers\AuthenticateController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/login', [AuthenticateController::class, 'showLoginForm'])->name('login');

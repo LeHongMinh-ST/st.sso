@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace App\Livewire\User;
 
 use App\Enums\Role;
-use App\SharedKernel\Domain\Enums\Status;
-use App\OrganizationalStructure\Infrastructure\Eloquent\Faculty;
-use App\OrganizationalStructure\Infrastructure\Eloquent\User;
 use App\OrganizationalStructure\Application\DTOs\UpdateUserProfileDTO;
 use App\OrganizationalStructure\Application\UseCases\AssignUserToDepartmentUseCase;
 use App\OrganizationalStructure\Application\UseCases\AssignUserToFacultyUseCase;
 use App\OrganizationalStructure\Application\UseCases\UpdateUserProfileUseCase;
+use App\OrganizationalStructure\Infrastructure\Eloquent\Faculty;
+use App\OrganizationalStructure\Infrastructure\Eloquent\User;
+use App\SharedKernel\Domain\Enums\Status;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Validate;
 use Livewire\Component;

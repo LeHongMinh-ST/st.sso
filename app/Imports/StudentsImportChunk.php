@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Imports;
 
 use App\Enums\Role;
-use App\SharedKernel\Domain\Enums\Status;
 use App\OrganizationalStructure\Infrastructure\Eloquent\User;
+use App\SharedKernel\Domain\Enums\Status;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\ToModel;

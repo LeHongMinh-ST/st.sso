@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\OrganizationalStructure\Infrastructure\Persistence;
 
-use App\OrganizationalStructure\Infrastructure\Eloquent\User as EloquentUser;
 use App\OrganizationalStructure\Domain\Aggregates\User;
 use App\OrganizationalStructure\Domain\Repositories\UserRepositoryInterface;
 use App\OrganizationalStructure\Domain\ValueObjects\DepartmentId;
@@ -14,6 +13,7 @@ use App\OrganizationalStructure\Domain\ValueObjects\PhoneNumber;
 use App\OrganizationalStructure\Domain\ValueObjects\UserCode;
 use App\OrganizationalStructure\Domain\ValueObjects\UserId;
 use App\OrganizationalStructure\Domain\ValueObjects\UserName;
+use App\OrganizationalStructure\Infrastructure\Eloquent\User as EloquentUser;
 use App\SharedKernel\Domain\ValueObjects\Email;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;

@@ -4,20 +4,33 @@ declare(strict_types=1);
 
 namespace App\Policies;
 
+use App\IdentityAccess\Application\Services\AuthorizationService;
 use App\OrganizationalStructure\Infrastructure\Eloquent\Department;
 use App\OrganizationalStructure\Infrastructure\Eloquent\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
+/**
+ * Department policy.
+ * Uses AuthorizationService from IdentityAccess Context for permission checks.
+ */
 class DepartmentPolicy
 {
     use HandlesAuthorization;
+
+    /**
+     * @param AuthorizationService $authorizationService
+     */
+    public function __construct(
+        private readonly AuthorizationService $authorizationService,
+    ) {
+    }
 
     /**
      * Determine whether the user can view any models.
      */
     public function viewAny(User $user): bool
     {
-        return $user->hasPermissionTo('department.view');
+        return $this->authorizationService->can($user, 'department.view');
     }
 
     /**
@@ -25,7 +38,7 @@ class DepartmentPolicy
      */
     public function view(User $user, Department $department): bool
     {
-        return $user->hasPermissionTo('department.view');
+        return $this->authorizationService->can($user, 'department.view');
     }
 
     /**
@@ -33,7 +46,7 @@ class DepartmentPolicy
      */
     public function create(User $user): bool
     {
-        return $user->hasPermissionTo('department.create');
+        return $this->authorizationService->can($user, 'department.create');
     }
 
     /**
@@ -41,7 +54,7 @@ class DepartmentPolicy
      */
     public function update(User $user, Department $department): bool
     {
-        return $user->hasPermissionTo('department.edit');
+        return $this->authorizationService->can($user, 'department.edit');
     }
 
     /**
@@ -49,6 +62,6 @@ class DepartmentPolicy
      */
     public function delete(User $user, Department $department): bool
     {
-        return $user->hasPermissionTo('department.delete');
+        return $this->authorizationService->can($user, 'department.delete');
     }
 }

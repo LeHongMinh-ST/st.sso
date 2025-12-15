@@ -5,11 +5,8 @@ declare(strict_types=1);
 namespace App\Livewire\Client;
 
 use App\Enums\Role;
-use App\Models\Client;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
+use App\IdentityAccess\Application\UseCases\RegisterClientUseCase;
 use Illuminate\Support\Facades\Log;
-use Laravel\Passport\ClientRepository;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Throwable;
@@ -33,7 +30,7 @@ class Create extends Component
     {
         return [
             'name' => 'required|max:255',
-            'redirect' => 'required|max:255',
+            'redirect' => 'required|max:255|url',
         ];
     }
 
@@ -53,28 +50,43 @@ class Create extends Component
             return;
         }
 
-        DB::beginTransaction();
         try {
             $this->isLoading = true;
             $this->validate();
 
-            $client = app(ClientRepository::class)
-                ->create(Auth::user()->id, $this->name, $this->redirect);
+            // Use RegisterClientUseCase
+            $registerClientUseCase = $this->getRegisterClientUseCase();
+            $dto = new \App\IdentityAccess\Application\DTOs\RegisterClientDTO(
+                name: $this->name,
+                redirectUri: $this->redirect,
+                description: $this->description,
+                allowedRoles: $this->allowed_roles,
+                grantTypes: ['authorization_code', 'refresh_token'],
+                scopes: [],
+            );
 
-            Client::where('id', $client->id)->update([
-                'description' => $this->description,
-                'allowed_roles' => $this->allowed_roles,
-            ]);
+            $client = $registerClientUseCase->execute($dto);
 
-            DB::commit();
             session()->flash('success', 'Tạo ứng dụng thành công!');
-            return redirect()->route('client.show', $client->id);
+
+            // Get integer ID for redirect (Laravel Passport uses string IDs)
+            return redirect()->route('client.show', $client->id()->toString());
         } catch (Throwable $th) {
-            DB::rollBack();
             Log::error($th->getMessage());
             $this->dispatch('alert', type: 'error', message: 'Tạo mới thất bại!');
         } finally {
             $this->isLoading = false;
         }
+    }
+
+    /**
+     * Get RegisterClientUseCase instance.
+     * Uses app() helper as per Livewire convention.
+     *
+     * @return RegisterClientUseCase
+     */
+    private function getRegisterClientUseCase(): RegisterClientUseCase
+    {
+        return app(RegisterClientUseCase::class);
     }
 }

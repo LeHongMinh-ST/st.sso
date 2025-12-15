@@ -4,19 +4,32 @@ declare(strict_types=1);
 
 namespace App\Policies;
 
+use App\IdentityAccess\Application\Services\AuthorizationService;
 use App\OrganizationalStructure\Infrastructure\Eloquent\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
+/**
+ * User policy.
+ * Uses AuthorizationService from IdentityAccess Context for permission checks.
+ */
 class UserPolicy
 {
     use HandlesAuthorization;
+
+    /**
+     * @param AuthorizationService $authorizationService
+     */
+    public function __construct(
+        private readonly AuthorizationService $authorizationService,
+    ) {
+    }
 
     /**
      * Determine whether the user can view any models.
      */
     public function viewAny(User $user): bool
     {
-        return $user->hasPermissionTo('user.view');
+        return $this->authorizationService->can($user, 'user.view');
     }
 
     /**
@@ -24,7 +37,7 @@ class UserPolicy
      */
     public function view(User $user, User $model): bool
     {
-        return $user->hasPermissionTo('user.view');
+        return $this->authorizationService->can($user, 'user.view');
     }
 
     /**
@@ -32,7 +45,7 @@ class UserPolicy
      */
     public function create(User $user): bool
     {
-        return $user->hasPermissionTo('user.create');
+        return $this->authorizationService->can($user, 'user.create');
     }
 
     /**
@@ -40,7 +53,7 @@ class UserPolicy
      */
     public function update(User $user, User $model): bool
     {
-        return $user->hasPermissionTo('user.edit');
+        return $this->authorizationService->can($user, 'user.edit');
     }
 
     /**
@@ -48,7 +61,7 @@ class UserPolicy
      */
     public function delete(User $user, User $model): bool
     {
-        return $user->hasPermissionTo('user.delete');
+        return $this->authorizationService->can($user, 'user.delete');
     }
 
     /**
@@ -56,6 +69,6 @@ class UserPolicy
      */
     public function resetPassword(User $user, User $model): bool
     {
-        return $user->hasPermissionTo('user.reset_password');
+        return $this->authorizationService->can($user, 'user.reset_password');
     }
 }

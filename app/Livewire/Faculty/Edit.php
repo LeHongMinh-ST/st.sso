@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Livewire\Faculty;
 
-use App\SharedKernel\Domain\Enums\Status;
 use App\OrganizationalStructure\Infrastructure\Eloquent\Faculty;
+use App\SharedKernel\Domain\Enums\Status;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Validate;
 use Livewire\Component;

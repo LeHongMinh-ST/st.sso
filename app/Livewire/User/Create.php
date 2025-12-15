@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Livewire\User;
 
 use App\Enums\Role;
-use App\OrganizationalStructure\Infrastructure\Eloquent\Faculty;
-use App\OrganizationalStructure\Infrastructure\Eloquent\User;
 use App\OrganizationalStructure\Application\DTOs\CreateUserDTO;
 use App\OrganizationalStructure\Application\UseCases\AssignUserToDepartmentUseCase;
 use App\OrganizationalStructure\Application\UseCases\AssignUserToFacultyUseCase;
 use App\OrganizationalStructure\Application\UseCases\CreateUserUseCase;
+use App\OrganizationalStructure\Infrastructure\Eloquent\Faculty;
+use App\OrganizationalStructure\Infrastructure\Eloquent\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Validate;

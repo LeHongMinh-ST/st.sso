@@ -4,13 +4,26 @@ declare(strict_types=1);
 
 namespace App\Livewire\Role;
 
+use App\IdentityAccess\Application\DTOs\AssignPermissionToRoleDTO;
+use App\IdentityAccess\Application\DTOs\RemovePermissionFromRoleDTO;
+use App\IdentityAccess\Application\UseCases\AssignPermissionToRoleUseCase;
+use App\IdentityAccess\Application\UseCases\RemovePermissionFromRoleUseCase;
+use App\IdentityAccess\Domain\Repositories\PermissionRepositoryInterface;
+use App\IdentityAccess\Domain\Repositories\RoleRepositoryInterface;
+use App\IdentityAccess\Domain\ValueObjects\RoleId;
 use App\Models\Permission;
 use App\Models\Role;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
+use RuntimeException;
 use Throwable;
 
+/**
+ * Livewire component for editing a role.
+ *
+ * Note: Uses app() helper for dependency injection as per Livewire convention.
+ */
 class Edit extends Component
 {
     public Role $role;
@@ -66,21 +79,66 @@ class Edit extends Component
             $this->isLoading = true;
             $this->validate();
 
-            $this->role->update([
-                'name' => $this->name,
-                'display_name' => $this->name,
-            ]);
+            // Get role UUID
+            $roleUuid = $this->getRoleUuid($this->role->id);
+            $roleRepository = $this->getRoleRepository();
+            $domainRole = $roleRepository->findById(RoleId::fromString($roleUuid));
 
-            // Detach all current permissions
-            $this->role->permissions()->detach();
+            if (null === $domainRole) {
+                throw new RuntimeException('Role not found');
+            }
 
-            // Attach selected permissions
-            if (!empty($this->selectedPermissions)) {
-                $permissions = Permission::whereIn('code', $this->selectedPermissions)->get();
-                foreach ($permissions as $permission) {
-                    $this->role->permissions()->attach($permission->id);
+            // Update role name (if changed)
+            if ($domainRole->name() !== $this->name) {
+                // Note: Role aggregate doesn't have updateName method yet
+                // For now, we'll update via Eloquent and reload
+                $this->role->update([
+                    'name' => $this->name,
+                    'display_name' => $this->name,
+                ]);
+                $domainRole = $roleRepository->findById(RoleId::fromString($roleUuid));
+            }
+
+            // Get current permission codes
+            $currentPermissionCodes = $domainRole->permissionIds();
+
+            // Get selected permission UUIDs
+            $selectedPermissionUuids = [];
+            $permissionRepository = $this->getPermissionRepository();
+            foreach ($this->selectedPermissions as $permissionCode) {
+                $permission = $permissionRepository->findByCode($permissionCode);
+                if (null !== $permission) {
+                    $selectedPermissionUuids[] = $permission->id()->toString();
                 }
             }
+
+            // Remove permissions that are no longer selected
+            $permissionsToRemove = array_diff($currentPermissionCodes, $selectedPermissionUuids);
+            $removePermissionUseCase = $this->getRemovePermissionFromRoleUseCase();
+            foreach ($permissionsToRemove as $permissionUuid) {
+                $removeDto = new RemovePermissionFromRoleDTO(
+                    roleId: $roleUuid,
+                    permissionId: $permissionUuid,
+                );
+                $removePermissionUseCase->execute($removeDto);
+            }
+
+            // Reload role after removing permissions
+            $domainRole = $roleRepository->findById(RoleId::fromString($roleUuid));
+
+            // Add new permissions
+            $permissionsToAdd = array_diff($selectedPermissionUuids, $currentPermissionCodes);
+            $assignPermissionUseCase = $this->getAssignPermissionToRoleUseCase();
+            foreach ($permissionsToAdd as $permissionUuid) {
+                $dto = new AssignPermissionToRoleDTO(
+                    roleId: $roleUuid,
+                    permissionId: $permissionUuid,
+                );
+                $assignPermissionUseCase->execute($dto);
+            }
+
+            // Save role
+            $roleRepository->save($domainRole);
 
             session()->flash('success', 'Cập nhật vai trò thành công!');
             return redirect()->route('role.show', $this->role->id);
@@ -90,5 +148,80 @@ class Edit extends Component
         } finally {
             $this->isLoading = false;
         }
+    }
+
+    /**
+     * Get AssignPermissionToRoleUseCase instance.
+     *
+     * @return AssignPermissionToRoleUseCase
+     */
+    private function getAssignPermissionToRoleUseCase(): AssignPermissionToRoleUseCase
+    {
+        return app(AssignPermissionToRoleUseCase::class);
+    }
+
+    /**
+     * Get RemovePermissionFromRoleUseCase instance.
+     *
+     * @return RemovePermissionFromRoleUseCase
+     */
+    private function getRemovePermissionFromRoleUseCase(): RemovePermissionFromRoleUseCase
+    {
+        return app(RemovePermissionFromRoleUseCase::class);
+    }
+
+    /**
+     * Get RoleRepositoryInterface instance.
+     *
+     * @return RoleRepositoryInterface
+     */
+    private function getRoleRepository(): RoleRepositoryInterface
+    {
+        return app(RoleRepositoryInterface::class);
+    }
+
+    /**
+     * Get PermissionRepositoryInterface instance.
+     *
+     * @return PermissionRepositoryInterface
+     */
+    private function getPermissionRepository(): PermissionRepositoryInterface
+    {
+        return app(PermissionRepositoryInterface::class);
+    }
+
+    /**
+     * Get role UUID from integer ID.
+     *
+     * @param int $roleId Integer role ID
+     * @return string Role UUID
+     */
+    private function getRoleUuid(int $roleId): string
+    {
+        $hasUuidColumn = \Illuminate\Support\Facades\Schema::hasColumn('roles', 'uuid');
+
+        if ($hasUuidColumn) {
+            $uuid = \Illuminate\Support\Facades\DB::table('roles')->where('id', $roleId)->value('uuid');
+            if (null !== $uuid) {
+                return $uuid;
+            }
+        }
+
+        return $this->generateDeterministicUuid('roles', $roleId);
+    }
+
+    /**
+     * Generate deterministic UUID from integer ID.
+     *
+     * @param string $table Table name
+     * @param int $integerId Integer ID
+     * @return string UUID string
+     */
+    private function generateDeterministicUuid(string $table, int $integerId): string
+    {
+        $namespace = \Ramsey\Uuid\Uuid::fromString('6ba7b810-9dad-11d1-80b4-00c04fd430c8');
+        $name = "{$table}:{$integerId}";
+
+        return \Ramsey\Uuid\Uuid::uuid5($namespace, $name)->toString();
     }
 }

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\OrganizationalStructure\Infrastructure\Persistence;
 
-use App\OrganizationalStructure\Infrastructure\Eloquent\Faculty as EloquentFaculty;
 use App\OrganizationalStructure\Domain\Entities\Faculty;
 use App\OrganizationalStructure\Domain\Repositories\FacultyRepositoryInterface;
 use App\OrganizationalStructure\Domain\ValueObjects\FacultyId;
+use App\OrganizationalStructure\Infrastructure\Eloquent\Faculty as EloquentFaculty;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Ramsey\Uuid\Uuid as RamseyUuid;

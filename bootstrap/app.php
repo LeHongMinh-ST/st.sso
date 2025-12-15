@@ -8,6 +8,7 @@ use App\Http\Middleware\CheckPermission;
 use App\Http\Middleware\CheckRole;
 use App\Http\Middleware\CheckSuperAdmin;
 use App\Http\Middleware\CheckSuperAdminApi;
+use App\IdentityAccess\Infrastructure\Http\Middleware\ValidateTokenMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -30,6 +31,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => CheckRole::class,
             'api.permission' => CheckApiPermission::class,
             'client.credentials' => CheckClientCredentials::class,
+            'validate.token' => ValidateTokenMiddleware::class,
         ])->trustProxies(at: '*');
     })
     ->withExceptions(function (Exceptions $exceptions): void {

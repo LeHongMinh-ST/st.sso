@@ -4,20 +4,33 @@ declare(strict_types=1);
 
 namespace App\Policies;
 
+use App\IdentityAccess\Application\Services\AuthorizationService;
 use App\Models\Client;
 use App\OrganizationalStructure\Infrastructure\Eloquent\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
+/**
+ * Client policy.
+ * Uses AuthorizationService from IdentityAccess Context for permission checks.
+ */
 class ClientPolicy
 {
     use HandlesAuthorization;
+
+    /**
+     * @param AuthorizationService $authorizationService
+     */
+    public function __construct(
+        private readonly AuthorizationService $authorizationService,
+    ) {
+    }
 
     /**
      * Determine whether the user can view any models.
      */
     public function viewAny(User $user): bool
     {
-        return $user->hasPermissionTo('client.view');
+        return $this->authorizationService->can($user, 'client.view');
     }
 
     /**
@@ -25,7 +38,7 @@ class ClientPolicy
      */
     public function view(User $user, Client $client): bool
     {
-        return $user->hasPermissionTo('client.view');
+        return $this->authorizationService->can($user, 'client.view');
     }
 
     /**
@@ -33,7 +46,7 @@ class ClientPolicy
      */
     public function create(User $user): bool
     {
-        return $user->hasPermissionTo('client.create');
+        return $this->authorizationService->can($user, 'client.create');
     }
 
     /**
@@ -41,7 +54,7 @@ class ClientPolicy
      */
     public function update(User $user, Client $client): bool
     {
-        return $user->hasPermissionTo('client.edit');
+        return $this->authorizationService->can($user, 'client.edit');
     }
 
     /**
@@ -49,6 +62,6 @@ class ClientPolicy
      */
     public function delete(User $user, Client $client): bool
     {
-        return $user->hasPermissionTo('client.delete');
+        return $this->authorizationService->can($user, 'client.delete');
     }
 }

@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\OrganizationalStructure\Application\UseCases;
 
-use App\SharedKernel\Domain\Enums\Status;
 use App\OrganizationalStructure\Application\DTOs\CreateFacultyDTO;
 use App\OrganizationalStructure\Domain\Entities\Faculty;
 use App\OrganizationalStructure\Domain\Repositories\FacultyRepositoryInterface;
 use App\OrganizationalStructure\Domain\ValueObjects\FacultyId;
+use App\SharedKernel\Domain\Enums\Status;
 use App\SharedKernel\Domain\Repositories\OutboxEventRepositoryInterface;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;

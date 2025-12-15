@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace App\OrganizationalStructure\Infrastructure\Eloquent;
 
-use App\OrganizationalStructure\Infrastructure\Eloquent\Department;
-use App\OrganizationalStructure\Infrastructure\Eloquent\Faculty;
-
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 use App\Enums\Role;
@@ -40,8 +37,8 @@ use Laravel\Passport\HasApiTokens;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Client> $clients
  * @property-read int|null $clients_count
- * @property-read \App\OrganizationalStructure\Infrastructure\Eloquent\Department|null $department
- * @property-read \App\OrganizationalStructure\Infrastructure\Eloquent\Faculty|null $faculty
+ * @property-read Department|null $department
+ * @property-read Faculty|null $faculty
  * @property-read string $full_name
  * @property-read \Illuminate\Notifications\DatabaseNotificationCollection<int, \Illuminate\Notifications\DatabaseNotification> $notifications
  * @property-read int|null $notifications_count
