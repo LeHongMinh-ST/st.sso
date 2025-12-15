@@ -5,17 +5,14 @@ declare(strict_types=1);
 namespace App\Imports;
 
 use App\Events\ImportProgressUpdated;
-use App\IdentityAccess\Domain\Enums\Role;
 use App\Notifications\ImportCompleted;
 use App\OrganizationalStructure\Application\UseCases\ImportUsersFromExcelUseCase;
 use App\OrganizationalStructure\Domain\Repositories\FacultyRepositoryInterface;
 use App\OrganizationalStructure\Domain\ValueObjects\FacultyId;
 use App\OrganizationalStructure\Infrastructure\Eloquent\Faculty;
 use App\OrganizationalStructure\Infrastructure\Eloquent\User;
-use App\SharedKernel\Domain\Enums\Status;
 use Exception;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 use Maatwebsite\Excel\Concerns\ToCollection;
@@ -26,7 +23,8 @@ use Throwable;
 
 /**
  * Students import class refactored to use DDD Use Cases.
- * Password and Role handling is temporary until IdentityAccess context is implemented (Phase 3).
+ * IdentityAccess credentials are created via Domain Event listener
+ * (CreateDefaultCredentialsWhenUserWasCreated). No manual password/role mutation here.
  */
 class StudentsImport implements ToCollection, WithHeadingRow, WithValidation
 {
@@ -74,9 +72,6 @@ class StudentsImport implements ToCollection, WithHeadingRow, WithValidation
                 try {
                     // Use Use Case to import users (OrganizationalStructure part)
                     $result = $this->getImportUsersUseCase()->execute($batch, $this->facultyUuid);
-
-                    // Handle password and role for new users (temporary until Phase 3)
-                    $this->handlePasswordAndRole($batch, $result['imported']);
 
                     $this->imported += $result['imported'];
                     $this->errors += $result['errors'];
@@ -184,35 +179,6 @@ class StudentsImport implements ToCollection, WithHeadingRow, WithValidation
             Log::error('Error getting faculty UUID: ' . $e->getMessage());
             return null;
         }
-    }
-
-    /**
-     * Handle password and role for imported users.
-     * This is temporary until IdentityAccess context is implemented (Phase 3).
-     *
-     * @param Collection $rows Batch rows
-     * @param int $importedCount Number of imported users
-     * @return void
-     */
-    private function handlePasswordAndRole(Collection $rows, int $importedCount): void
-    {
-        // Get user codes from batch
-        $codes = $rows->pluck('ma_sinh_vien')->filter()->unique()->toArray();
-
-        if (empty($codes)) {
-            return;
-        }
-
-        // Update password and role for users that were just created
-        // Note: This is a temporary solution until IdentityAccess context is implemented
-        User::whereIn('code', $codes)
-            ->where('role', '!=', Role::Student->value)
-            ->update([
-                'password' => Hash::make('password'),
-                'role' => Role::Student->value,
-                'status' => Status::Active->value,
-                'is_change_password' => false,
-            ]);
     }
 
     /**
