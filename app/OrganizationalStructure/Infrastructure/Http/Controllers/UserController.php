@@ -9,6 +9,7 @@ use App\IdentityAccess\Application\UseCases\ChangePasswordUseCase;
 use App\IdentityAccess\Infrastructure\Services\UserIdentityBridgeService;
 use App\OrganizationalStructure\Application\DTOs\CreateUserDTO;
 use App\OrganizationalStructure\Application\DTOs\UpdateUserProfileDTO;
+use App\OrganizationalStructure\Application\Services\PolicyAuthorizationServiceInterface;
 use App\OrganizationalStructure\Application\UseCases\AssignUserToDepartmentUseCase;
 use App\OrganizationalStructure\Application\UseCases\AssignUserToFacultyUseCase;
 use App\OrganizationalStructure\Application\UseCases\CreateUserUseCase;
@@ -42,6 +43,7 @@ final class UserController
         private readonly AssignUserToDepartmentUseCase $assignUserToDepartmentUseCase,
         private readonly ChangePasswordUseCase $changePasswordUseCase,
         private readonly UserIdentityBridgeService $bridgeService,
+        private readonly PolicyAuthorizationServiceInterface $policyAuthorizationService,
     ) {
     }
 
@@ -59,7 +61,7 @@ final class UserController
     {
         // Check permission
         $currentUser = Auth::guard('api')->user();
-        if (null === $currentUser || !$currentUser->can('viewAny', EloquentUser::class)) {
+        if (null === $currentUser || !$this->policyAuthorizationService->canViewAny($currentUser, EloquentUser::class)) {
             return response()->json([
                 'error' => 'Forbidden',
                 'message' => 'Insufficient permissions',
@@ -156,7 +158,7 @@ final class UserController
             // Check permission to view this specific user
             // Get Eloquent User for policy check
             $eloquentUser = $this->bridgeService->getEloquentUser($user);
-            if (null === $eloquentUser || !$currentUser->can('view', $eloquentUser)) {
+            if (null === $eloquentUser || !$this->policyAuthorizationService->canView($currentUser, $eloquentUser)) {
                 return response()->json([
                     'error' => 'Forbidden',
                     'message' => 'Insufficient permissions',

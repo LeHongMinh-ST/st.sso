@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\OrganizationalStructure\Infrastructure\Http\Controllers;
 
 use App\OrganizationalStructure\Application\DTOs\CreateFacultyDTO;
+use App\OrganizationalStructure\Application\Services\PolicyAuthorizationServiceInterface;
 use App\OrganizationalStructure\Application\UseCases\CreateFacultyUseCase;
 use App\OrganizationalStructure\Application\UseCases\FindUsersUseCase;
 use App\OrganizationalStructure\Domain\Exceptions\FacultyNotFoundException;
@@ -33,6 +34,7 @@ final class FacultyController
         private readonly CreateFacultyUseCase $createFacultyUseCase,
         private readonly FacultyRepositoryInterface $facultyRepository,
         private readonly FindUsersUseCase $findUsersUseCase,
+        private readonly PolicyAuthorizationServiceInterface $policyAuthorizationService,
     ) {
     }
 
@@ -51,7 +53,7 @@ final class FacultyController
         try {
             // Check permission
             $currentUser = Auth::guard('api')->user();
-            if (null === $currentUser || !$currentUser->can('viewAny', EloquentFaculty::class)) {
+            if (null === $currentUser || !$this->policyAuthorizationService->canViewAny($currentUser, EloquentFaculty::class)) {
                 return response()->json([
                     'error' => 'Forbidden',
                     'message' => 'Insufficient permissions',

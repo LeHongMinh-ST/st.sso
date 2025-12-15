@@ -9,11 +9,11 @@ use App\Models\Role;
 use App\OrganizationalStructure\Infrastructure\Eloquent\Department;
 use App\OrganizationalStructure\Infrastructure\Eloquent\Faculty;
 use App\OrganizationalStructure\Infrastructure\Eloquent\User;
-use App\Policies\ClientPolicy;
-use App\Policies\DepartmentPolicy;
-use App\Policies\FacultyPolicy;
-use App\Policies\RolePolicy;
-use App\Policies\UserPolicy;
+use App\OrganizationalStructure\Infrastructure\Policies\ClientPolicy;
+use App\OrganizationalStructure\Infrastructure\Policies\DepartmentPolicy;
+use App\OrganizationalStructure\Infrastructure\Policies\FacultyPolicy;
+use App\OrganizationalStructure\Infrastructure\Policies\RolePolicy;
+use App\OrganizationalStructure\Infrastructure\Policies\UserPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 class AuthServiceProvider extends ServiceProvider

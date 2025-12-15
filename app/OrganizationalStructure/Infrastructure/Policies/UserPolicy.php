@@ -2,18 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Policies;
+namespace App\OrganizationalStructure\Infrastructure\Policies;
 
 use App\IdentityAccess\Application\Services\AuthorizationService;
-use App\OrganizationalStructure\Infrastructure\Eloquent\Department;
 use App\OrganizationalStructure\Infrastructure\Eloquent\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 /**
- * Department policy.
+ * User policy.
  * Uses AuthorizationService from IdentityAccess Context for permission checks.
  */
-class DepartmentPolicy
+class UserPolicy
 {
     use HandlesAuthorization;
 
@@ -30,15 +29,15 @@ class DepartmentPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $this->authorizationService->can($user, 'department.view');
+        return $this->authorizationService->can($user, 'user.view');
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Department $department): bool
+    public function view(User $user, User $model): bool
     {
-        return $this->authorizationService->can($user, 'department.view');
+        return $this->authorizationService->can($user, 'user.view');
     }
 
     /**
@@ -46,22 +45,30 @@ class DepartmentPolicy
      */
     public function create(User $user): bool
     {
-        return $this->authorizationService->can($user, 'department.create');
+        return $this->authorizationService->can($user, 'user.create');
     }
 
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Department $department): bool
+    public function update(User $user, User $model): bool
     {
-        return $this->authorizationService->can($user, 'department.edit');
+        return $this->authorizationService->can($user, 'user.edit');
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Department $department): bool
+    public function delete(User $user, User $model): bool
     {
-        return $this->authorizationService->can($user, 'department.delete');
+        return $this->authorizationService->can($user, 'user.delete');
+    }
+
+    /**
+     * Determine whether the user can reset password.
+     */
+    public function resetPassword(User $user, User $model): bool
+    {
+        return $this->authorizationService->can($user, 'user.reset_password');
     }
 }
