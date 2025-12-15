@@ -99,7 +99,7 @@ final class UserIdentity
         $userIdentity->recordEvent(new UserIdentityWasCreated(
             $id->toString(),
             $organizationalStructureUserId,
-            $email->toString(),
+            (string) $email,
         ));
 
         return $userIdentity;
@@ -168,7 +168,7 @@ final class UserIdentity
             $this->recordEvent(new UserWasAuthenticated(
                 $this->id->toString(),
                 $this->organizationalStructureUserId,
-                $this->email->toString(),
+                (string) $this->email,
             ));
         }
 
