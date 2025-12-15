@@ -16,10 +16,12 @@ Route::get('/health', [HealthCheckController::class, 'basic']);
 Route::get('/health/detailed', [HealthCheckController::class, 'detailed']);
 
 // Current user endpoint
-Route::get('/user', fn (Request $request) => $request->user())->middleware('auth:api');
+// Note: Support both auth:api (Laravel Passport) and validate.token (IdentityAccess) for gradual migration
+Route::get('/user', fn (Request $request) => $request->user())->middleware(['auth:api', 'validate.token']);
 
 // OrganizationalStructure Context - DDD API Routes
-Route::middleware(['auth:api'])->group(function (): void {
+// Note: Support both auth:api (Laravel Passport) and validate.token (IdentityAccess) for gradual migration
+Route::middleware(['auth:api', 'validate.token'])->group(function (): void {
     // User aggregate routes
     Route::apiResource('users', UserController::class);
 

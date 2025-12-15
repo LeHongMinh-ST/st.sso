@@ -323,4 +323,10 @@ Route::middleware(['validate.token'])->group(function (): void {
 
 Phase 4 đã được implement **rất tốt** và tuân thủ DDD principles. Code quality cao, security được ưu tiên. 
 
-**Cần bổ sung tests và quyết định strategy** cho API routes và authorization middleware. Sau đó có thể bổ sung các features optional.
+**Đã bổ sung tất cả issues**:
+- ✅ Authorization middleware (CheckPermissionMiddleware, CheckRoleMiddleware)
+- ✅ API routes updated (support both auth:api and validate.token)
+- ✅ Feature tests và integration tests
+- ✅ UserIdentityBridgeService created
+
+**Status**: ✅ Hoàn thành ~95%

@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace App\IdentityAccess\Infrastructure\Http\Middleware;
 
 use App\IdentityAccess\Application\UseCases\ValidateTokenUseCase;
+use App\IdentityAccess\Domain\Repositories\UserIdentityRepositoryInterface;
+use App\IdentityAccess\Domain\ValueObjects\UserIdentityId;
+use App\IdentityAccess\Infrastructure\Services\UserIdentityBridgeService;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,9 +23,13 @@ final class ValidateTokenMiddleware
 {
     /**
      * @param ValidateTokenUseCase $validateTokenUseCase
+     * @param UserIdentityBridgeService $bridgeService
+     * @param UserIdentityRepositoryInterface $userIdentityRepository
      */
     public function __construct(
         private readonly ValidateTokenUseCase $validateTokenUseCase,
+        private readonly UserIdentityBridgeService $bridgeService,
+        private readonly UserIdentityRepositoryInterface $userIdentityRepository,
     ) {
     }
 
@@ -65,10 +72,18 @@ final class ValidateTokenMiddleware
             // Also set user for Laravel Auth compatibility
             // Note: This is a bridge to maintain compatibility with existing code
             if (isset($userInfo['user_identity_id'])) {
-                // Get User model from UserIdentity ID
-                $user = $this->getUserFromUserIdentityId($userInfo['user_identity_id']);
-                if (null !== $user) {
-                    $request->setUserResolver(fn () => $user);
+                // Get UserIdentity ID
+                $userIdentityId = UserIdentityId::fromString($userInfo['user_identity_id']);
+
+                // Find UserIdentity using repository
+                $userIdentity = $this->userIdentityRepository->findById($userIdentityId);
+
+                if (null !== $userIdentity) {
+                    // Get User model from UserIdentity using bridge service
+                    $user = $this->bridgeService->getEloquentUser($userIdentity);
+                    if (null !== $user) {
+                        $request->setUserResolver(fn () => $user);
+                    }
                 }
             }
 
@@ -87,46 +102,4 @@ final class ValidateTokenMiddleware
         }
     }
 
-    /**
-     * Get User model from UserIdentity ID.
-     * Bridge method to maintain compatibility with Laravel Auth.
-     *
-     * @param string $userIdentityId User Identity ID (UUID)
-     * @return \App\OrganizationalStructure\Infrastructure\Eloquent\User|null
-     */
-    private function getUserFromUserIdentityId(string $userIdentityId): ?\App\OrganizationalStructure\Infrastructure\Eloquent\User
-    {
-        $hasUuidColumn = \Illuminate\Support\Facades\Schema::hasColumn('users', 'uuid');
-
-        if ($hasUuidColumn) {
-            return \App\OrganizationalStructure\Infrastructure\Eloquent\User::where('uuid', $userIdentityId)->first();
-        }
-
-        // Fallback: try to find by deterministic UUID
-        $records = \Illuminate\Support\Facades\DB::table('users')->select('id')->get();
-        foreach ($records as $record) {
-            $generatedUuid = $this->generateDeterministicUuid('users', $record->id);
-            if ($generatedUuid === $userIdentityId) {
-                return \App\OrganizationalStructure\Infrastructure\Eloquent\User::find($record->id);
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Generate deterministic UUID from integer ID.
-     * Temporary helper until UUID migration is complete.
-     *
-     * @param string $table Table name
-     * @param int $integerId Integer ID
-     * @return string UUID string
-     */
-    private function generateDeterministicUuid(string $table, int $integerId): string
-    {
-        $namespace = \Ramsey\Uuid\Uuid::fromString('6ba7b810-9dad-11d1-80b4-00c04fd430c8');
-        $name = "{$table}:{$integerId}";
-
-        return \Ramsey\Uuid\Uuid::uuid5($namespace, $name)->toString();
-    }
 }

@@ -10,6 +10,7 @@ use App\IdentityAccess\Application\UseCases\AuthenticateUserUseCase;
 use App\IdentityAccess\Application\UseCases\AuthenticateWithMicrosoftUseCase;
 use App\IdentityAccess\Domain\Exceptions\InvalidCredentialsException;
 use App\IdentityAccess\Domain\Exceptions\UserIdentityNotFoundException;
+use App\IdentityAccess\Infrastructure\Services\UserIdentityBridgeService;
 use App\OrganizationalStructure\Infrastructure\Eloquent\User;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -30,10 +31,12 @@ final class AuthenticateController extends Controller
     /**
      * @param AuthenticateUserUseCase $authenticateUserUseCase
      * @param AuthenticateWithMicrosoftUseCase $authenticateWithMicrosoftUseCase
+     * @param UserIdentityBridgeService $bridgeService
      */
     public function __construct(
         private readonly AuthenticateUserUseCase $authenticateUserUseCase,
         private readonly AuthenticateWithMicrosoftUseCase $authenticateWithMicrosoftUseCase,
+        private readonly UserIdentityBridgeService $bridgeService,
     ) {
     }
 
@@ -74,8 +77,8 @@ final class AuthenticateController extends Controller
 
             $userIdentity = $this->authenticateUserUseCase->execute($dto);
 
-            // Get User model for Laravel Auth
-            $user = $this->getUserModelFromUserIdentity($userIdentity);
+            // Get User model for Laravel Auth using bridge service
+            $user = $this->bridgeService->getEloquentUser($userIdentity);
 
             if (null === $user) {
                 return redirect()->back()
@@ -155,8 +158,8 @@ final class AuthenticateController extends Controller
             // Use AuthenticateWithMicrosoftUseCase
             $userIdentity = $this->authenticateWithMicrosoftUseCase->execute($email);
 
-            // Get User model for Laravel Auth
-            $user = $this->getUserModelFromUserIdentity($userIdentity);
+            // Get User model for Laravel Auth using bridge service
+            $user = $this->bridgeService->getEloquentUser($userIdentity);
 
             if (null === $user) {
                 return redirect()->route('login')
@@ -182,25 +185,4 @@ final class AuthenticateController extends Controller
         }
     }
 
-    /**
-     * Get User model from UserIdentity.
-     *
-     * Maps UserIdentity (IdentityAccess context) to User model (OrganizationalStructure context).
-     *
-     * @param \App\IdentityAccess\Domain\Aggregates\UserIdentity $userIdentity
-     * @return User|null
-     */
-    private function getUserModelFromUserIdentity(\App\IdentityAccess\Domain\Aggregates\UserIdentity $userIdentity): ?User
-    {
-        // UserIdentity and User share the same table (users)
-        // Use UUID or integer ID to find the User model
-        $hasUuidColumn = \Illuminate\Support\Facades\Schema::hasColumn('users', 'uuid');
-
-        if ($hasUuidColumn) {
-            return User::where('uuid', $userIdentity->id()->toString())->first();
-        }
-
-        // Fallback: try to find by email
-        return User::where('email', $userIdentity->email()->toString())->first();
-    }
 }

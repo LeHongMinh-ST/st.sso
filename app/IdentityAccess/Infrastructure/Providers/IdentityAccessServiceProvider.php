@@ -18,6 +18,7 @@ use App\IdentityAccess\Infrastructure\Persistence\EloquentRoleRepository;
 use App\IdentityAccess\Infrastructure\Persistence\EloquentUserIdentityRepository;
 use App\IdentityAccess\Infrastructure\Services\LaravelPasswordHasher;
 use App\IdentityAccess\Infrastructure\Services\PassportTokenGenerator;
+use App\IdentityAccess\Infrastructure\Services\UserIdentityBridgeService;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -68,6 +69,12 @@ final class IdentityAccessServiceProvider extends ServiceProvider
         $this->app->singleton(
             TokenGeneratorInterface::class,
             PassportTokenGenerator::class,
+        );
+
+        // Bridge service (temporary - will be removed in Phase 6)
+        $this->app->singleton(
+            UserIdentityBridgeService::class,
+            UserIdentityBridgeService::class,
         );
     }
 
