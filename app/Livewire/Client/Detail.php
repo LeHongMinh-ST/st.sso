@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire\Client;
 
 use App\Models\Client;
+use App\OrganizationalStructure\Application\Services\PolicyAuthorizationServiceInterface;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
@@ -25,7 +26,8 @@ class Detail extends Component
     #[On('deleteClient')]
     public function delete()
     {
-        if (!auth()->user()->can('delete', $this->client)) {
+        $currentUser = auth()->user();
+        if (null === $currentUser || !$this->getPolicyAuthorizationService()->canDelete($currentUser, $this->client)) {
             session()->flash('error', 'Bạn không có quyền xóa ứng dụng!');
             return;
         }
@@ -37,10 +39,22 @@ class Detail extends Component
 
     public function openDeleteModal(): void
     {
-        if (!auth()->user()->can('delete', $this->client)) {
+        $currentUser = auth()->user();
+        if (null === $currentUser || !$this->getPolicyAuthorizationService()->canDelete($currentUser, $this->client)) {
             return;
         }
 
         $this->dispatch('onOpenDeleteModal');
+    }
+
+    /**
+     * Get PolicyAuthorizationService instance.
+     * Livewire components cannot use constructor injection, so we use app() helper.
+     *
+     * @return PolicyAuthorizationServiceInterface
+     */
+    private function getPolicyAuthorizationService(): PolicyAuthorizationServiceInterface
+    {
+        return app(PolicyAuthorizationServiceInterface::class);
     }
 }

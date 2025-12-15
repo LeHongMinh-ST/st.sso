@@ -6,6 +6,7 @@ namespace App\Livewire\Client;
 
 use App\Enums\Role;
 use App\Models\Client;
+use App\OrganizationalStructure\Application\Services\PolicyAuthorizationServiceInterface;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 
@@ -46,7 +47,8 @@ class Edit extends Component
 
     public function submit(): void
     {
-        if (!auth()->user()->can('update', $this->client)) {
+        $currentUser = auth()->user();
+        if (null === $currentUser || !$this->getPolicyAuthorizationService()->canUpdate($currentUser, $this->client)) {
             $this->dispatch('alert', type: 'error', message: 'Bạn không có quyền chỉnh sửa ứng dụng!');
             return;
         }
@@ -61,5 +63,16 @@ class Edit extends Component
         ]);
 
         $this->dispatch('alert', type: 'success', message: 'Cập nhật thành công!');
+    }
+
+    /**
+     * Get PolicyAuthorizationService instance.
+     * Livewire components cannot use constructor injection, so we use app() helper.
+     *
+     * @return PolicyAuthorizationServiceInterface
+     */
+    private function getPolicyAuthorizationService(): PolicyAuthorizationServiceInterface
+    {
+        return app(PolicyAuthorizationServiceInterface::class);
     }
 }

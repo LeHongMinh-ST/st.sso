@@ -6,7 +6,9 @@ namespace App\Livewire\Faculty;
 
 use App\Imports\StudentsImportChunk;
 use App\Jobs\ImportStudentsJob;
+use App\OrganizationalStructure\Application\Services\PolicyAuthorizationServiceInterface;
 use App\OrganizationalStructure\Infrastructure\Eloquent\Faculty;
+use App\OrganizationalStructure\Infrastructure\Eloquent\User as EloquentUser;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\On;
 use Livewire\Component;
@@ -46,7 +48,8 @@ class ImportStudents extends Component
 
     public function toggleImportForm(): void
     {
-        if (!auth()->user()->can('create', \App\OrganizationalStructure\Infrastructure\Eloquent\User::class)) {
+        $currentUser = auth()->user();
+        if (null === $currentUser || !$this->getPolicyAuthorizationService()->canCreate($currentUser, EloquentUser::class)) {
             return;
         }
         $this->showImportForm = !$this->showImportForm;
@@ -59,7 +62,8 @@ class ImportStudents extends Component
             return;
         }
 
-        if (!auth()->user()->can('create', \App\OrganizationalStructure\Infrastructure\Eloquent\User::class)) {
+        $currentUser = auth()->user();
+        if (null === $currentUser || !$this->getPolicyAuthorizationService()->canCreate($currentUser, EloquentUser::class)) {
             $this->dispatch('alert', type: 'error', message: 'Bạn không có quyền nhập sinh viên!');
             return;
         }
@@ -149,5 +153,16 @@ class ImportStudents extends Component
         $this->importedCount = 0;
         $this->errorCount = 0;
         $this->importStatus = '';
+    }
+
+    /**
+     * Get PolicyAuthorizationService instance.
+     * Livewire components cannot use constructor injection, so we use app() helper.
+     *
+     * @return PolicyAuthorizationServiceInterface
+     */
+    private function getPolicyAuthorizationService(): PolicyAuthorizationServiceInterface
+    {
+        return app(PolicyAuthorizationServiceInterface::class);
     }
 }

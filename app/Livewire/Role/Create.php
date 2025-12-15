@@ -6,6 +6,7 @@ namespace App\Livewire\Role;
 
 use App\IdentityAccess\Application\DTOs\AssignPermissionToRoleDTO;
 use App\IdentityAccess\Application\DTOs\CreateRoleDTO;
+use App\IdentityAccess\Application\Services\AuthorizationService;
 use App\IdentityAccess\Application\UseCases\AssignPermissionToRoleUseCase;
 use App\IdentityAccess\Application\UseCases\CreateRoleUseCase;
 use App\IdentityAccess\Domain\Repositories\PermissionRepositoryInterface;
@@ -53,7 +54,8 @@ class Create extends Component
             return;
         }
 
-        if (!auth()->user()->can('role.create')) {
+        $currentUser = auth()->user();
+        if (null === $currentUser || !$this->getAuthorizationService()->can($currentUser, 'role.create')) {
             $this->dispatch('alert', type: 'error', message: 'Bạn không có quyền tạo vai trò!');
             return;
         }
@@ -143,6 +145,17 @@ class Create extends Component
     private function getPermissionRepository(): PermissionRepositoryInterface
     {
         return app(PermissionRepositoryInterface::class);
+    }
+
+    /**
+     * Get AuthorizationService instance.
+     * Livewire components cannot use constructor injection, so we use app() helper.
+     *
+     * @return AuthorizationService
+     */
+    private function getAuthorizationService(): AuthorizationService
+    {
+        return app(AuthorizationService::class);
     }
 
     /**

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire\User;
 
 use App\Models\Role;
+use App\OrganizationalStructure\Application\Services\PolicyAuthorizationServiceInterface;
 use App\OrganizationalStructure\Infrastructure\Eloquent\User;
 use Illuminate\Support\Facades\Log;
 use Livewire\Component;
@@ -38,7 +39,8 @@ class Roles extends Component
             return;
         }
 
-        if (!auth()->user()->can('viewAny', Role::class)) {
+        $currentUser = auth()->user();
+        if (null === $currentUser || !$this->getPolicyAuthorizationService()->canViewAny($currentUser, Role::class)) {
             $this->dispatch('alert', type: 'error', message: 'Bạn không có quyền gán vai trò cho người dùng!');
             return;
         }
@@ -64,5 +66,16 @@ class Roles extends Component
         } finally {
             $this->isLoading = false;
         }
+    }
+
+    /**
+     * Get PolicyAuthorizationService instance.
+     * Livewire components cannot use constructor injection, so we use app() helper.
+     *
+     * @return PolicyAuthorizationServiceInterface
+     */
+    private function getPolicyAuthorizationService(): PolicyAuthorizationServiceInterface
+    {
+        return app(PolicyAuthorizationServiceInterface::class);
     }
 }

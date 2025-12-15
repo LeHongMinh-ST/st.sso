@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Faculty;
 
+use App\OrganizationalStructure\Application\Services\PolicyAuthorizationServiceInterface;
 use App\OrganizationalStructure\Infrastructure\Eloquent\Faculty;
 use App\SharedKernel\Domain\Enums\Status;
 use Illuminate\Support\Facades\Log;
@@ -52,7 +53,8 @@ class Edit extends Component
             return;
         }
 
-        if (!auth()->user()->can('update', $this->faculty)) {
+        $currentUser = auth()->user();
+        if (null === $currentUser || !$this->getPolicyAuthorizationService()->canUpdate($currentUser, $this->faculty)) {
             $this->dispatch('alert', type: 'error', message: 'Bạn không có quyền chỉnh sửa khoa!');
             return;
         }
@@ -79,12 +81,24 @@ class Edit extends Component
 
     public function toggleStatus(): void
     {
-        if (!auth()->user()->can('update', $this->faculty)) {
+        $currentUser = auth()->user();
+        if (null === $currentUser || !$this->getPolicyAuthorizationService()->canUpdate($currentUser, $this->faculty)) {
             return;
         }
 
         $this->status = Status::Active === $this->status
             ? Status::Inactive
             : Status::Active;
+    }
+
+    /**
+     * Get PolicyAuthorizationService instance.
+     * Livewire components cannot use constructor injection, so we use app() helper.
+     *
+     * @return PolicyAuthorizationServiceInterface
+     */
+    private function getPolicyAuthorizationService(): PolicyAuthorizationServiceInterface
+    {
+        return app(PolicyAuthorizationServiceInterface::class);
     }
 }

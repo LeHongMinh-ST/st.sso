@@ -6,6 +6,8 @@ namespace App\Livewire\Client;
 
 use App\Enums\Role;
 use App\IdentityAccess\Application\UseCases\RegisterClientUseCase;
+use App\Models\Client;
+use App\OrganizationalStructure\Application\Services\PolicyAuthorizationServiceInterface;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
@@ -45,7 +47,8 @@ class Create extends Component
             return;
         }
 
-        if (!auth()->user()->can('create', Client::class)) {
+        $currentUser = auth()->user();
+        if (null === $currentUser || !$this->getPolicyAuthorizationService()->canCreate($currentUser, Client::class)) {
             $this->dispatch('alert', type: 'error', message: 'Bạn không có quyền tạo ứng dụng!');
             return;
         }
@@ -88,5 +91,16 @@ class Create extends Component
     private function getRegisterClientUseCase(): RegisterClientUseCase
     {
         return app(RegisterClientUseCase::class);
+    }
+
+    /**
+     * Get PolicyAuthorizationService instance.
+     * Livewire components cannot use constructor injection, so we use app() helper.
+     *
+     * @return PolicyAuthorizationServiceInterface
+     */
+    private function getPolicyAuthorizationService(): PolicyAuthorizationServiceInterface
+    {
+        return app(PolicyAuthorizationServiceInterface::class);
     }
 }

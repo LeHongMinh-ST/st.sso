@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\Faculty;
 
+use App\OrganizationalStructure\Application\Services\PolicyAuthorizationServiceInterface;
 use App\OrganizationalStructure\Infrastructure\Eloquent\Faculty;
 use App\OrganizationalStructure\Infrastructure\Eloquent\User;
 use App\SharedKernel\Helpers\Constants;
@@ -40,7 +41,8 @@ class Detail extends Component
     #[On('deleteFaculty')]
     public function delete()
     {
-        if (!auth()->user()->can('delete', $this->faculty)) {
+        $currentUser = auth()->user();
+        if (null === $currentUser || !$this->getPolicyAuthorizationService()->canDelete($currentUser, $this->faculty)) {
             session()->flash('error', 'Bạn không có quyền xóa khoa!');
             return;
         }
@@ -52,7 +54,8 @@ class Detail extends Component
 
     public function openDeleteModal(): void
     {
-        if (!auth()->user()->can('delete', $this->faculty)) {
+        $currentUser = auth()->user();
+        if (null === $currentUser || !$this->getPolicyAuthorizationService()->canDelete($currentUser, $this->faculty)) {
             return;
         }
         $this->dispatch('onOpenDeleteModal');
@@ -60,7 +63,8 @@ class Detail extends Component
 
     public function toggleCreateUserForm(): void
     {
-        if (!auth()->user()->can('create', User::class)) {
+        $currentUser = auth()->user();
+        if (null === $currentUser || !$this->getPolicyAuthorizationService()->canCreate($currentUser, User::class)) {
             return;
         }
         $this->showCreateUserForm = !$this->showCreateUserForm;
@@ -69,7 +73,8 @@ class Detail extends Component
 
     public function toggleImportStudentsForm(): void
     {
-        if (!auth()->user()->can('create', User::class)) {
+        $currentUser = auth()->user();
+        if (null === $currentUser || !$this->getPolicyAuthorizationService()->canCreate($currentUser, User::class)) {
             return;
         }
         $this->showImportStudentsForm = !$this->showImportStudentsForm;
@@ -87,5 +92,16 @@ class Detail extends Component
     public function refreshUsers(): void
     {
         $this->resetPage();
+    }
+
+    /**
+     * Get PolicyAuthorizationService instance.
+     * Livewire components cannot use constructor injection, so we use app() helper.
+     *
+     * @return PolicyAuthorizationServiceInterface
+     */
+    private function getPolicyAuthorizationService(): PolicyAuthorizationServiceInterface
+    {
+        return app(PolicyAuthorizationServiceInterface::class);
     }
 }

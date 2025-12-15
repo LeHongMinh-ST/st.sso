@@ -6,6 +6,7 @@ namespace App\Livewire\User;
 
 use App\Enums\Role;
 use App\OrganizationalStructure\Application\DTOs\UpdateUserProfileDTO;
+use App\OrganizationalStructure\Application\Services\PolicyAuthorizationServiceInterface;
 use App\OrganizationalStructure\Application\UseCases\AssignUserToDepartmentUseCase;
 use App\OrganizationalStructure\Application\UseCases\AssignUserToFacultyUseCase;
 use App\OrganizationalStructure\Application\UseCases\UpdateUserProfileUseCase;
@@ -118,7 +119,8 @@ class Edit extends Component
             return;
         }
 
-        if (!auth()->user()->can('update', $this->user)) {
+        $currentUser = auth()->user();
+        if (null === $currentUser || !$this->getPolicyAuthorizationService()->canUpdate($currentUser, $this->user)) {
             $this->dispatch('alert', type: 'error', message: 'Bạn không có quyền chỉnh sửa người dùng!');
             return;
         }
@@ -218,6 +220,17 @@ class Edit extends Component
     private function getAssignUserToDepartmentUseCase(): AssignUserToDepartmentUseCase
     {
         return app(AssignUserToDepartmentUseCase::class);
+    }
+
+    /**
+     * Get PolicyAuthorizationService instance.
+     * Livewire components cannot use constructor injection, so we use app() helper.
+     *
+     * @return PolicyAuthorizationServiceInterface
+     */
+    private function getPolicyAuthorizationService(): PolicyAuthorizationServiceInterface
+    {
+        return app(PolicyAuthorizationServiceInterface::class);
     }
 
     /**

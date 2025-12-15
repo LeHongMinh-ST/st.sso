@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Livewire\User;
 
+use App\OrganizationalStructure\Application\Services\PolicyAuthorizationServiceInterface;
 use App\OrganizationalStructure\Infrastructure\Eloquent\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -28,7 +29,8 @@ class Detail extends Component
     #[On('deleteUser')]
     public function delete()
     {
-        if (!auth()->user()->can('delete', $this->user)) {
+        $currentUser = auth()->user();
+        if (null === $currentUser || !$this->getPolicyAuthorizationService()->canDelete($currentUser, $this->user)) {
             session()->flash('error', 'Bạn không có quyền xóa người dùng!');
             return;
         }
@@ -40,7 +42,8 @@ class Detail extends Component
 
     public function openDeleteModal(): void
     {
-        if (!auth()->user()->can('delete', $this->user)) {
+        $currentUser = auth()->user();
+        if (null === $currentUser || !$this->getPolicyAuthorizationService()->canDelete($currentUser, $this->user)) {
             return;
         }
         $this->dispatch('onOpenDeleteModal');
@@ -48,7 +51,8 @@ class Detail extends Component
 
     public function resetPassword(): void
     {
-        if (!auth()->user()->can('resetPassword', $this->user)) {
+        $currentUser = auth()->user();
+        if (null === $currentUser || !$this->getPolicyAuthorizationService()->can($currentUser, $this->user, 'resetPassword')) {
             $this->dispatch('alert', type: 'error', message: 'Bạn không có quyền đặt lại mật khẩu!');
             return;
         }
@@ -69,5 +73,16 @@ class Detail extends Component
     public function openResetPasswordModal(): void
     {
         $this->dispatch('onOpenResetPasswordModal');
+    }
+
+    /**
+     * Get PolicyAuthorizationService instance.
+     * Livewire components cannot use constructor injection, so we use app() helper.
+     *
+     * @return PolicyAuthorizationServiceInterface
+     */
+    private function getPolicyAuthorizationService(): PolicyAuthorizationServiceInterface
+    {
+        return app(PolicyAuthorizationServiceInterface::class);
     }
 }

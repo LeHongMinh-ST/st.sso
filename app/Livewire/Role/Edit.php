@@ -6,6 +6,7 @@ namespace App\Livewire\Role;
 
 use App\IdentityAccess\Application\DTOs\AssignPermissionToRoleDTO;
 use App\IdentityAccess\Application\DTOs\RemovePermissionFromRoleDTO;
+use App\IdentityAccess\Application\Services\AuthorizationService;
 use App\IdentityAccess\Application\UseCases\AssignPermissionToRoleUseCase;
 use App\IdentityAccess\Application\UseCases\RemovePermissionFromRoleUseCase;
 use App\IdentityAccess\Domain\Repositories\PermissionRepositoryInterface;
@@ -65,7 +66,8 @@ class Edit extends Component
             return;
         }
 
-        if (!auth()->user()->can('role.edit')) {
+        $currentUser = auth()->user();
+        if (null === $currentUser || !$this->getAuthorizationService()->can($currentUser, 'role.edit')) {
             $this->dispatch('alert', type: 'error', message: 'Bạn không có quyền chỉnh sửa vai trò!');
             return;
         }
@@ -223,5 +225,16 @@ class Edit extends Component
         $name = "{$table}:{$integerId}";
 
         return \Ramsey\Uuid\Uuid::uuid5($namespace, $name)->toString();
+    }
+
+    /**
+     * Get AuthorizationService instance.
+     * Livewire components cannot use constructor injection, so we use app() helper.
+     *
+     * @return AuthorizationService
+     */
+    private function getAuthorizationService(): AuthorizationService
+    {
+        return app(AuthorizationService::class);
     }
 }

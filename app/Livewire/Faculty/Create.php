@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Livewire\Faculty;
 
 use App\OrganizationalStructure\Application\DTOs\CreateFacultyDTO;
+use App\OrganizationalStructure\Application\Services\PolicyAuthorizationServiceInterface;
 use App\OrganizationalStructure\Application\UseCases\CreateFacultyUseCase;
 use App\OrganizationalStructure\Infrastructure\Eloquent\Faculty;
 use Illuminate\Support\Facades\Log;
@@ -46,7 +47,8 @@ class Create extends Component
             return;
         }
 
-        if (!auth()->user()->can('create', Faculty::class)) {
+        $currentUser = auth()->user();
+        if (null === $currentUser || !$this->getPolicyAuthorizationService()->canCreate($currentUser, Faculty::class)) {
             $this->dispatch('alert', type: 'error', message: 'Bạn không có quyền tạo khoa!');
             return;
         }
@@ -86,6 +88,17 @@ class Create extends Component
     private function getCreateFacultyUseCase(): CreateFacultyUseCase
     {
         return app(CreateFacultyUseCase::class);
+    }
+
+    /**
+     * Get PolicyAuthorizationService instance.
+     * Livewire components cannot use constructor injection, so we use app() helper.
+     *
+     * @return PolicyAuthorizationServiceInterface
+     */
+    private function getPolicyAuthorizationService(): PolicyAuthorizationServiceInterface
+    {
+        return app(PolicyAuthorizationServiceInterface::class);
     }
 
     /**
