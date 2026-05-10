@@ -26,6 +26,8 @@ class ImportStudents extends Component
     public int $importedCount = 0;
     public int $errorCount = 0;
     public string $importStatus = '';
+    /** Shown after file is queued; real-time progress requires Echo (often off in local). */
+    public bool $showPostImportReloadHint = false;
     public $userId;
     private bool $isLoading = false;
 
@@ -71,9 +73,7 @@ class ImportStudents extends Component
 
         try {
             $this->isLoading = true;
-            $this->isImporting = true;
-            $this->importProgress = 0;
-            $this->importStatus = 'Đang tải file lên và bắt đầu xử lý...';
+            $this->showPostImportReloadHint = false;
 
             // Store file and dispatch job
             $path = $this->file->store('imports');
@@ -83,7 +83,14 @@ class ImportStudents extends Component
                 $path
             );
 
-            $this->dispatch('alert', type: 'success', message: 'File đã được tải lên và đang được xử lý. Theo dõi tiến trình bên dưới.');
+            // Do not keep isImporting=true: background work has no Livewire update without Echo.
+            $this->isImporting = false;
+            $this->importProgress = 0;
+            $this->showPostImportReloadHint = true;
+            $this->importStatus = '';
+
+            $message = 'Hệ thống đang xử lý file. Vui lòng tải lại trang sau vài phút để xem danh sách sinh viên cập nhật.';
+            $this->dispatch('alert', type: 'success', message: $message);
             $this->dispatch('importStarted');
             $this->reset('file');
         } catch (Throwable $th) {
@@ -109,6 +116,7 @@ class ImportStudents extends Component
             $this->errorCount = $data['errors'];
             $this->importStatus = $data['message'];
             $this->isImporting = false;
+            $this->showPostImportReloadHint = false;
 
             // Dispatch events to refresh data
             $this->dispatch('studentsImported');
@@ -145,5 +153,6 @@ class ImportStudents extends Component
         $this->importedCount = 0;
         $this->errorCount = 0;
         $this->importStatus = '';
+        $this->showPostImportReloadHint = false;
     }
 }

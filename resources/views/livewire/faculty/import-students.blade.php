@@ -24,6 +24,19 @@
                 </div>
             </div>
 
+            @if($showPostImportReloadHint)
+                <div class="alert alert-info d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-2 mb-3" role="alert">
+                    <div>
+                        <i class="ph-info me-1"></i>
+                        <strong>Hệ thống đang xử lý file.</strong>
+                        Vui lòng <strong>tải lại trang</strong> sau vài phút để xem danh sách sinh viên đã cập nhật.
+                    </div>
+                    <button type="button" class="btn btn-sm btn-primary text-nowrap" onclick="window.location.reload()">
+                        <i class="ph-arrow-clockwise me-1"></i> Tải lại trang
+                    </button>
+                </div>
+            @endif
+
             <!-- Import Progress Display -->
             {{-- @if($isImporting)
                 <div class="row mb-4">
@@ -89,8 +102,7 @@
                                    type="file" 
                                    class="form-control @error('file') is-invalid @enderror" 
                                    id="file" 
-                                   accept=".xlsx,.xls,.csv"
-                                   @if($isImporting) disabled @endif>
+                                   accept=".xlsx,.xls,.csv">
                             @error('file')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -106,17 +118,12 @@
                         <button wire:loading.attr="disabled" 
                                 wire:target="import" 
                                 type="submit" 
-                                class="btn btn-success fw-semibold"
-                                @if($isImporting) disabled @endif>
+                                class="btn btn-success fw-semibold">
                             <span wire:loading.remove wire:target="import">
-                                @if($isImporting)
-                                    <i class="ph-circle-notch spinner me-1"></i> Đang xử lý...
-                                @else
-                                    <i class="ph-microsoft-excel-logo me-1"></i> Nhập danh sách sinh viên
-                                @endif
+                                <i class="ph-microsoft-excel-logo me-1"></i> Nhập danh sách sinh viên
                             </span>
                             <span wire:loading wire:target="import">
-                                <i class="ph-circle-notch spinner me-1"></i> Đang xử lý...
+                                <i class="ph-circle-notch spinner me-1"></i> Đang tải file lên...
                             </span>
                         </button>
                     </div>
