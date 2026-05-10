@@ -41,7 +41,8 @@ class StudentsImportChunk implements ToModel, WithHeadingRow, WithValidation, Wi
                 \Log::error('Import failed: ' . $event->getException()->getMessage());
             },
             AfterChunk::class => function (AfterChunk $event): void {
-                \Log::info('After chunk: ' . $event->chunk()->count());
+                // AfterChunk exposes sheet + start row only (no chunk() in current maatwebsite/excel).
+                Log::info('Excel chunk finished', ['start_row' => $event->getStartRow()]);
             },
         ];
     }
