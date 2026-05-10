@@ -7,6 +7,7 @@ namespace App\Imports;
 use App\Enums\Role;
 use App\Enums\Status;
 use App\Events\ImportProgressUpdated;
+use App\Imports\Concerns\PreparesStudentRowForValidation;
 use App\Models\User;
 use App\Notifications\ImportCompleted;
 use Illuminate\Support\Collection;
@@ -20,6 +21,8 @@ use Throwable;
 
 class StudentsImport implements ToCollection, WithHeadingRow, WithValidation
 {
+    use PreparesStudentRowForValidation;
+
     private int $facultyId;
     private int $imported = 0;
     private int $errors = 0;

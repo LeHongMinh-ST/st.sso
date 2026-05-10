@@ -6,6 +6,7 @@ namespace App\Imports;
 
 use App\Enums\Role;
 use App\Enums\Status;
+use App\Imports\Concerns\PreparesStudentRowForValidation;
 use App\Models\User;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Log;
@@ -21,6 +22,8 @@ use Throwable;
 
 class StudentsImportChunk implements ToModel, WithHeadingRow, WithValidation, WithChunkReading, ShouldQueue, WithBatchInserts, WithEvents
 {
+    use PreparesStudentRowForValidation;
+
     private int $facultyId;
     private int $errors = 0;
     private int $userId;
